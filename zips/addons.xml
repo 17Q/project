@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addons>
+<addon id="plugin.video.patriot" version="1.0.0" name=" Patriot" provider-name="17Q">
+	<requires>
+		<import addon="xbmc.python" version="2.19.0" />
+		<import addon="script.module.resolveurl" />
+		<import addon="script.module.requests" />
+		<import addon="script.module.metahandler" />
+		<import addon="plugin.video.youtube" />
+		<import addon="script.extendedinfo" />
+		<import addon="script.module.openscrapers" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="patriot.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.service" library="service.py" start="startup" />
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en">Patriot</summary>
+		<description lang="en">[B]Patriot Movies, TV Shows, Trakt and Library Support[/B][CR][CR]This addon does not form part of the Kodi Media Center. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR][CR]The author does not host any of the content in this addon and takes no responsibility for content found.</description>
+		<platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
+		<forum></forum>
+		<website></website>
+		<source></source>
+		<disclaimer lang="en">The author of this addon does not host any of the content which is found and have no affiliation with any of the content providers. This addon simply searches websites for content. Use at your own risk!</disclaimer>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
+		</assets>
+		<news>- RealDebrid Recommended
+- Fix Episodes Out of Order
+- Fix Trailers
+- Added Movie Collections to Movies
+- Added OpenScrapers Support
+- Update Code
+- VPN Recommended
+- Initial Version 1.0.0 Covenant Fork
+</news>
+	</extension>
+</addon>
+
 <addon id="repository.17q" name="17Q Repository" version="1.0.0" provider-name="17Q">
 	<extension point="xbmc.addon.repository" name="17Q Repository">
 		<dir>

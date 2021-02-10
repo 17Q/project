@@ -1,0 +1,10 @@
+
+[B]1.0.0[/B]
+- RealDebrid Recommended
+- Fix Episodes Out of Order
+- Fix Trailers
+- Added Movie Collections to Movies
+- Added OpenScrapers Support
+- Update Code
+- VPN Recommended
+- Initial Version 1.0.0 Covenant Fork
