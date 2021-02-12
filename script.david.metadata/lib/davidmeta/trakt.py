@@ -4,8 +4,8 @@ import json
 # from davidmeta.utils import logger
 
 API_ENDPOINT = "https://api-v2launch.trakt.tv"
-CLIENT_ID = "fc6d05ba4dd54c123e95cf19bee045d9c1dc4c799a4d47c18f8a583a2edd3e2b"
-CLIENT_SECRET = "d96eac963563939e91608bc26064494bf483f2a2e180e88c1f5704ed66cb26ef"
+CLIENT_ID = "46a691933d7cf646fd73ce846a44d1951b7a2d28304a370b4ebd4c06bab83f63"
+CLIENT_SECRET = "f0145ebe05107a6655edfd581aca11d632f97a04e0896e5da843310153b82ffd"
 
 def traktGetIDs(db_type, id_type, media_id):
     from davidmeta.metacache import cache_function
