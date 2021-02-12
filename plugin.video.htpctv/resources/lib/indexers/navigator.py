@@ -226,6 +226,9 @@ class navigator:
     def mytvshows(self, lite=False):
         self.accountCheck()
 
+        if traktIndicators == True:
+            self.addDirectoryItem(32037, 'calendar&url=progress', 'trakt.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
+
         if traktCredentials == True and imdbCredentials == True:
             self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt.png', 'DefaultTVShows.png', context=(32211, 'tvshowsToLibrary&url=traktcollection'))
             self.addDirectoryItem(32033, 'tvshows&url=traktwatchlist', 'trakt.png', 'DefaultTVShows.png', context=(32211, 'tvshowsToLibrary&url=traktwatchlist'))
@@ -247,7 +250,7 @@ class navigator:
 
         if traktIndicators == True:
             self.addDirectoryItem(32036, 'calendar&url=trakthistory', 'trakt.png', 'DefaultTVShows.png', queue=True)
-            self.addDirectoryItem(32037, 'calendar&url=progress', 'trakt.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
+#             self.addDirectoryItem(32037, 'calendar&url=progress', 'trakt.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
             self.addDirectoryItem(32038, 'calendar&url=mycalendar', 'trakt.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
 
         self.addDirectoryItem(32040, 'tvUserlists', 'imdb.png', 'DefaultTVShows.png')
