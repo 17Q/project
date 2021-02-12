@@ -152,7 +152,7 @@ def get_movie_window(window_type):
 
 		@ch.click(120)
 		def search_in_meta_by_title(self):
-			url = 'plugin://plugin.video.metaq/movies/tmdb/search_term/%s/1/' % self.info.get('title', '')
+			url = 'plugin://plugin.video.openmeta/movies/tmdb/search_term/%s/1/' % self.info.get('title', '')
 			self.close()
 			xbmc.executebuiltin('ActivateWindow(videos,%s,return)' % url)
 
@@ -167,7 +167,7 @@ def get_movie_window(window_type):
 				url = ''
 				PLAYER.play_from_button(url, listitem=None, window=self, type='movieid', dbid=dbid)
 			else:
-				url = 'plugin://plugin.video.metaq/movies/play/tmdb/%s' % self.info.get('id', '')
+				url = 'plugin://plugin.video.openmeta/movies/play/tmdb/%s' % self.info.get('id', '')
 				xbmc.executebuiltin('RunPlugin(%s)' % url)
 
 		@ch.action('contextmenu', 8)
@@ -177,14 +177,14 @@ def get_movie_window(window_type):
 				url = ''
 				PLAYER.play_from_button(url, listitem=None, window=self, type='movieid', dbid=dbid)
 			else:
-				url = 'plugin://plugin.video.metaq/movies/play_choose_player/tmdb/%s/False' % self.info.get('id', '')
+				url = 'plugin://plugin.video.openmeta/movies/play_choose_player/tmdb/%s/False' % self.info.get('id', '')
 				xbmc.executebuiltin('RunPlugin(%s)' % url)
 
 		@ch.click(445)
 		def show_manage_dialog(self):
 			manage_list = []
 			manage_list.append(["MetaInfo's settings", 'Addon.OpenSettings("script.extendedinfo")'])
-			manage_list.append(["MetaQ's settings", 'Addon.OpenSettings("plugin.video.metaq")'])
+			manage_list.append(["OpenMeta's settings", 'Addon.OpenSettings("plugin.video.openmeta")'])
 			manage_list.append(["YouTube's settings", 'Addon.OpenSettings("plugin.video.youtube")'])
 			selection = xbmcgui.Dialog().select(heading='Settings', list=[i[0] for i in manage_list])
 			if selection > -1:
@@ -193,21 +193,21 @@ def get_movie_window(window_type):
 
 		@ch.click(18)
 		def add_movie_to_library(self):
-			if not xbmc.getCondVisibility('System.HasAddon(plugin.video.metaq)'):
-				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.metaq/setup/total)')
+			if not xbmc.getCondVisibility('System.HasAddon(plugin.video.openmeta)'):
+				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.openmeta/setup/total)')
 			if xbmcgui.Dialog().yesno('MetaInfo', 'Add [B]%s[/B] to library?' % self.info['title']):
-				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.metaq/movies/add_to_library/tmdb/%s)' % self.info.get('id', ''))
+				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.openmeta/movies/add_to_library/tmdb/%s)' % self.info.get('id', ''))
 				Utils.after_add(type='movie')
 				Utils.notify(header='[B]%s[/B] added to library' % self.info['title'], message='Exit & re-enter to refresh', icon=self.info['poster'], time=5000, sound=False)
 
 		@ch.click(19)
 		def remove_movie_from_library(self):
-			if not xbmc.getCondVisibility('System.HasAddon(plugin.video.metaq)'):
-				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.metaq/setup/total)')
+			if not xbmc.getCondVisibility('System.HasAddon(plugin.video.openmeta)'):
+				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.openmeta/setup/total)')
 			if xbmcgui.Dialog().yesno('MetaInfo', 'Remove [B]%s[/B] from library?' % self.info['title']):
-				if os.path.exists(xbmc.translatePath('%s%s/' % (Utils.METAQ_MOVIE_FOLDER, self.info['imdb_id']))):
+				if os.path.exists(xbmc.translatePath('%s%s/' % (Utils.OPENMETA_MOVIE_FOLDER, self.info['imdb_id']))):
 					Utils.get_kodi_json(method='VideoLibrary.RemoveMovie', params='{"movieid": %d}' % int(self.info['dbid']))
-					shutil.rmtree(xbmc.translatePath('%s%s/' % (Utils.METAQ_MOVIE_FOLDER, self.info['imdb_id'])))
+					shutil.rmtree(xbmc.translatePath('%s%s/' % (Utils.OPENMETA_MOVIE_FOLDER, self.info['imdb_id'])))
 					Utils.after_add(type='movie')
 					Utils.notify(header='Removed [B]%s[/B] from library' % self.info.get('title', ''), message='Exit & re-enter to refresh', icon=self.info['poster'], time=5000, sound=False)
 

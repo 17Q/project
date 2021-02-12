@@ -120,6 +120,7 @@
 							<itemgap>-10</itemgap>
 							<orientation>horizontal</orientation>
 							<scrolltime tween="quadratic">200</scrolltime>
+<!-- 
 							<control type="radiobutton" id="8">
 								<label>Play</label>
 								<textureradioonfocus colordiffuse="FFFFFFFF">icons/play.png</textureradioonfocus>
@@ -212,6 +213,8 @@
 								<radioheight>44</radioheight>
 								<visible>!String.IsEqual(Window.Property(Type),tvshow) + !String.IsEqual(Window.Property(Type),movie) + !String.IsEqual(Window.Property(Type),season) + !String.IsEqual(Window.Property(Type),episode)</visible>
 							</control>
+ -->
+<!-- 
 							<control type="radiobutton" id="18">
 								<label>Library</label>
 								<textureradioonfocus colordiffuse="FFFFFFFF">icons/starplus.png</textureradioonfocus>
@@ -308,8 +311,10 @@
 								<visible>!String.IsEmpty(Window.Property(movie.DBID))</visible>
 								<visible>!String.IsEqual(Window.Property(Type),movie) + !String.IsEqual(Window.Property(Type),episode) + !String.IsEqual(Window.Property(Type),season)</visible>
 							</control>
+ -->
+<!-- 
 							<control type="radiobutton" id="120">
-								<label>MetaQ</label>
+								<label>OpenMeta</label>
 								<textureradioonfocus colordiffuse="FFFFFFFF">icons/browse.png</textureradioonfocus>
 								<textureradioofffocus colordiffuse="FFFFFFFF">icons/browse.png</textureradioofffocus>
 								<textureradiooffnofocus colordiffuse="FF999999">icons/browse.png</textureradiooffnofocus>
@@ -331,6 +336,8 @@
 								<radioheight>44</radioheight>
 								<visible>String.IsEqual(Window.Property(Type),tvshow) | String.IsEqual(Window.Property(Type),season) | String.IsEqual(Window.Property(Type),movie)</visible>
 							</control>
+ -->
+<!-- 
 							<control type="radiobutton" id="445">
 								<width>280</width>
 								<height>140</height>
@@ -354,6 +361,7 @@
 								<label>Settings</label>
 								<visible>!Skin.HasSetting(kioskmode)</visible>
 							</control>
+ -->
 						</control>
 					</control>
 					<control type="group">

@@ -7,7 +7,7 @@
 		<import addon="script.module.requests" version="2.9.1"/>
 		<import addon="script.skin.helper.service" version="1.0.0"/>
 		<import addon="resource.images.studios.white" version="0.0.18"/>
-		<import addon="plugin.video.metaq" version="1.0.0" optional="true"/>
+		<import addon="plugin.video.openmeta" version="1.0.0" optional="true"/>
 	</requires>
 	<extension point="xbmc.python.script" library="script.py"/>
 	<extension point="xbmc.python.pluginsource" library="plugin.py">
@@ -25,7 +25,7 @@
 		<reuselanguageinvoker>false</reuselanguageinvoker>
 		<platform>all</platform>
 		<summary>Fork of the ExtendedInfo script from phil65 mod by A4K</summary>
-		<description>This script offers various possibilities to display online content inside skins as well as a complete MovieDB browser including info dialogs for various media types. Needs skin implementation for lot of functions and MetaQ for library functions.</description>
+		<description>This script offers various possibilities to display online content inside skins as well as a complete MovieDB browser including info dialogs for various media types. Needs skin implementation for lot of functions and OpenMeta for library functions.</description>
 		<assets>
 			<icon>resources/icon.png</icon>
 			<fanart>resources/fanart.jpg</fanart>
