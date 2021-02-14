@@ -1,3 +1,11 @@
+name="HTMC (v17.6) SPMC Krypton fork"
+section="no"
+url="https://www.dropbox.com/s/4h7scsgoh7wnczf/HTMC-17.6-SPMC.apk?dl=1"
+icon="https://raw.githubusercontent.com/17q/project/master/apks/icon-spmc-krypton.png"
+fanart="https://raw.githubusercontent.com/17q/project/master/apks/fanart.jpg"
+adult="no"
+description="Download HTMC v17.6 SPMC Krypton fork..."
+
 name="HTMC (v17.6) KODI Krypton fork"
 section="no"
 url="https://www.dropbox.com/s/ci3mekws7pohfn5/HTMC-17.6-Kodi.apk?dl=1"
@@ -13,6 +21,14 @@ icon="https://raw.githubusercontent.com/17q/project/master/apks/icon-kodi-leia.p
 fanart="https://raw.githubusercontent.com/17q/project/master/apks/fanart.jpg"
 adult="no"
 description="Download HTMC v18.9 KODI Leia fork..."
+
+name="HTMC (v19.0) KODI Matrix RC 1 fork"
+section="no"
+url="https://www.dropbox.com/s/4hx5ag56bimdfpf/HTMC-19.0-Kodi.apk?dl=1"
+icon="https://raw.githubusercontent.com/17q/project/master/apks/icon-kodi-matrix.png"
+fanart="https://raw.githubusercontent.com/17q/project/master/apks/fanart.jpg"
+adult="no"
+description="Download HTMC v19.0 KODI Matrix RC 1 fork..."
 
 name="HTMC (v17.6) SPMC Krypton fork"
 section="no"
