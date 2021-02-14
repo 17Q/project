@@ -1,2 +1,2 @@
 # script.extendedinfo
-MetaInfo Kodi Add-on
+MetaInfo Kodi Add-on fork of OpenInfo

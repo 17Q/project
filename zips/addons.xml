@@ -226,7 +226,7 @@
     </extension>
 </addon>
 
-<addon id="script.extendedinfo" name="MetaInfo" version="8.0.0" provider-name="17Q">
+<addon id="script.extendedinfo" name="MetaInfo" version="8.0.1" provider-name="17Q">
 	<requires>
 		<import addon="xbmc.python" version="2.25.0"/>
 		<import addon="script.module.pil" version="1.1.7"/>
@@ -252,7 +252,7 @@
 		<reuselanguageinvoker>false</reuselanguageinvoker>
 		<platform>all</platform>
 		<summary>Fork of the ExtendedInfo script from phil65 mod by A4K</summary>
-		<description>This script offers various possibilities to display online content inside skins as well as a complete MovieDB browser including info dialogs for various media types. Needs skin implementation for lot of functions and OpenMeta for library functions.</description>
+		<description>This script offers various possibilities to display online content inside skins as well as a complete MovieDB browser including info dialogs for various media types.</description>
 		<assets>
 			<icon>resources/icon.png</icon>
 			<fanart>resources/fanart.jpg</fanart>
@@ -260,10 +260,8 @@
 			<screenshot>resources/screenshot2.jpg</screenshot>
 			<screenshot>resources/screenshot3.jpg</screenshot>
 		</assets>
-		<news>6.2.3 - Fix TV Show trailers
-		6.2.2 - Added ability to search using the tvdb_id for "extendedepisodeinfo"
-		6.2.1 - Fix context menu now available for widgets pointing to MetaInfo's video addon items
-		6.2.0 - Added context menu force "player select" to the play button, available via "c" and long press "enter" button
+		<news>Various fixes
+		Initial version fork of OpenInfo
 		</news>
 	</extension>
 </addon>

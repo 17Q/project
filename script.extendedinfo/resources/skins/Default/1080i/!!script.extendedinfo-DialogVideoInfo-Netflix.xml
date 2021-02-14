@@ -337,8 +337,7 @@
 
 
 
-							<!--
-
+							
 							<control type="radiobutton" id="28">
 								<label>Play Trailer</label>	
 								<altlabel>Stop Trailer</altlabel>
@@ -364,8 +363,6 @@
 								<pulseonselect>false</pulseonselect>
 								<visible>String.IsEqual(Window.Property(Type),tvshow) | String.IsEqual(Window.Property(Type),movie)</visible>
 							</control>
--->
-<!-- 
 							<control type="radiobutton" id="445">
 								<label>Settings</label>
 								<textureradioonfocus colordiffuse="FFFFFFFF">icons/tool2.png</textureradioonfocus>
@@ -388,7 +385,6 @@
 								<radioheight>44</radioheight>
 								<visible>!Skin.HasSetting(kioskmode) + String.IsEqual(Window.Property(Type),tvshow) | String.IsEqual(Window.Property(Type),movie)</visible>
 							</control>
- -->
 						</control>
 					</control>
 					<control type="group">

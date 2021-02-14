@@ -143,7 +143,7 @@ def get_tvshow_window(window_type):
 		def show_manage_dialog(self):
 			manage_list = []
 			manage_list.append(["MetaInfo's settings", 'Addon.OpenSettings("script.extendedinfo")'])
-			manage_list.append(["OpenMeta's settings", 'Addon.OpenSettings("plugin.video.openmeta")'])
+# 			manage_list.append(["OpenMeta's settings", 'Addon.OpenSettings("plugin.video.openmeta")'])
 			manage_list.append(["YouTube's settings", 'Addon.OpenSettings("plugin.video.youtube")'])
 			selection = xbmcgui.Dialog().select(heading='Settings', list=[i[0] for i in manage_list])
 			if selection > -1:

@@ -510,6 +510,8 @@
 					<radiowidth>32</radiowidth>
 					<radioheight>32</radioheight>
 				</control>
+ -->
+
 				<control type="radiobutton" id="21">
 					<visible>String.IsEqual(Window.Property(Type),tvshow) + !String.IsEmpty(Window.Property(movie.DBID))</visible>
 					<label>Library</label>
@@ -531,8 +533,6 @@
 					<radiowidth>32</radiowidth>
 					<radioheight>32</radioheight>
 				</control>
- -->
-<!-- 
 				<control type="radiobutton" id="445">
 					<label>Settings</label>
 					<texturefocus colordiffuse="FFFF0000">netflix/button.png</texturefocus>
@@ -553,7 +553,6 @@
 					<radiowidth>32</radiowidth>
 					<radioheight>32</radioheight>
 				</control>
- -->
 			</control>
 			<control type="group">
 				<visible>String.IsEqual(Window.Property(type),movie) | String.IsEqual(Window.Property(type),tvshow)</visible>

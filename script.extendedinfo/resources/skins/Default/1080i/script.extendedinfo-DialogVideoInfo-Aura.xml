@@ -337,7 +337,6 @@
 								<visible>String.IsEqual(Window.Property(Type),tvshow) | String.IsEqual(Window.Property(Type),season) | String.IsEqual(Window.Property(Type),movie)</visible>
 							</control>
  -->
-<!-- 
 							<control type="radiobutton" id="445">
 								<width>280</width>
 								<height>140</height>
@@ -361,7 +360,6 @@
 								<label>Settings</label>
 								<visible>!Skin.HasSetting(kioskmode)</visible>
 							</control>
- -->
 						</control>
 					</control>
 					<control type="group">
