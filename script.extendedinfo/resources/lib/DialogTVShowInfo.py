@@ -75,7 +75,7 @@ def get_tvshow_window(window_type):
 
 		@ch.click(120)
 		def browse_tvshow(self):
-			url = 'plugin://plugin.video.openmeta/tv/tvdb/%s/' % self.info['tvdb_id']
+			url = 'plugin://plugin.video.metaq/tv/tvdb/%s/' % self.info['tvdb_id']
 			self.close()
 			xbmc.executebuiltin('ActivateWindow(videos,%s,return)' % url)
 
@@ -143,7 +143,7 @@ def get_tvshow_window(window_type):
 		def show_manage_dialog(self):
 			manage_list = []
 			manage_list.append(["MetaInfo's settings", 'Addon.OpenSettings("script.extendedinfo")'])
-# 			manage_list.append(["OpenMeta's settings", 'Addon.OpenSettings("plugin.video.openmeta")'])
+			manage_list.append(["MetaQ's settings", 'Addon.OpenSettings("plugin.video.metaq")'])
 			manage_list.append(["YouTube's settings", 'Addon.OpenSettings("plugin.video.youtube")'])
 			selection = xbmcgui.Dialog().select(heading='Settings', list=[i[0] for i in manage_list])
 			if selection > -1:
@@ -160,31 +160,31 @@ def get_tvshow_window(window_type):
 
 		@ch.click(9)
 		def play_tvshow(self):
-			url = 'plugin://plugin.video.openmeta/tv/play/%s/1/1' % self.info['tvdb_id']
+			url = 'plugin://plugin.video.metaq/tv/play/%s/1/1' % self.info['tvdb_id']
 			xbmc.executebuiltin('RunPlugin(%s)' % url)
 
 		@ch.action('contextmenu', 9)
 		def play_tvshow_choose_player(self):
-			url = 'plugin://plugin.video.openmeta/tv/play_choose_player/%s/1/1/False' % self.info['tvdb_id']
+			url = 'plugin://plugin.video.metaq/tv/play_choose_player/%s/1/1/False' % self.info['tvdb_id']
 			xbmc.executebuiltin('RunPlugin(%s)' % url)
 
 		@ch.click(20)
 		def add_tvshow_to_library(self):
-			if not xbmc.getCondVisibility('System.HasAddon(plugin.video.openmeta)'):
-				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.openmeta/setup/total)')
+			if not xbmc.getCondVisibility('System.HasAddon(plugin.video.metaq)'):
+				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.metaq/setup/total)')
 			if xbmcgui.Dialog().yesno('MetaInfo', 'Add [B]%s[/B] to library?' % self.info['TVShowTitle']):
-				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.openmeta/tv/add_to_library/%s)' % self.info['tvdb_id'])
+				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.metaq/tv/add_to_library/%s)' % self.info['tvdb_id'])
 				Utils.after_add(type='tv')
 				Utils.notify(header='[B]%s[/B] added to library' % self.info['TVShowTitle'], message='Exit & re-enter to refresh', icon=self.info['poster'], time=5000, sound=False)
 
 		@ch.click(21)
 		def remove_tvshow_from_library(self):
-			if not xbmc.getCondVisibility('System.HasAddon(plugin.video.openmeta)'):
-				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.openmeta/setup/total)')
+			if not xbmc.getCondVisibility('System.HasAddon(plugin.video.metaq)'):
+				xbmc.executebuiltin('RunPlugin(plugin://plugin.video.metaq/setup/total)')
 			if xbmcgui.Dialog().yesno('MetaInfo', 'Remove [B]%s[/B] from library?' % self.info['TVShowTitle']):
-				if os.path.exists(xbmc.translatePath('%s%s/' % (Utils.OPENMETA_TV_FOLDER, self.info['tvdb_id']))):
+				if os.path.exists(xbmc.translatePath('%s%s/' % (Utils.METAQ_TV_FOLDER, self.info['tvdb_id']))):
 					Utils.get_kodi_json(method='VideoLibrary.RemoveTVShow', params='{"tvshowid": %s}' % int(self.info['dbid']))
-					shutil.rmtree(xbmc.translatePath('%s%s/' % (Utils.OPENMETA_TV_FOLDER, self.info['tvdb_id'])))
+					shutil.rmtree(xbmc.translatePath('%s%s/' % (Utils.METAQ_TV_FOLDER, self.info['tvdb_id'])))
 					Utils.after_add(type='tv')
 					Utils.notify(header='Removed [B]%s[/B] from library' % self.info['TVShowTitle'], message='Exit & re-enter to refresh', icon=self.info['poster'], time=5000, sound=False)
 

@@ -123,6 +123,51 @@
 	</extension>
 </addon>
 
+<addon id="plugin.video.metaq" name=" MetaQ" version="1.0.2" provider-name="17Q">
+	<requires>
+		<import addon="xbmc.python" version="2.25.0"/>
+		<import addon="metadata.tvdb.com" version="3.0.14"/>
+		<import addon="script.module.futures" version="2.2.0"/>
+		<import addon="script.module.requests" version="2.19.1"/>
+		<import addon="script.module.requests-cache" version="0.4.13"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="addon.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.service" library="service.py"/>
+	<extension point="kodi.context.item">
+		<menu id="kodi.core.main">
+			<item library="context.py">
+				<label>MetaQ - Default Player</label>
+				<visible>!String.StartsWith(ListItem.path,plugin://plugin.video.metaq/)+[String.IsEqual(ListItem.dbtype,episode)|String.IsEqual(ListItem.dbtype,movie)]</visible>
+			</item>
+			<item library="context2.py">
+				<label>MetaQ - Choose Player</label>
+				<visible>String.IsEqual(ListItem.dbtype,movie) | String.IsEqual(ListItem.dbtype,episode)</visible>
+			</item>
+		</menu>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<platform>all</platform>
+		<summary lang="en">TMDb, TVDb and Trakt browser</summary>
+		<description lang="en">Browse The MovieDb, The TVDb, Trakt and pass info along to library or an addon. Needs player-files and the appropriate addon to play the files.</description>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
+			<screenshot>resources/screenshot1.jpg</screenshot>
+			<screenshot>resources/screenshot2.jpg</screenshot>
+			<screenshot>resources/screenshot3.jpg</screenshot>
+		</assets>
+		<license></license>
+		<forum></forum>
+		<website></website>
+		<source></source>
+		<news>
+		1.0.0 - Initial version fork of OpenMeta
+		</news>
+	</extension>
+</addon>
+
 <addon id="plugin.video.patriot" version="1.0.0" name=" Patriot" provider-name="17Q">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
@@ -226,7 +271,7 @@
     </extension>
 </addon>
 
-<addon id="script.extendedinfo" name="MetaInfo" version="8.0.1" provider-name="17Q">
+<addon id="script.extendedinfo" name=" MetaInfo" version="8.0.3" provider-name="17Q">
 	<requires>
 		<import addon="xbmc.python" version="2.25.0"/>
 		<import addon="script.module.pil" version="1.1.7"/>
@@ -234,7 +279,7 @@
 		<import addon="script.module.requests" version="2.9.1"/>
 		<import addon="script.skin.helper.service" version="1.0.0"/>
 		<import addon="resource.images.studios.white" version="0.0.18"/>
-		<import addon="plugin.video.openmeta" version="1.0.0" optional="true"/>
+		<import addon="plugin.video.metaq" version="1.0.0"/>
 	</requires>
 	<extension point="xbmc.python.script" library="script.py"/>
 	<extension point="xbmc.python.pluginsource" library="plugin.py">
@@ -251,17 +296,18 @@
 	<extension point="xbmc.addon.metadata">
 		<reuselanguageinvoker>false</reuselanguageinvoker>
 		<platform>all</platform>
-		<summary>Fork of the ExtendedInfo script from phil65 mod by A4K</summary>
-		<description>This script offers various possibilities to display online content inside skins as well as a complete MovieDB browser including info dialogs for various media types.</description>
+		<summary>Fork of the ExtendedInfo script from phil65</summary>
+		<description>This script offers various possibilities to display online content inside skins as well as a complete MovieDB browser including info dialogs for various media types. Needs skin implementation for lot of functions and MetaQ for library functions.</description>
 		<assets>
-			<icon>resources/icon.png</icon>
-			<fanart>resources/fanart.jpg</fanart>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
 			<screenshot>resources/screenshot1.jpg</screenshot>
 			<screenshot>resources/screenshot2.jpg</screenshot>
 			<screenshot>resources/screenshot3.jpg</screenshot>
+			<screenshot>resources/screenshot4.jpg</screenshot>
 		</assets>
-		<news>Various fixes
-		Initial version fork of OpenInfo
+		<news>
+		8.0.0 - Initial version fork of OpenInfo
 		</news>
 	</extension>
 </addon>

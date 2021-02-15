@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.extendedinfo" name="MetaInfo" version="8.0.1" provider-name="17Q">
+<addon id="script.extendedinfo" name=" MetaInfo" version="8.0.3" provider-name="17Q">
 	<requires>
 		<import addon="xbmc.python" version="2.25.0"/>
 		<import addon="script.module.pil" version="1.1.7"/>
@@ -7,7 +7,7 @@
 		<import addon="script.module.requests" version="2.9.1"/>
 		<import addon="script.skin.helper.service" version="1.0.0"/>
 		<import addon="resource.images.studios.white" version="0.0.18"/>
-		<import addon="plugin.video.openmeta" version="1.0.0" optional="true"/>
+		<import addon="plugin.video.metaq" version="1.0.0"/>
 	</requires>
 	<extension point="xbmc.python.script" library="script.py"/>
 	<extension point="xbmc.python.pluginsource" library="plugin.py">
@@ -24,17 +24,18 @@
 	<extension point="xbmc.addon.metadata">
 		<reuselanguageinvoker>false</reuselanguageinvoker>
 		<platform>all</platform>
-		<summary>Fork of the ExtendedInfo script from phil65 mod by A4K</summary>
-		<description>This script offers various possibilities to display online content inside skins as well as a complete MovieDB browser including info dialogs for various media types.</description>
+		<summary>Fork of the ExtendedInfo script from phil65</summary>
+		<description>This script offers various possibilities to display online content inside skins as well as a complete MovieDB browser including info dialogs for various media types. Needs skin implementation for lot of functions and MetaQ for library functions.</description>
 		<assets>
-			<icon>resources/icon.png</icon>
-			<fanart>resources/fanart.jpg</fanart>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
 			<screenshot>resources/screenshot1.jpg</screenshot>
 			<screenshot>resources/screenshot2.jpg</screenshot>
 			<screenshot>resources/screenshot3.jpg</screenshot>
+			<screenshot>resources/screenshot4.jpg</screenshot>
 		</assets>
-		<news>Various fixes
-		Initial version fork of OpenInfo
+		<news>
+		8.0.0 - Initial version fork of OpenInfo
 		</news>
 	</extension>
 </addon>

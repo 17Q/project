@@ -131,7 +131,7 @@ def start_info_actions(infos, params):
 			resolve_url(params.get('handle'))
 			Utils.get_kodi_json(method='Player.Open', params='{"item": {"songid": %s}}' % params.get('dbid'))
 
-		elif info == 'openinfodialog':
+		elif info == 'metainfodialog':
 			resolve_url(params.get('handle'))
 			if xbmc.getCondVisibility('System.HasActiveModalDialog | System.HasModalDialog'):
 				container_id = ''

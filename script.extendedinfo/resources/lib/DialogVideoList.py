@@ -129,7 +129,7 @@ def get_tmdb_window(window_type):
 			selection = xbmcgui.Dialog().select(heading='Choose option', list=listitems)
 			if selection == 0:
 				if self.listitem.getProperty('TVShowTitle'):
-					url = 'plugin://plugin.video.openmeta/tv/play/%s/1/1' % tvdb_id
+					url = 'plugin://plugin.video.metaq/tv/play/%s/1/1' % tvdb_id
 					PLAYER.play_from_button(url, listitem=None, window=self, dbid=0)
 				else:
 					if self.listitem.getProperty('dbid'):
@@ -137,11 +137,11 @@ def get_tmdb_window(window_type):
 						url = ''
 					else:
 						dbid = 0
-						url = 'plugin://plugin.video.openmeta/movies/play/tmdb/%s' % item_id
+						url = 'plugin://plugin.video.metaq/movies/play/tmdb/%s' % item_id
 					PLAYER.play_from_button(url, listitem=None, window=self, type='movieid', dbid=dbid)
 			if selection == 1:
 				if self.listitem.getProperty('TVShowTitle'):
-					TVLibrary = xbmcaddon.Addon('plugin.video.openmeta').getSetting('tv_library_folder')
+					TVLibrary = xbmcaddon.Addon('plugin.video.metaq').getSetting('tv_library_folder')
 					if self.listitem.getProperty('dbid'):
 						Utils.get_kodi_json(method='VideoLibrary.RemoveTVShow', params='{"tvshowid": %s}' % dbid)
 						if os.path.exists(xbmc.translatePath('%s%s/' % (TVLibrary, tvdb_id))):
@@ -153,14 +153,14 @@ def get_tmdb_window(window_type):
 							self.getControl(500).selectItem(self.position)
 					else:
 						if xbmcgui.Dialog().yesno('MetaInfo', 'Add [B]%s[/B] to library?' % self.listitem.getProperty('TVShowTitle')):
-							xbmc.executebuiltin('RunPlugin(plugin://plugin.video.openmeta/tv/add_to_library/%s)' % tvdb_id)
+							xbmc.executebuiltin('RunPlugin(plugin://plugin.video.metaq/tv/add_to_library/%s)' % tvdb_id)
 							Utils.after_add(type='tv')
 							Utils.notify(header='[B]%s[/B] added to library' % self.listitem.getProperty('TVShowTitle'), message='Exit & re-enter to refresh', icon=self.listitem.getProperty('poster'), time=5000, sound=False)
 				else:
 					if self.listitem.getProperty('dbid'):
 						if xbmcgui.Dialog().yesno('MetaInfo', 'Remove [B]%s[/B] from library?' % self.listitem.getProperty('title')):
 							Utils.get_kodi_json(method='VideoLibrary.RemoveMovie', params='{"movieid": %s}' % dbid)
-							MovieLibrary = xbmcaddon.Addon('plugin.video.openmeta').getSetting('movies_library_folder')
+							MovieLibrary = xbmcaddon.Addon('plugin.video.metaq').getSetting('movies_library_folder')
 							if os.path.exists(xbmc.translatePath('%s%s/' % (MovieLibrary, imdb_id))):
 								shutil.rmtree(xbmc.translatePath('%s%s/' % (MovieLibrary, imdb_id)))
 								Utils.after_add(type='movie')
@@ -170,7 +170,7 @@ def get_tmdb_window(window_type):
 								self.getControl(500).selectItem(self.position)
 					else:
 						if xbmcgui.Dialog().yesno('MetaInfo', 'Add [B]%s[/B] to library?' % self.listitem.getProperty('title')):
-							xbmc.executebuiltin('RunPlugin(plugin://plugin.video.openmeta/movies/add_to_library/tmdb/%s)' % item_id)
+							xbmc.executebuiltin('RunPlugin(plugin://plugin.video.metaq/movies/add_to_library/tmdb/%s)' % item_id)
 							Utils.after_add(type='movie')
 							Utils.notify(header='[B]%s[/B] added to library' % self.listitem.getProperty('title'), message='Exit & re-enter to refresh', icon=self.listitem.getProperty('poster'), time=5000, sound=False)
 			if selection == 2:
