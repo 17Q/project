@@ -45,6 +45,47 @@
 					<effect type="slide" end="0,20" time="180" tween="sine" delay="80" />
 				</animation>
 				<include>OpenClose_Right</include>
+
+<!-- Added for Customized Main Menu Widgets -->
+				<control type="group" id="40000">
+					<include content="Widget_FadeSlide_Right_Delayed">
+						<param name="list_id" value="51000"/>
+					</include>				
+					<control type="grouplist" id="40001">
+						<include>WidgetGroupListCommon</include>
+						<inlcude>Widget_FadeSlide_Right_Delayed</inlcude>
+						<include content="WidgetListPoster">
+							<param name="content_path" value="$INFO[Container(9000).ListItem.Property(widgetPath.personalposter1)]"/>
+							<param name="widget_header" value="$INFO[Container(9000).ListItem.Property(widgetName.personalposter1)]"/>
+							<param name="widget_target" value="$INFO[Container(9000).ListItem.Property(widgetTarget.personalposter1)]"/>
+							<param name="visible" value="!String.IsEmpty(Container(9000).ListItem.Property(widgetPath.personalposter1))"/>
+							<param name="list_id" value="51000"/>
+						</include>
+						<include content="WidgetListPoster">
+							<param name="content_path" value="$INFO[Container(9000).ListItem.Property(widgetPath.personalposter2)]"/>
+							<param name="widget_header" value="$INFO[Container(9000).ListItem.Property(widgetName.personalposter2)]"/>
+							<param name="widget_target" value="$INFO[Container(9000).ListItem.Property(widgetTarget.personalposter2)]"/>
+							<param name="visible" value="!String.IsEmpty(Container(9000).ListItem.Property(widgetPath.personalposter2))"/>
+							<param name="list_id" value="52000"/>
+						</include>
+						<include content="WidgetListPoster">
+							<param name="content_path" value="$INFO[Container(9000).ListItem.Property(widgetPath.personalposter3)]"/>
+							<param name="widget_header" value="$INFO[Container(9000).ListItem.Property(widgetName.personalposter3)]"/>
+							<param name="widget_target" value="$INFO[Container(9000).ListItem.Property(widgetTarget.personalposter3)]"/>
+							<param name="visible" value="!String.IsEmpty(Container(9000).ListItem.Property(widgetPath.personalposter3))"/>
+							<param name="list_id" value="53000"/>
+						</include>
+						<include content="WidgetListPoster">
+							<param name="content_path" value="$INFO[Container(9000).ListItem.Property(widgetPath.personalposter4)]"/>
+							<param name="widget_header" value="$INFO[Container(9000).ListItem.Property(widgetName.personalposter4)]"/>
+							<param name="widget_target" value="$INFO[Container(9000).ListItem.Property(widgetTarget.personalposter4)]"/>
+							<param name="visible" value="!String.IsEmpty(Container(9000).ListItem.Property(widgetPath.personalposter4))"/>
+							<param name="list_id" value="54000"/>
+						</include>
+					</control>
+				</control>
+<!--  -->
+
 				<control type="group" id="5000">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),movies)</visible>
 					<include content="Visible_Right_Delayed">
@@ -100,11 +141,11 @@
 							<param name="list_id" value="5600"/>
 						</include>
 					</control>
-<!-- 
+
 					<include content="ImageWidget" condition="!Library.HasContent(movies)">
-<!~~  ~~>
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/movie.jpg"/>
-<!~~  ~~>
+<!--  -->
 						<param name="text_label" value="$LOCALIZE[31104]" />
 						<param name="button_label" value="$LOCALIZE[31110]" />
 						<param name="button_onclick" value="ActivateWindow(videos,files,return)"/>
@@ -116,23 +157,6 @@
 						<param name="scrollbar_id" value="5010"/>
 					</include>
 				</control>
- -->
-
-					<include content="ImageWidget">
-						<param name="image_path" value="special://skin/extras/home-images/movie.jpg"/>
-						<param name="text_label" value="$LOCALIZE[31104]" />
-						<param name="button_label" value="$LOCALIZE[31110]" />
-						<param name="button_onclick" value="ActivateWindow(videos,files,return)"/>
-						<param name="button_id" value="5500"/>
-						<param name="visible" value="!Library.HasContent(movies)"/>
-						<param name="button2_onclick" value="Skin.SetBool(HomeMenuNoMovieButton)"/>
-					</include>
-					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
-						<param name="scrollbar_id" value="5010"/>
-					</include>
-				</control>
-
-
 				<control type="group" id="6000">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),tvshows)</visible>
 					<include content="Visible_Right_Delayed">
@@ -186,7 +210,7 @@
 						</include>
 					</control>
 					<include content="ImageWidget" condition="!Library.HasContent(tvshows)">
-<!--  -->
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/tvshows.jpg"/>
 <!--  -->
 						<param name="text_label" value="$LOCALIZE[31104]" />
@@ -259,7 +283,7 @@
 						</include>
 					</control>
 					<include content="ImageWidget" condition="!Library.HasContent(music)">
-<!--  -->
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/music.jpg"/>
 <!--  -->
 						<param name="text_label" value="$LOCALIZE[31104]" />
@@ -343,7 +367,7 @@
 						</include>
 					</control>
 					<include content="ImageWidget">
-<!--  -->
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/add-ons.jpg"/>
 <!--  -->
 						<param name="text_label" value="$LOCALIZE[31119]" />
@@ -386,7 +410,7 @@
 						</include>
 					</control>
 					<include content="ImageWidget">
-<!--  -->
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/tv.jpg"/>
 <!--  -->
 						<param name="text_label" value="$LOCALIZE[31105]" />
@@ -467,7 +491,7 @@
 						</include>
 					</control>
 					<include content="ImageWidget" condition="!System.HasPVRAddon">
-<!--  -->
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/tv.jpg"/>
 <!--  -->
 						<param name="text_label" value="$LOCALIZE[31143]" />
@@ -547,7 +571,7 @@
 						</include>
 					</control>
 					<include content="ImageWidget" condition="!System.HasPVRAddon">
-<!--  -->
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/radio.jpg"/>
 <!--  -->
 						<param name="text_label" value="$LOCALIZE[31143]" />
@@ -603,7 +627,7 @@
 						<content>favourites://</content>
 					</control>
 					<include content="ImageWidget">
-<!--  -->
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/favorites.jpg"/>
 <!--  -->
 						<param name="text_label" value="$LOCALIZE[31025]" />
@@ -716,7 +740,7 @@
 						</include>
 					</control>
 					<include content="ImageWidget" condition="String.IsEmpty(Weather.plugin)">
-<!--  -->
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/weather.jpg"/>
 <!--  -->
 						<param name="text_label" value="$LOCALIZE[31120]" />
@@ -811,7 +835,7 @@
 						</include>
 					</control>
 					<include content="ImageWidget" condition="!Library.HasContent(musicvideos)">
-<!--  -->
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/musicvideos.jpg"/>
 <!--  -->
 						<param name="text_label" value="$LOCALIZE[31104]" />
@@ -859,7 +883,7 @@
 						</include>
 					</control>
 					<include content="ImageWidget">
-<!--  -->
+<!--  Added for Main Menu Home Images -->
 						<param name="image_path" value="special://skin/extras/home-images/games.jpg"/>
 <!--  -->
 						<param name="text_label" value="$LOCALIZE[31162]" />
@@ -893,8 +917,6 @@
 				</control>
 			</control>
 
-<!-- Change top to 150 if taking out Kodi Image in textures, top to 240 with Kodi Image............ -->
-
 			<control type="group">
 				<depth>DepthContentPanel</depth>
 				<include>OpenClose_Left</include>
@@ -903,6 +925,7 @@
 				</include>
 				<control type="fixedlist" id="9000">
 					<left>0</left>
+<!-- Change top to 150 if taking out Kodi Image in textures, top to 240 with Kodi Image............ -->
 					<top>150</top>
 					<width>462</width>
 					<bottom>-10</bottom>
@@ -910,8 +933,21 @@
 					<focusposition>0</focusposition>
 					<onfocus>ClearProperty(listposition,home)</onfocus>
 					<onright>SetFocus($INFO[Container(9000).ListItem.Property(menu_id)])</onright>
+<!-- 
 					<onup>700</onup>
 					<ondown>700</ondown>
+ -->
+
+<!--  -->
+					<onright>40000</onright>
+					<onup>700</onup>
+					<ondown>700</ondown>
+					<onleft>9001</onleft>
+					
+					<animation effect="fade" start="100" end="0" time="500" condition="Control.HasFocus(9001)">Conditional</animation>
+
+<!-- Customized Sub Menu Added Here-->
+
 					<scrolltime tween="cubic" easing="out">500</scrolltime>
 					<focusedlayout height="95">
 						<control type="group">
@@ -979,7 +1015,8 @@
 						</control>
 					</itemlayout>
 					<content>
-<!--  -->
+
+<!-- Moved Add-ons to top of Main Menu -->
 						<item>
 							<label>$LOCALIZE[24001]</label>
 							<property name="menu_id">$NUMBER[8000]</property>
@@ -988,7 +1025,13 @@
 							<property name="id">addons</property>
 							<visible>!Skin.HasSetting(HomeMenuNoProgramsButton)</visible>
 						</item>
+
 <!--  -->
+
+<!-- Customized Menu Added Here -->
+						<include>skinshortcuts-mainmenu</include>
+<!--  -->
+
 						<item>
 							<label>$LOCALIZE[342]</label>
 							<onclick condition="Library.HasContent(movies) + Skin.HasSetting(home_no_categories_widget)">ActivateWindow(Videos,videodb://movies/,return)</onclick>
@@ -1057,7 +1100,7 @@
 							<property name="id">games</property>
 							<visible>System.GetBool(gamesgeneral.enable) + !Skin.HasSetting(HomeMenuNoGamesButton)</visible>
 						</item>
-<!-- 
+<!-- Original Main Menu line up for Add-ons.. moved Add-ons to top of main menu
 						<item>
 							<label>$LOCALIZE[24001]</label>
 							<property name="menu_id">$NUMBER[8000]</property>
@@ -1102,15 +1145,103 @@
 						</item>
 					</content>
 				</control>
+
+<!-- Customized Sub Menu Added Here -->
+				<control type="fixedlist" id="9001">
+					<left>-500</left>
+					<top>150</top>
+					<width>462</width>
+<!-- Change top to 150 if taking out Kodi Image in textures, top to 240 with Kodi Image............ -->
+					<bottom>-10</bottom>
+					<movement>7</movement>
+					<focusposition>0</focusposition>
+					<onfocus>ClearProperty(listposition,home)</onfocus>
+					<onright>9000</onright>
+					<onup>700</onup>
+					<ondown>700</ondown>
+					<animation effect="slide" start="0,0" end="500,0" time="400">Focus</animation>
+					<animation effect="slide" start="500,0" end="0,0" time="400">UnFocus</animation>
+					<scrolltime tween="cubic" easing="out">500</scrolltime>
+					<focusedlayout height="95">
+						<control type="group">
+							<animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+							<control type="image">
+								<left>0</left>
+								<top>0</top>
+								<width>462</width>
+								<height>95</height>
+								<texture colordiffuse="button_focus">lists/focus.png</texture>
+								<animation effect="fade" start="100" end="0" time="0" condition="[!Control.HasFocus(9001) + !ControlGroup(700).HasFocus] | System.HasModalDialog">Conditional</animation>
+							</control>
+							<control type="image">
+								<left>-3</left>
+								<top>1</top>
+								<width>95</width>
+								<height>95</height>
+								<texture colordiffuse="button_focus">$INFO[ListItem.Art(thumb)]</texture>
+								<animation effect="fade" start="0" end="100" time="300" reversible="false">Focus</animation>
+							</control>
+							<control type="image">
+								<left>0</left>
+								<top>0</top>
+								<width>95</width>
+								<height>95</height>
+								<texture colordiffuse="51FFFFFF">colors/black.png</texture>
+								<animation effect="fade" start="100" end="0" time="0" condition="[!Control.HasFocus(9001) + !ControlGroup(700).HasFocus] | System.HasModalDialog">Conditional</animation>
+							</control>
+						</control>
+						<control type="image">
+							<left>-3</left>
+							<top>1</top>
+							<width>95</width>
+							<height>95</height>
+							<texture>$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>104</left>
+							<top>0</top>
+							<height>95</height>
+							<width>560</width>
+							<aligny>center</aligny>
+							<font>font37</font>
+							<label>$INFO[ListItem.Label]</label>
+							<shadowcolor>text_shadow</shadowcolor>
+						</control>
+					</focusedlayout>
+					<itemlayout height="95">
+						<control type="image">
+							<left>-3</left>
+							<top>1</top>
+							<width>95</width>
+							<height>95</height>
+							<texture colordiffuse="44FFFFFF">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>104</left>
+							<top>0</top>
+							<height>95</height>
+							<width>560</width>
+							<aligny>center</aligny>
+							<font>font37</font>
+							<label>$INFO[ListItem.Label]</label>
+							<shadowcolor>text_shadow</shadowcolor>
+						</control>
+					</itemlayout>
+					<content>
+										
+						<include>skinshortcuts-submenu</include>
+
+					</content>
+				</control>
+<!-- End Add for Customized Sub Menu -->
+
 				<control type="grouplist" id="700">
 					<orientation>horizontal</orientation>
 					<itemgap>0</itemgap>
 					<left>-8</left>
 					<width>480</width>
 					<height>110</height>
-
 <!-- Change top to 0 if taking out Kodi Image in textures, top to 100 to show Kodi Image............ -->
-
 					<top>0</top>
 					<onup>SetFocus(9000,99,absolute)</onup>
 					<ondown>SetFocus(9000,0,absolute)</ondown>
@@ -1143,6 +1274,7 @@
 					</include>
 				</control>
 			</control>
+
 			<include>BottomBar</include>
 			<control type="group">
 				<depth>DepthBars</depth>
