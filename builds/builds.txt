@@ -1,3 +1,16 @@
+
+name="Matrix Xtuary Build"
+version="1.0"
+url="https://www.dropbox.com/s/gl8crk38qfhwxyd/MatrixXtuary.zip?dl=1"
+gui="http://"
+kodi="19.0"
+theme="http://"
+icon="https://raw.githubusercontent.com/judaea/project/master/builds/icon-xtuary.png"
+fanart="https://raw.githubusercontent.com/judaea/project/master/builds/fanart-xtuary.jpg"
+preview="http://"
+adult="no"
+description="Download Matrix Xtuary Build"
+
 name="Leia Xtuary Build"
 version="1.5"
 url="https://www.dropbox.com/s/8yyxk8erz5mqe2g/LeiaXtuary.zip?dl=1"
