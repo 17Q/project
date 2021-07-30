@@ -15,15 +15,20 @@ def regex_get_all(text, start_with, end_with):
     r = re.findall("(?i)(" + start_with + "[\S\s]+?" + end_with + ")", text)
     return r
     
-def addDir(name,url,mode,iconimage,fanart,description):
+def addDir(name,url,mode,type,iconimage,fanart,description):
     u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
     ok=True
-    liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+    liz=xbmcgui.ListItem(name)
     liz.setInfo( type="Video", infoLabels={"Title": name,"Plot":description,})
+    liz.setArt({'thumb': iconimage,'icon': iconimage,'fanart': fanart})
     liz.setProperty('fanart_image', fanart)
     cm = []
-    cm.append(('Add Movie to Kodi Library','XBMC.RunPlugin(plugin://'+user.id+'/?mode=18&name='+name+'&url='+url+')'))
-    cm.append(('Play Trailer','XBMC.RunPlugin(plugin://'+user.id+'/?mode=9&url='+str(name)+')'))
+    if (type =='22') or (type == '24') or (type == '25') or (type == 'ppv'):
+        cm.append(('Play Trailer','XBMC.RunPlugin(plugin://'+user.id+'/?mode=9&url='+str(name)+')'))
+    else:
+        cm.append(('Movie Information','XBMC.RunPlugin(plugin://'+user.id+'/?mode=20&name='+name+'&url='+url+')'))
+        cm.append(('Play Trailer','XBMC.RunPlugin(plugin://'+user.id+'/?mode=9&url='+str(name)+')'))
+        cm.append(('Add Movie to Kodi Library','XBMC.RunPlugin(plugin://'+user.id+'/?mode=18&name='+name+'&url='+url+')'))
     liz.addContextMenuItems(cm,replaceItems=True)
     if mode==4:
         liz.setProperty("IsPlayable","true")
@@ -36,12 +41,14 @@ def addDir(name,url,mode,iconimage,fanart,description):
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
     return ok
     xbmcplugin.endOfDirectory
+ 
     
 def addDirMeta(name,url,mode,iconimage,fanart,description,yr,cst,ratin,runtime,genr,direct):
     u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
     ok=True
-    liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+    liz=xbmcgui.ListItem(name)
     liz.setInfo( type="Video", infoLabels={"title": name,"plot":description,"mpaa":ratin,"year":yr,"duration":runtime,"cast":cst,"genre":genr,"director":direct})
+    liz.setArt({'thumb': iconimage,'icon': iconimage,'fanart': fanart})
     liz.setProperty('fanart_image', fanart)
     liz.setProperty("IsPlayable","true")
     cm = []
