@@ -18,12 +18,11 @@
 '''
 
 
-from resources.lib.modules import log_utils
 from resources.lib.modules import control
+from resources.lib.modules import log_utils
 import threading
 
 control.execute('RunPlugin(plugin://%s)' % control.get_plugin_url({'action': 'service'}))
-
 
 def syncTraktLibrary():
     control.execute(
@@ -31,30 +30,13 @@ def syncTraktLibrary():
     control.execute(
         'RunPlugin(plugin://%s)' % 'plugin.video.patriot/?action=moviesToLibrarySilent&url=traktcollection')
 
-try:
-    ModuleVersion = control.addon('script.module.patriot').getAddonInfo('version')
-    AddonVersion = control.addon('plugin.video.patriot').getAddonInfo('version')
-    RepoVersion = control.addon('repository.patriot').getAddonInfo('version')
-
-    log_utils.log('######################### PATRIOT ############################', log_utils.LOGNOTICE)
-    log_utils.log('####### CURRENT PATRIOT VERSIONS REPORT ######################', log_utils.LOGNOTICE)
-    log_utils.log('### PATRIOT PLUGIN VERSION: %s ###' % str(AddonVersion), log_utils.LOGNOTICE)
-    log_utils.log('### PATRIOT SCRIPT VERSION: %s ###' % str(ModuleVersion), log_utils.LOGNOTICE)
-    log_utils.log('### PATRIOT REPOSITORY VERSION: %s ###' % str(RepoVersion), log_utils.LOGNOTICE)
-    log_utils.log('###############################################################', log_utils.LOGNOTICE)
-except:
-    log_utils.log('######################### PATRIOT ############################', log_utils.LOGNOTICE)
-    log_utils.log('####### CURRENT PATRIOT VERSIONS REPORT ######################', log_utils.LOGNOTICE)
-    log_utils.log('### ERROR GETTING PATRIOT VERSIONS - NO HELP WILL BE GIVEN AS THIS IS NOT AN OFFICIAL PATRIOT INSTALL. ###', log_utils.LOGNOTICE)
-    log_utils.log('###############################################################', log_utils.LOGNOTICE)
-
 if control.setting('autoTraktOnStart') == 'true':
     syncTraktLibrary()
 
 if int(control.setting('schedTraktTime')) > 0:
-    log_utils.log('###############################################################', log_utils.LOGNOTICE)
-    log_utils.log('#################### STARTING TRAKT SCHEDULING ################', log_utils.LOGNOTICE)
-    log_utils.log('#################### SCHEDULED TIME FRAME '+ control.setting('schedTraktTime')  + ' HOURS ################', log_utils.LOGNOTICE)
+    log_utils.log('###############################################################')
+    log_utils.log('#################### STARTING TRAKT SCHEDULING ################')
+    log_utils.log('#################### SCHEDULED TIME FRAME '+ control.setting('schedTraktTime')  + ' HOURS ################')
     timeout = 3600 * int(control.setting('schedTraktTime'))
     schedTrakt = threading.Timer(timeout, syncTraktLibrary)
     schedTrakt.start()

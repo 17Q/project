@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
 '''
-    Copyright (C) 2013 Sean Poyser (seanpoyser@gmail.com)
+    Patriot Add-on
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,34 +18,16 @@
 '''
 
 
-def get(version):
+import os
+from resources.lib.modules import control, log_utils
+
+
+def get():
     try:
-        import xbmc,xbmcgui,xbmcaddon,xbmcvfs
-
-        f = xbmcvfs.File(xbmcaddon.Addon().getAddonInfo('changelog'))
-        text = f.read() ; f.close()
-
-        label = '%s - %s' % (xbmc.getLocalizedString(24054), xbmcaddon.Addon().getAddonInfo('name'))
-
-        id = 10147
-
-        xbmc.executebuiltin('ActivateWindow(%d)' % id)
-        xbmc.sleep(100)
-
-        win = xbmcgui.Window(id)
-
-        retry = 50
-        while (retry > 0):
-            try:
-                xbmc.sleep(10)
-                win.getControl(1).setLabel(label)
-                win.getControl(5).setText(text)
-                retry = 0
-            except:
-                retry -= 1
-
-        return '1'
+        changelogfile = os.path.join(control.addonPath, 'changelog.txt')
+        head = 'Patriot  -- Changelog --'
+        control.textViewer(file=changelogfile, heading=head)
     except:
-        return '1'
-
+        control.infoDialog('Error opening changelog', sound=True)
+        log_utils.log('changeloglog_view_fail', 1)
 

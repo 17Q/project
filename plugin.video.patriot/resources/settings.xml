@@ -1,67 +1,81 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
 <settings>
-    <category label="32310">
-        <setting label="General" type="lsep" />
-        <setting type="sep" />
-		<setting id="appearance.1" type="select" label="32311" values="Xtuary" default="Xtuary" visible="true" />
-        <setting id="scrapers.timeout.1" type="slider" label="32312" default="10" range="10,60" option="int" />
-        <setting type="sep" />
-        <setting type="lsep" label="TV Shows Settings" />
-        <setting id="trakt.user" type="text" default="" label="Trakt User:" enable="false" visible="true" />
+
+    <category label="General">
+        <!--<setting id="appearance.alt" type="action" label="32311" default="-" option="close" action="RunPlugin(plugin://plugin.video.patriot/?action=artwork)" visible="!System.HasAddon(script.patriot.artwork)" /> -->
+        <!--<setting id="appearance.1" type="select" label="32311" values="Exuary" default="Exuary" visible="false" /> -->
+        <setting id="appearance.1" type="select" label="32311" values="Xtuary" default="Xtuary" visible="false" />
+        <setting id="trakt.authed" type="text" default="" visible="false" enable="false" />
         <setting id="indicators.alt" type="enum" label="32313" lvalues="32314|32315" default="1" visible="!eq(-1,)" />
         <setting id="indicators" type="enum" label="32313" lvalues="32314" default="0" visible="eq(-2,)" />
         <setting id="api.language" type="select" label="32316" values="AUTO|Bulgarian|Chinese|Croatian|Czech|Danish|Dutch|English|Finnish|French|German|Greek|Hebrew|Hungarian|Italian|Japanese|Korean|Norwegian|Polish|Portuguese|Romanian|Russian|Serbian|Slovak|Slovenian|Spanish|Swedish|Thai|Turkish|Ukrainian" default="AUTO" />
-        <setting id="providers.lang" type="select" label="32360" values="English|German|German+English|French|French+English|Polish|Polish+English|Korean|Korean+English|Russian|Russian+English|Spanish|Spanish+English|Italian|Italian+English|Greek|Greek+English" default="English" />
-        <setting id="flatten.tvshows" type="bool" label="32317" default="false" />
+        <setting id="providers.lang" type="select" label="32360" values="English|Greek|Greek+English" default="English" />
         <setting id="fanart" type="bool" label="32318" default="true" />
-        <setting id="showunaired" type="bool" label="32570" default="false" />
-        <setting id="unaired.identify" type="enum" label="Unaired Seasons/Episodes Color" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32598" default="1" />
+        <setting id="hq.artwork" type="bool" label="32129" default="false" />
+        <setting id="hq.art.text" type="text" label="32130" enable="false" visible="eq(-1,true)" />
         <setting id="hidecinema" type="bool" label="32571" default="false" />
-        <setting type="sep" />
+        <setting id="items.per.page" type="slider" label="32138" default="20" range="10,40" option="int" />
+        <setting id="trailer.source" type="enum" label="Trailers Source" values="TMDb|YouTube|IMDb" default="2" />
+        <setting id="trailer.select" type="enum" label="Trailers Action" lvalues="32334|32119" default="1" />
         <setting type="lsep" label="32319" />
         <setting id="movie.widget" type="enum" label="32320" lvalues="32302|32321|32322|32323|32324|32580" default="4" />
-        <setting id="tv.widget.alt" type="enum" label="32325" lvalues="32302|32326|32327|32328" default="2" visible="!eq(-11,)" />  
-        <setting id="tv.widget" type="enum" label="32325" lvalues="32302|32326" default="1" visible="eq(-12,)" />
-        <setting id="prgr.sortorder" type="enum" label="32584" lvalues="32585|32586" default="1" visible="!eq(-13,)" />
-<!--         <setting id="lists.widget" type="enum" label="32329" lvalues="32302|32301" default="1" /> -->
-        <setting type="sep" />
-        <setting type="lsep" label="Auto Trakt Collections Syncing" />
-        <setting id="autoTraktOnStart" type="bool" label="Sync on Kodi Start" default="False" />
-        <setting id="schedTraktTime" type="slider" label="Schedule Updates Every - Hour/s" default="0" range="0,24" option="int" />
-        <setting type="lsep" label="0 Value Disables Scheduling" />
+        <!--<setting id="lists.widget" type="enum" label="32329" lvalues="32302|32301" default="1" />-->
+        <setting id="imdb.sort.order" type="enum" label="32567" lvalues="32568|32569" default="0" />
+        <setting type="lsep" label="32002" />
+        <!--<setting id="flatten.tvshows" type="bool" label="32317" default="false" />-->
+        <setting id="showunaired" type="bool" label="32570" default="true" />
+        <setting id="unaired.identify" type="enum" label="Unaired Seasons/Episodes Color" lvalues="32201|32202|32203|32204|32205|32206|32207|32208|32209|32210|32211|32212|32213|32214|32215|32216|32217|32218|32219|32220|32221|32200" default="1" />
+        <setting id="tv.specials" type="bool" label="32613" default="false" />
+        <setting id="tv.widget.alt" type="enum" label="32325" lvalues="32302|32326|32327|32328" default="2" visible="!eq(-19,)" />
+        <setting id="tv.widget" type="enum" label="32325" lvalues="32302|32326" default="1" visible="eq(-20,)" />
+        <setting id="prgr.sortorder" type="enum" label="32584" lvalues="32585|32586" default="1" visible="!eq(-21,)" />
+        <setting id="write.settings" type="text" label="write settings" default="" visible="false" enable="false" />
     </category>
+
     <category label="Navigation">
         <setting label="Navigation" type="lsep" />
         <setting type="sep" />
         <setting type="lsep" label="32001" />
-        <setting id="navi.moviesTheaters" type="bool" label="32022" default="true" />
-        <setting id="navi.moviesLatest" type="bool" label="32005" default="true" />
+        <setting id="navi.moviesTheaters" type="bool" label="In Theaters" default="true" />
+        <setting id="navi.moviesRecently" type="bool" label="Recently Released" default="true" />
+        <setting id="navi.moviesLatest" type="bool" label="Featured" default="true" />
         <setting id="navi.moviesPopular" type="bool" label="32018" default="true" />
         <setting id="navi.moviesTrending" type="bool" label="32017" default="true" />
         <setting id="navi.moviesGenre" type="bool" label="32011" default="true" />
         <setting id="navi.moviesMales" type="bool" label="Most Popular Actors" default="true" />
         <setting id="navi.moviesFemales" type="bool" label="Most Popular Actresses" default="true" />
-        <setting id="navi.moviesActors" type="bool" label="Actor Boxsets" default="true" />
-        <setting id="navi.moviesPersons" type="bool" label="32013" default="false" />
+        <setting id="navi.moviesPersons" type="bool" label="Most Popular People" default="true" />
         <setting id="navi.moviesBoxsets" type="bool" label="Boxsets" default="true" />
+        <setting id="navi.moviesTrilogies" type="bool" label="Trilogies" default="true" />
         <setting id="navi.moviesCar" type="bool" label="Car Movies" default="true" />
+        <setting id="navi.moviesPrison" type="bool" label="Prison Movies" default="true" />
         <setting id="navi.moviesXmas" type="bool" label="Christmas Movies" default="true" />
-        <setting id="navi.moviesKids" type="bool" label="Kid Collections" default="true" />
-        <setting id="navi.moviesHero" type="bool" label="Superhero Collections" default="true" />
-        <setting id="navi.moviesYears" type="bool" label="32012" default="true" />
-        <setting id="navi.moviesLanguages" type="bool" label="32014" default="false" />
-        <setting id="navi.moviesCertificates" type="bool" label="32015" default="true" />
-        <setting id="navi.moviesVoted" type="bool" label="32019" default="true" />
-        <setting id="navi.moviesBoxoffice" type="bool" label="32020" default="true" />
-        <setting id="navi.moviesOscars" type="bool" label="32021" default="true" />
+        <setting id="navi.moviesKid" type="bool" label="Kid Movies" default="true" />
+        <setting id="navi.moviesDisney" type="bool" label="Disney Movies" default="true" />
+        <setting id="navi.moviesDc" type="bool" label="DC Comics Movies" default="true" />
+        <setting id="navi.moviesMarvel" type="bool" label="Marvel Movies" default="true" />
+        <setting id="navi.moviesYears" type="bool" label="Year" default="true" />
+        <setting id="navi.moviesDecades" type="bool" label="Decade" default="true" />
+        <setting id="navi.moviesMosts" type="bool" label="Mosts" default="true" />
+        <setting id="navi.moviesVoted" type="bool" label="Most Voted" default="true" />
+        <setting id="navi.moviesHighlyRated" type="bool" label="Highly Rated" default="true" />
+        <setting id="navi.moviesLanguages" type="bool" label="Languages" default="true" />
+        <setting id="navi.moviesCertificates" type="bool" label="Certificates" default="true" />
+        <setting id="navi.moviesOscars" type="bool" label="Oscar Winners" default="true" />
+        <setting id="navi.moviesBoxoffice" type="bool" label="Box Office" default="true" />
+        <setting id="navi.movieslistWidget" type="bool" label="My Movies (Trakt)" default="true" />
+        <setting id="navi.moviesPerson" type="bool" label="People Search" default="true" />
+        <setting id="navi.moviesSearch" type="bool" label="Search" default="true" />
         <setting type="sep" />
         <setting type="lsep" label="32002" />
         <setting id="navi.tvPopular" type="bool" label="32018" default="true" />
         <setting id="navi.tvTrending" type="bool" label="32017" default="true" />
         <setting id="navi.tvGenres" type="bool" label="32011" default="true" />
         <setting id="navi.tvNetworks" type="bool" label="32016" default="true" />
-        <setting id="navi.tvLanguages" type="bool" label="32014" default="false" />
+        <setting id="navi.tvLanguages" type="bool" label="32014" default="true" />
         <setting id="navi.tvCertificates" type="bool" label="32015" default="true" />
+        <setting id="navi.tvMost" type="bool" label="Mosts" default="true" />
         <setting id="navi.tvRating" type="bool" label="32023" default="true" />
         <setting id="navi.tvViews" type="bool" label="32019" default="true" />
         <setting id="navi.tvAiring" type="bool" label="32024" default="true" />
@@ -69,134 +83,166 @@
         <setting id="navi.tvPremier" type="bool" label="32026" default="true" />
         <setting id="navi.tvAdded" type="bool" label="32006" default="true" />
         <setting id="navi.tvCalendar" type="bool" label="32027" default="true" />
+        <setting id="navi.tvlistWidget" type="bool" label="My TV Shows (Trakt)" default="true" />
+        <setting id="navi.tvPerson" type="bool" label="People Search" default="true" />
+        <setting id="navi.tvSearch" type="bool" label="Search" default="true" />
         <setting type="sep" />
         <setting type="lsep" label="Main Menu" />
         <setting id="navi.movies" type="bool" label="Movies" default="true" />
         <setting id="navi.tvShows" type="bool" label="TV Shows" default="true" />
         <setting id="navi.movieWidget" type="bool" label="My Movies (Trakt)" default="true" />
         <setting id="navi.tvWidget" type="bool" label="My TV Shows (Trakt)" default="true" />
+        <setting id="navi.movieNew" type="bool" label="New Movies" default="true" />
+        <setting id="navi.episodeNew" type="bool" label="New Episodes" default="true" />
         <setting id="navi.search" type="bool" label="Search" default="true" />
     </category>
-    <category label="32330">
-        <setting label="Playback" type="lsep" />
-        <setting type="sep" />
-        <setting id="hosts.mode" type="enum" label="32331" lvalues="32332|32333|32334" default="1" />
+
+    <category label="Playback">
+        <setting id="hosts.mode" type="enum" label="32331" lvalues="32332|32333|32334" default="2" />
         <setting id="progress.dialog" type="enum" label="32335" lvalues="32336|32337" default="0" />
-        <setting id="debrid.only" type="bool" label="Debrid Sources Only" default="false" />
-        <setting id="prem.identify" type="enum" label="32588" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32598" default="0" />
-        <setting type="sep" />
-        <setting type="lsep" label="Torrent Support Requires a Premium Account Subscription" />
-        <setting id="torrent.enabled" type="bool" label="Enable Torrent Scrapers" default="true" />
-        <setting id="torrent.identify" type="enum" label="Torrent Source Color"  enable="eq(-1,true)" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32598" default="6" />
-        <setting id="torrent.min.seeders" type="slider" label="Minimum Seeders" enable="eq(-2,true)" default="10" range="1,100" option="int" />
-        <setting id="torrent.sort.them.up" type="bool" label="Sort By Torrent/Premium" enable="eq(-3,true)"  default="false" />
-        <setting type="sep" />
-        <setting type="lsep" label="32338" />
-        <setting id="hosts.quality" type="enum" label="32339" values="4K|1440p|1080p|720p|480p" default="0" />
-        <setting id="autoplay.sd" type="bool" label="32340" default="false" />
-        <setting id="sources.extrainfo" type="bool" label="32587" default="true" />
-        <setting id="HEVC" type="bool" label="32363" default="true" />
-        <setting id="hosts.captcha" type="bool" label="32341" default="false" />
-        <setting id="hosts.sort.provider" type="bool" label="32342" default="false" />
-        <setting type="sep" />
+        <setting id="scrapers.timeout.1" type="slider" label="32312" default="10" range="10,60" option="int" />
+        <setting id="preemptive.termination" type="bool" label="32618" default="false" />
+        <setting id="preemptive.limit" type="slider" label="32619" default="10" range="1,50" option="int" subsetting="true" enable="eq(-1,true)" />
+        <setting id="linesplit" type="enum" label="32628" lvalues="32629|32630|32631" default="1" />
+        <setting id="prem.identify" type="select" label="32588" lvalues="32201|32202|32203|32204|32205|32206|32207|32208|32209|32210|32211|32212|32213|32214|32215|32216|32217|32218|32219|32220|32221" default="20" enable="!eq(-1,2)"/>
+        <setting id="sec.identify" type="select" label="32626" lvalues="32201|32202|32203|32204|32205|32206|32207|32208|32209|32210|32211|32212|32213|32214|32215|32216|32217|32218|32219|32220|32221|32200" default="17" enable="!eq(-2,2)"/>
+        <setting id="sources.name" type="enum" label="32587" lvalues="32131|32132" default="0" enable="!eq(-3,2)" />
+        <setting id="source.list.meta" type="bool" label="32112" default="false" enable="eq(-9,1)" />
         <setting type="lsep" label="32343" />
         <setting id="bookmarks" type="bool" label="32344" default="true" />
-        <setting type="sep" />
+        <setting id="bookmarks.auto" type="bool" label="32623" default="false" enable="eq(-1,true)" />
         <setting type="lsep" label="32372" />
         <setting id="crefresh" type="bool" label="32373" default="false" />
     </category>
-    <category label="32345">
-        <setting label="Open Scrapers Module" type="lsep" />
-        <setting type="sep" />
-        <setting id="module.provider" type="text" label="Powered by" default="Openscrapers Scrapers" visible="true" enable="false" />
-        <setting id="open.settings" type="action" label="Open Scrapers Settings" option="close" action="RunPlugin(plugin://script.module.openscrapers/?mode=OpenscrapersSettings)" />
-        <setting type="lsep" label="Clear Providers Cache After Changing Scraper Provider" />
-        <setting id="open.Settings.CacheProviders" type="action" label="Clear Providers Cache" option="close" action="RunPlugin(plugin://plugin.video.patriot/?action=clearAllCache)" />
-    </category>
-    <category label="Free Accounts">
-        <setting label="Free Accounts" type="lsep" />
-        <setting type="sep" />
-        <setting type="lsep" label="Automatically Track TV Shows and Movies You're Watching" />
+
+    <category label="Trakt">
         <setting type="lsep" label="Sign up for free at https://trakt.tv/auth/join" />
-        <setting id="trakt.auth" type="action" label="32306" option="close" action="RunPlugin(plugin://plugin.video.patriot/?action=authTrakt)" />
+
+        <setting id="trakt.user" type="action" label="32306" option="close" action="RunPlugin(plugin://plugin.video.patriot/?action=authTrakt)" />
         <setting id="trakt.token" type="text" visible="false" label="" default="" />
         <setting id="trakt.refresh" type="text" visible="false" label="" default="" />
-        <setting id="trakt.user" label="32303" type="text" default="" visible="true" enable="false" />
+        <setting type="lsep" label="32075" />
+        <setting id="trakt.client_id" type="text" label="32609" default="" />
+        <setting id="trakt.client_secret" type="text" label="32610" default="" />
         <setting type="sep" />
-        <setting type="lsep" label="Personal API keys provide quicker API responses" />
-        <setting type="lsep" label="Sign up for free at https://www.themoviedb.org/account/signup" />
-        <setting id="tm.user" type="text" option="hidden" label="TMDb API Key..." default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="Stream Movies and TV Shows from your Personal IMDb Lists" />
-        <setting type="lsep" label="Sign up for free at https://www.imdb.com/registration/signin" />
-        <setting id="imdb.user" type="text" label="IMDb User ID #..." default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="Personal API keys provide quicker API responses" />
-        <setting type="lsep" label="Become a VIP member for many benefits at: https://fanart.tv/vip" />
-        <setting id="fanart.tv.user" type="text" option="hidden" label="Fanart.tv API Key..." default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="Moviesplanet.is" />
-        <setting id="moviesplanet.user" type="text" label="32303" default="" />
-        <setting id="moviesplanet.pass" type="text" option="hidden" label="32307" default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="Streamlord.com" />
-        <setting id="streamlord.user" type="text" label="32303" default="" />
-        <setting id="streamlord.pass" type="text" option="hidden" label="32307" default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="Ororo.tv" />
-        <setting id="ororo.user" type="text" label="32304" option="hidden" default="" />
-        <setting id="ororo.pass" type="text" option="hidden" label="32307" default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="Seriesever.net" />
-        <setting id="seriesever.user" type="text" label="32303" default="" />
-        <setting id="seriesever.pass" type="text" option="hidden" label="32307" default="" />
+        <setting id="trakt.scrobble" type="bool" label="32097" default="false" enable="!eq(-6,)"/>
+        <setting id="scrobble.text" type="text" label="32098" enable="false" />
+        <setting id="trakt.scrobble.notify" type="bool" label="32099" default="false" enable="!eq(-8,)+eq(-2,true)"/>
+        <setting id="rersume.source" type="enum" label="32095" lvalues="32314|32096" default="0" enable="!eq(-9,)" />
+        <setting type="lsep" label="32614" />
+        <setting id="autoTraktOnStart" type="bool" label="32615" default="false" enable="!eq(-11,)"/>
+        <setting id="schedTraktTime" type="slider" label="32616" default="0" range="0,24" option="int" enable="!eq(-12,)" />
+        <setting id="sched.text" type="text" label="32617" enable="false" />
     </category>
-    <category label="Premium Accounts">
-        <setting label="Authorize Premium Accounts in ResolveURL Settings" type="lsep" />
+
+    <category label="API Keys">
+        <setting type="lsep" label="Sign up for free at https://www.themoviedb.org/account/signup" />
+        <setting id="tm.user" type="text" option="hidden" label="TMDB API Key" default="" />
         <setting type="sep" />
+        <setting type="lsep" label="Sign up for free at https://www.imdb.com/registration/signin" />
+        <setting id="imdb.user" type="text" label="IMDb User ID" default="" />
+        <setting type="sep" />
+        <setting type="lsep" label="Become a VIP member for many benefits at: https://fanart.tv/vip" />
+        <setting id="fanart.tv.user" type="text" label="Fanart Personal API Key" default="" />
+        <setting type="sep" />
+        <setting type="lsep" label="Opensubtitles.org" />
+        <setting id="os.user" type="text" label="32117" default="" />
+        <setting id="os.pass" type="text" option="hidden" label="32307" default="" />
+        <setting type="lsep" label="32539" />
+    </category>
+
+    <category label="Premium Accounts">
+        <setting label="Authorize Your Debrid Accounts" type="lsep" />
         <setting id="rdAuthorize" type="action" label="Authorize My Real-Debrid.com Account" action="RunPlugin(plugin://script.module.resolveurl/?mode=auth_rd)"/>
         <setting id="adAuthorize" type="action" label="Authorize My AllDebrid.com Account" action="RunPlugin(plugin://script.module.resolveurl/?mode=auth_ad)"/>
-        <setting id="pmAuthorize" type="action" label="Authorize My Premiumize.me Account" action="RunPlugin(plugin://script.module.resolveurl/?mode=auth_pm)"/>
-        <setting id="lsAuthorize" type="action" label="Login My Linksnappy.com Account" action="RunPlugin(plugin://script.module.resolveurl/?mode=auth_ls)"/>
-    </category>
-    <category label="32541">
-        <setting label="Library" type="lsep" />
         <setting type="sep" />
+        <setting label="Or Authorize Your Debrid Accounts in ResolveURL Settings" type="lsep" />
+        <setting id="open_smu_settings" type="action" label="32540" enable="true" option="close" action="RunPlugin(plugin://plugin.video.patriot/?action=smuSettings)" />
+        <setting type="sep" />
+        <setting type="lsep" label="Furk.net" />
+        <setting id="furk.user_name" type="text" label="Furk Username" default="" />
+        <setting id="furk.user_pass" type="text" label="Furk Password" option="hidden" default="" />
+        <setting id="furk.api" type="text" label="Furk API Key" default="" />
+        <setting id="furk.limit" label="Limit results" type="slider" default="25" range="5,5,200" option="int" />
+    </category>
+
+    <category label="32338">
+        <setting id="hosts.quality" type="enum" label="32339" values="4K|1080p|720p|SD" default="0" />
+        <setting id="min.quality" type="enum" label="32127" values="4K|1080p|720p|SD" default="3" />
+        <setting id="remove.cam" type="bool" label="32122" default="true" subsetting="true" visible="eq(-1,3)" />
+        <setting id="size.filters" type="bool" label="32137" default="false" />
+        <setting id="min.size.gb" type="slider" label="32133" default="0" range="0,0.5,20" option="float" visible="eq(-1,true)" subsetting="true" />
+        <setting id="max.size.gb" type="slider" label="32134" default="20" range="0.5,0.5,50" option="float" visible="eq(-2,true)" subsetting="true" />
+        <setting id="debrid.only" type="bool" label="32621" default="false" />
+        <setting id="autoplay.sd" type="bool" label="32620" default="false" />
+        <setting id="remove.hevc" type="bool" label="32363" default="false" />
+        <setting id="remove.captcha" type="bool" label="32341" default="true" />
+        <!--<setting id="cf.disable" type="bool" label="32362" default="false" />-->
+        <setting id="remove.dups" type="bool" label="32090" default="true" />
+        <setting id="check.torr.cache" type="bool" label="32114" default="true" />
+        <setting id="remove.uncached" type="bool" label="32126" default="true" enable="eq(-1,true)" subsetting="true" />
+        <setting id="debrid.text" type="text" label="32115" enable="false" subsetting="true" />
+        <setting type="lsep" label="32142" />
+        <setting id="main.sort" type="enum" label="32143" lvalues="32144|32145" default="0" />
+        <setting id="torr.sort.size" type="bool" label="32113" default="true" />
+        <setting id="hosts.sort.provider" type="bool" label="32342" default="true" />
+    </category>
+
+    <category label="32345">
+        <setting type="lsep" label="32083" />
+        <setting id="module.provider.alt" type="select" label="32084" values="OathScrapers|Built-in|OathScrapers + Built-in" default="OathScrapers" />
+        <setting id="open.Osettings" subsetting="true" type="action" label="32085" option="close" action="RunPlugin(plugin://script.module.oathscrapers/?mode=oathscrapersettings)" />
+        <setting id="clear.providers.cache" subsetting="true" type="action" label="32087" action="RunPlugin(plugin://plugin.video.patriot/?action=clearCacheProviders)" />
+        <setting type="lsep" label="32088" />
+        <setting id="provider.orionoid" type="bool" label="ORION" default="false" />
+        <setting id="install.orion" subsetting="true" type="action" label="32102" option="close" action="InstallAddon(script.module.orion)" enable="!System.HasAddon(script.module.orion)" visible="eq(-1,true)"/>
+        <setting id="provider.orionoid.settings" subsetting="true" type="action" label="32103" option="close" action="RunPlugin(plugin://script.module.orion?action=dialogSettings)" enable="System.HasAddon(script.module.orion)" visible="eq(-2,true)" />
+        <setting id="orionoid.streamtype" subsetting="true" type="enum" label="32104" values="Hosters|Torrents|All" default="0" enable="System.HasAddon(script.module.orion)" visible="eq(-3,true)" />
+        <setting id="orion.extra.info" subsetting="true" type="bool" label="32105" default="true" enable="System.HasAddon(script.module.orion)" visible="eq(-4,true)" />
+        <setting id="orion.info.filename" subsetting="true" type="bool" label="32106" default="false" enable="System.HasAddon(script.module.orion)" visible="eq(-5,true)" />
+        <setting id="orion.color" subsetting="true" type="select" label="32107" values="No color|blue|red|yellow|deeppink|cyan|lawngreen|gold|magenta|yellowgreen|white|black|crimson|goldenrod|powderblue|deepskyblue|springgreen|darkcyan|aquamarine|mediumturquoise|khaki|darkorange" default="No color" enable="System.HasAddon(script.module.orion)" visible="eq(-6,true)" />
+    </category>
+
+    <category label="32541">
         <setting id="library.movie" type="folder" label="32543" default="special://userdata/addon_data/plugin.video.patriot/Movies" />
         <setting id="library.tv" type="folder" label="32544" default="special://userdata/addon_data/plugin.video.patriot/TVShows" />
         <setting type="lsep" label="32542" />
-        <setting type="sep" />
         <setting id="library.service.update" type="bool" label="32545" default="true" />
         <setting id="library.service.notification" type="bool" label="32546" default="true" />
         <setting type="sep" />
         <setting id="library.update" type="bool" label="32547" default="true" />
         <setting id="library.check" type="bool" label="32548" default="true" />
         <setting type="sep" />
-        <setting id="library.check_movie" type="bool" label="32549" default="false" />
-        <setting id="library.check_episode" type="bool" label="32550" default="false" />
+        <setting id="library.importdelay" type="bool" label="32612" default="false" />
         <setting id="library.include_unknown" type="bool" label="32565" default="true" />
+        <setting id="library.include_special" type="bool" label="32566" default="true" />
     </category>
+
     <category label="32347">
-        <setting label="Downloads" type="lsep" />
-        <setting type="sep" />
         <setting id="downloads" type="bool" label="32348" default="false" />
         <setting type="sep" />
         <setting id="movie.download.path" type="folder" label="32349" enable="!eq(-2,false)" default="" />
         <setting id="tv.download.path" type="folder" label="32350" enable="!eq(-3,false)" default="" />
         <setting type="lsep" label="[CR]" />
-        <setting type="lsep" label="32351" />
-        <setting type="lsep" label="32352" />
+        <setting id="dl.text1" type="text" label="32351" enable="false" />
+        <setting id="dl.text2" type="text" label="32352" enable="false" />
     </category>
+
     <category label="32353">
-        <setting label="Subtitles" type="lsep" />
-        <setting type="sep" />
         <setting id="subtitles" type="bool" label="32354" default="false" />
-        <setting id="subtitles.utf" type="bool" label="32355" enable="!eq(-2,false)" default="false" />
         <setting type="sep" />
-        <setting id="subtitles.lang.1" type="select" label="32356" values="Afrikaans|Albanian|Arabic|Armenian|Basque|Bengali|Bosnian|Breton|Bulgarian|Burmese|Catalan|Chinese|Croatian|Czech|Danish|Dutch|English|Esperanto|Estonian|Finnish|French|Galician|Georgian|German|Greek|Hebrew|Hindi|Hungarian|Icelandic|Indonesian|Italian|Japanese|Kazakh|Khmer|Korean|Latvian|Lithuanian|Luxembourgish|Macedonian|Malay|Malayalam|Manipuri|Mongolian|Montenegrin|Norwegian|Occitan|Persian|Polish|Portuguese|Portuguese(Brazil)|Romanian|Russian|Serbian|Sinhalese|Slovak|Slovenian|Spanish|Swahili|Swedish|Syriac|Tagalog|Tamil|Telugu|Thai|Turkish|Ukrainian|Urdu" enable="!eq(-4,false)" default="English" />
-        <setting id="subtitles.lang.2" type="select" label="32357" values="Afrikaans|Albanian|Arabic|Armenian|Basque|Bengali|Bosnian|Breton|Bulgarian|Burmese|Catalan|Chinese|Croatian|Czech|Danish|Dutch|English|Esperanto|Estonian|Finnish|French|Galician|Georgian|German|Greek|Hebrew|Hindi|Hungarian|Icelandic|Indonesian|Italian|Japanese|Kazakh|Khmer|Korean|Latvian|Lithuanian|Luxembourgish|Macedonian|Malay|Malayalam|Manipuri|Mongolian|Montenegrin|Norwegian|Occitan|Persian|Polish|Portuguese|Portuguese(Brazil)|Romanian|Russian|Serbian|Sinhalese|Slovak|Slovenian|Spanish|Swahili|Swedish|Syriac|Tagalog|Tamil|Telugu|Thai|Turkish|Ukrainian|Urdu" enable="!eq(-5,false)" default="English" />
-        <setting type="lsep" label="[CR]" />
-        <setting type="lsep" label="32358" />
-        <setting type="lsep" label="32359" />
+        <setting id="subtitles.lang.1" type="select" label="32356" values="Afrikaans|Albanian|Arabic|Armenian|Basque|Bengali|Bosnian|Breton|Bulgarian|Burmese|Catalan|Chinese|Croatian|Czech|Danish|Dutch|English|Esperanto|Estonian|Finnish|French|Galician|Georgian|German|Greek|Hebrew|Hindi|Hungarian|Icelandic|Indonesian|Italian|Japanese|Kazakh|Khmer|Korean|Latvian|Lithuanian|Luxembourgish|Macedonian|Malay|Malayalam|Manipuri|Mongolian|Montenegrin|Norwegian|Occitan|Persian|Polish|Portuguese|Portuguese(Brazil)|Romanian|Russian|Serbian|Sinhalese|Slovak|Slovenian|Spanish|Swahili|Swedish|Syriac|Tagalog|Tamil|Telugu|Thai|Turkish|Ukrainian|Urdu" enable="!eq(-2,false)" default="Greek" />
+        <setting id="subtitles.lang.2" type="select" label="32357" values="Afrikaans|Albanian|Arabic|Armenian|Basque|Bengali|Bosnian|Breton|Bulgarian|Burmese|Catalan|Chinese|Croatian|Czech|Danish|Dutch|English|Esperanto|Estonian|Finnish|French|Galician|Georgian|German|Greek|Hebrew|Hindi|Hungarian|Icelandic|Indonesian|Italian|Japanese|Kazakh|Khmer|Korean|Latvian|Lithuanian|Luxembourgish|Macedonian|Malay|Malayalam|Manipuri|Mongolian|Montenegrin|Norwegian|Occitan|Persian|Polish|Portuguese|Portuguese(Brazil)|Romanian|Russian|Serbian|Sinhalese|Slovak|Slovenian|Spanish|Swahili|Swedish|Syriac|Tagalog|Tamil|Telugu|Thai|Turkish|Ukrainian|Urdu" enable="!eq(-3,false)" default="English" />
+        <setting type="sep" />
+        <setting id="subtitles.utf" type="bool" label="32355" enable="!eq(-5,false)" default="false" />
+        <setting id="subtitles.notify" type="bool" label="32361" enable="!eq(-6,false)" default="false" />
+        <setting id="subs.text" type="text" label="32118" enable="false" />
     </category>
+
+    <category label="Debugging">
+        <setting id="addon.debug" type="bool" label="Enable Debugging" default="false" />
+        <setting id="debug.text" type="text" label="32139" enable="false" />
+        <!--<setting id="debug.location" type="enum" label="Log location" values="Kodi log|Add-on log" default="0" />-->
+    </category>
+
 </settings>

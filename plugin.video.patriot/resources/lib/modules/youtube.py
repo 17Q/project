@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 '''
-    Exodus Add-on
-    Copyright (C) 2016 Exodus
+    Patriot Add-on
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,7 +18,9 @@
 '''
 
 
-import re,json
+import re
+import simplejson as json
+import six
 
 from resources.lib.modules import client
 from resources.lib.modules import workers
@@ -75,14 +76,14 @@ class youtube(object):
         for item in items:
             try:
                 title = item['snippet']['title']
-                title = title.encode('utf-8')
+                title = six.ensure_str(title)
 
                 url = item['id']
-                url = url.encode('utf-8')
+                url = six.ensure_str(url)
 
                 image = item['snippet']['thumbnails']['high']['url']
                 if '/default.jpg' in image: raise Exception()
-                image = image.encode('utf-8')
+                image = six.ensure_str(image)
 
                 self.list.append({'title': title, 'url': url, 'image': image})
             except:
@@ -119,15 +120,15 @@ class youtube(object):
         for item in items: 
             try:
                 title = item['snippet']['title']
-                title = title.encode('utf-8')
+                title = six.ensure_str(title)
 
                 try: url = item['snippet']['resourceId']['videoId']
                 except: url = item['id']['videoId']
-                url = url.encode('utf-8')
+                url = six.ensure_str(url)
 
                 image = item['snippet']['thumbnails']['high']['url']
                 if '/default.jpg' in image: raise Exception()
-                image = image.encode('utf-8')
+                image = six.ensure_str(image)
 
                 append = {'title': title, 'url': url, 'image': image}
                 if not next == '': append['next'] = next
@@ -136,7 +137,7 @@ class youtube(object):
                 pass
 
         try:
-            u = [range(0, len(self.list))[i:i+50] for i in range(len(range(0, len(self.list))))[::50]]
+            u = [range(0, len(self.list))[i:i+50] for i in(range(len(range(0, len(self.list)))))[::50]]
             u = [','.join([self.list[x]['url'] for x in i]) for i in u]
             u = [self.content_link % i + self.key_link for i in u]
 

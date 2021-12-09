@@ -2,7 +2,6 @@
 
 '''
     Patriot Add-on
-    Copyright (C) 2017 Patriot
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,12 +15,12 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    
 '''
+
 
 import re
 import sys
+import six
 
 from resources.lib.modules import jsunpack
 
@@ -59,7 +58,7 @@ def run(e):
 
     try:
         t = jsunpack.unpack(t)
-        t = unicode(t, 'utf-8')
+        t = six.ensure_text(t)
     except:
         t = None
     
