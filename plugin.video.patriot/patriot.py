@@ -501,14 +501,6 @@ elif action == 'cleanSettings':
     from resources.lib.modules import control
     control.clean_settings()
 
-elif action == 'tvcredits':
-    from resources.lib.modules import credits
-    credits.Credits().get_tv(tmdb, status)
-
-elif action == 'moviecredits':
-    from resources.lib.modules import credits
-    credits.Credits().get_movies(tmdb, status)
-
 elif action == 'random':
     from sys import argv
     if rtype == 'movie':

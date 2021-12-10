@@ -21,7 +21,7 @@
 tmdb_key = '6e6a68c545dffdce0e054d1060fdd6e0'
 tvdb_key = 'CAC2F74D9CB97149'
 fanarttv_key = 'e2355ed4187bb206b3b87152073333aa'
-yt_key = 'AIzaSyDw__6wPoiNWWxVdkaEKTg0ayGt8lL7P_c'
+yt_key = 'AIzaSyAO7xj2i30yaJorW2xrXybx7f1CVScmNB8'
 trakt_client_id = 'f1bbcd43412a8e479a4f00061c285cb68b879f4d108474e7e5b70f165a34189a'
 trakt_secret = 'e3a56b231928be7662a2d7e165e0ac4d93f2ca423c637e75aaaaa5589c000795'
 orion_key = 'JFLMB6G2RFMFJFSNT7HEJLANMEFL8TJM'

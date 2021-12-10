@@ -320,7 +320,7 @@ msgid "[I]Refresh[/I]"
 msgstr ""
 
 msgctxt "#32073"
-msgid "[B]TRAKT[/B] : Authorize"
+msgid "[B]TRAKT[/B] : Authorise"
 msgstr ""
 
 msgctxt "#32074"
@@ -328,7 +328,7 @@ msgid "[B]HELP[/B]"
 msgstr ""
 
 msgctxt "#32075"
-msgid "Utilize your own Trakt API key (optional):"
+msgid "Utilise your own Trakt API key (optional):"
 msgstr ""
 
 msgctxt "#32076"
@@ -504,7 +504,7 @@ msgid "Enter your Opensubtitles.org log-in credentials on 'Accounts' tab"
 msgstr ""
 
 msgctxt "#32119"
-msgid "Always choose"
+msgid "Select"
 msgstr ""
 
 msgctxt "#32120"
@@ -512,7 +512,7 @@ msgid "Choose on season/episode level"
 msgstr ""
 
 msgctxt "#32121"
-msgid "Select Trailer:"
+msgid "Related videos (%s):"
 msgstr ""
 
 msgctxt "#32122"
@@ -524,7 +524,7 @@ msgid "Decade"
 msgstr ""
 
 msgctxt "#32124"
-msgid "IMDb Keyword Searches"
+msgid "IMDb keyword searches"
 msgstr ""
 
 msgctxt "#32125"
@@ -560,11 +560,11 @@ msgid "Simplified info"
 msgstr ""
 
 msgctxt "#32133"
-msgid "Min movie size (GB)"
+msgid "Min size (GB per hour)"
 msgstr ""
 
 msgctxt "#32134"
-msgid "Max movie size (GB)"
+msgid "Max size (GB per hour)"
 msgstr ""
 
 msgctxt "#32135"
@@ -588,7 +588,7 @@ msgid "WARNING: Enable only if you were asked to.[CR]Possible memory leaks."
 msgstr ""
 
 msgctxt "#32140"
-msgid "Log file is empty.[CR]Please enable debugging in add-on\'s settings and restart Kodi.[CR]Reproduce the problem and try uploading again.[CR]DISABLE debugging afterwards."
+msgid "Log file is empty.[CR]Please enable debugging in add-on\'s settings,[CR]reproduce the problem and try uploading again.[CR]DISABLE debugging afterwards."
 msgstr ""
 
 msgctxt "#32141"
@@ -732,7 +732,7 @@ msgid "ID"
 msgstr ""
 
 msgctxt "#32306"
-msgid "[B]Authorize[/B]"
+msgid "[B]Authorise[/B]"
 msgstr ""
 
 msgctxt "#32307"
@@ -1284,7 +1284,7 @@ msgid "Waiting for"
 msgstr ""
 
 msgctxt "#32603"
-msgid "New search..."
+msgid "[I]New search...[/I]"
 msgstr ""
 
 msgctxt "#32604"
@@ -1292,7 +1292,7 @@ msgid "[B]Patriot[/B] : Clear search history..."
 msgstr ""
 
 msgctxt "#32605"
-msgid "Click to clear search history"
+msgid "[I]Clear search history...[/I]"
 msgstr ""
 
 msgctxt "#32606"
