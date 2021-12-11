@@ -1,5 +1,9 @@
 [B]Updates[/B]
 
+[B]December 11, 2021[/B]
+[B]Version 1.0.2[/B]
+- Bump
+
 [B]December 8, 2021[/B]
 [B]Version 1.0.1[/B]
 - Added Show/Hide Menu Navigation Support
