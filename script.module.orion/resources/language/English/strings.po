@@ -1505,7 +1505,7 @@ msgctxt "#33047"
 msgid "You currently have an anonymous account. If something goes wrong with your Kodi setup, you will loose access to the account and subscription. It is recommended to register a new account on the website, enter the new API key in the addon settings, and only then redeem the voucher. Do you want to continue redeeming the voucher to the anonymous account and risk loosing access to it?"
 msgstr ""
 
-msgctxt "#33048"
+msgctxt "#33048"7
 msgid "The voucher was successfully redeemed. Your account was recharged with the %s package for %s."
 msgstr ""
 
@@ -1611,6 +1611,38 @@ msgstr ""
 
 msgctxt "#33074"
 msgid "Online Backups For Premium Users Only"
+msgstr ""
+
+msgctxt "#33075"
+msgid "OR"
+msgstr ""
+
+msgctxt "#33076"
+msgid "Scan the QR code with your phone and complete the authentication in a browser."
+msgstr ""
+
+msgctxt "#33077"
+msgid "Visit the link below in a browser on any device, enter the code, and complete the authentication."
+msgstr ""
+
+msgctxt "#33078"
+msgid "Link:"
+msgstr ""
+
+msgctxt "#33079"
+msgid "Code:"
+msgstr ""
+
+msgctxt "#33080"
+msgid "Do not close this dialog. It will automatically close once you completed the authentication."
+msgstr ""
+
+msgctxt "#33081"
+msgid "Waiting For Authentication Approval"
+msgstr ""
+
+msgctxt "#33082"
+msgid "[B]Login[/B] with [B]Code[/B] or [B]QR[/B]"
 msgstr ""
 
 ##############################################################################

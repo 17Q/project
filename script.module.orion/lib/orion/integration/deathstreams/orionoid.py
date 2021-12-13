@@ -52,13 +52,23 @@ class Scraper(scraper.Scraper):
 		return hosts
 
 	def _error(self):
-		type, value, traceback = sys.exc_info()
-		filename = traceback.tb_frame.f_code.co_filename
-		linenumber = traceback.tb_lineno
-		name = traceback.tb_frame.f_code.co_name
-		errortype = type.__name__
-		errormessage = str(errortype) + ' -> ' + str(value.message)
-		parameters = [filename, linenumber, name, errormessage]
+		type, value, trace = sys.exc_info()
+		try: filename = trace.tb_frame.f_code.co_filename
+		except: filename = None
+		try: linenumber = trace.tb_lineno
+		except: linenumber = None
+		try: name = trace.tb_frame.f_code.co_name
+		except: name = None
+		try: errortype = type.__name__
+		except: errortype = None
+		try: errormessage = value.message
+		except:
+			try:
+				import traceback
+				errormessage = traceback.format_exception(type, value, trace)
+			except: pass
+		message = str(errortype) + ' -> ' + str(errormessage)
+		parameters = [filename, linenumber, name, message]
 		parameters = ' | '.join([str(parameter) for parameter in parameters])
 		xbmc.log('DEATH STREAMS ORION [ERROR]: ' + parameters, xbmc.LOGERROR)
 

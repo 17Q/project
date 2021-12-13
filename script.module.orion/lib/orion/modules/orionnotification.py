@@ -81,7 +81,11 @@ class OrionNotification:
 		except: return default
 
 	def contentMessage(self, default = None):
-		try: return self.mData['content']['message']
+		try:
+			result = self.mData['content']['message']
+			result = result.replace('[U]', '').replace('[/U]', '')
+			result = result.replace('[URL]', '[I][COLOR %s]' % OrionInterface.ColorPrimary).replace('[/URL]', '[/COLOR][/I]')
+			return result
 		except: return default
 
 	##############################################################################

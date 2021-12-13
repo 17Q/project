@@ -1,4 +1,32 @@
 
+[B]4.6.7 (2021.11.26)[/B]
+- Fixed link splitting.
+- Fixed Fen hoster integration.
+- Updated other integrations.
+
+[B]4.6.6 (2021.11.22)[/B]
+- Changed stream updates.
+- Fixed various integrations.
+
+[B]4.6.5 (2021.10.03)[/B]
+- Changed connection error notification.
+
+[B]4.6.4 (2021.10.02)[/B]
+- Fixed settings wizard cancel.
+
+[B]4.6.3 (2021.09.30)[/B]
+- Fixed Python 3 ranges.
+
+[B]4.6.2 (2021.09.21)[/B]
+- Updated notification formatting.
+
+[B]4.6.1 (2021.09.21)[/B]
+- Updated app popularity.
+
+[B]4.6.0 (2021.08.31)[/B]
+- Added code and QR authentication.
+- Fixed coupon redemption.
+
 [B]4.5.7 (2021.07.04)[/B]
 - Added filter settings launch.
 - Updated Asgard integration.

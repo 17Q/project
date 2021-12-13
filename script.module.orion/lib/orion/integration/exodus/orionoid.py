@@ -56,7 +56,8 @@ class source:
 		self.key = 'VWxOQ1JVbEVZMmRSVTBKSlNVVm5aMVJUUVRSSlJUUm5UbmxDUzBsRlVXZE9VMEpHU1VWSloxUlRRbE5KUmtWblZHbENUVWxFWTJkU2VVSlNTVVJyWjFOcFFraEpSV2RuVkVOQk5VbEZNR2RXUTBKSg=='
 		self.domains = ['https://orionoid.com']
 		self.providers = []
-		self.cachePath = os.path.join(xbmc.translatePath(OrionTools.unicodeDecode(self.addon.getAddonInfo('profile'))), 'orion.cache')
+		try: self.cachePath = os.path.join(xbmcvfs.translatePath(OrionTools.unicodeDecode(self.addon.getAddonInfo('profile'))), 'orion.cache')
+		except: self.cachePath = os.path.join(xbmc.translatePath(OrionTools.unicodeDecode(self.addon.getAddonInfo('profile'))), 'orion.cache')
 		self.cacheData = None
 		self.resolvers = None
 		try: self.seeds = int(self.addon.getSetting('torrent.min.seeders'))
@@ -75,13 +76,23 @@ class source:
 		except: return None
 
 	def _error(self):
-		type, value, traceback = sys.exc_info()
-		filename = traceback.tb_frame.f_code.co_filename
-		linenumber = traceback.tb_lineno
-		name = traceback.tb_frame.f_code.co_name
-		errortype = type.__name__
-		errormessage = str(errortype) + ' -> ' + str(value.message)
-		parameters = [filename, linenumber, name, errormessage]
+		type, value, trace = sys.exc_info()
+		try: filename = trace.tb_frame.f_code.co_filename
+		except: filename = None
+		try: linenumber = trace.tb_lineno
+		except: linenumber = None
+		try: name = trace.tb_frame.f_code.co_name
+		except: name = None
+		try: errortype = type.__name__
+		except: errortype = None
+		try: errormessage = value.message
+		except:
+			try:
+				import traceback
+				errormessage = traceback.format_exception(type, value, trace)
+			except: pass
+		message = str(errortype) + ' -> ' + str(errormessage)
+		parameters = [filename, linenumber, name, message]
 		parameters = ' | '.join([str(parameter) for parameter in parameters])
 		xbmc.log('EXODUS ORION [ERROR]: ' + parameters, xbmc.LOGERROR)
 

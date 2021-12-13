@@ -21,9 +21,15 @@ import sys
 import os
 import re
 import xbmc
+import xbmcvfs
 import xbmcaddon
 
 class Orionoid:
+
+	priority = 0
+	pack_capable = True
+	hasMovies = True
+	hasEpisodes = True
 
 	TypeTorrent = OrionStream.TypeTorrent
 	TypeHoster = OrionStream.TypeHoster
@@ -43,7 +49,8 @@ class Orionoid:
 	def __init__(self, type):
 		self.type = type
 		self.addon = xbmcaddon.Addon('script.module.fenomscrapers')
-		profile = xbmc.translatePath(OrionTools.unicodeDecode(self.addon.getAddonInfo('profile')))
+		try: profile = xbmcvfs.translatePath(OrionTools.unicodeDecode(self.addon.getAddonInfo('profile')))
+		except: profile = xbmc.translatePath(OrionTools.unicodeDecode(self.addon.getAddonInfo('profile')))
 		try: os.mkdir(profile)
 		except: pass
 		self.priority = 1
@@ -77,13 +84,23 @@ class Orionoid:
 		except: return None
 
 	def _error(self):
-		type, value, traceback = sys.exc_info()
-		filename = traceback.tb_frame.f_code.co_filename
-		linenumber = traceback.tb_lineno
-		name = traceback.tb_frame.f_code.co_name
-		errortype = type.__name__
-		errormessage = str(errortype) + ' -> ' + str(value.message)
-		parameters = [filename, linenumber, name, errormessage]
+		type, value, trace = sys.exc_info()
+		try: filename = trace.tb_frame.f_code.co_filename
+		except: filename = None
+		try: linenumber = trace.tb_lineno
+		except: linenumber = None
+		try: name = trace.tb_frame.f_code.co_name
+		except: name = None
+		try: errortype = type.__name__
+		except: errortype = None
+		try: errormessage = value.message
+		except:
+			try:
+				import traceback
+				errormessage = traceback.format_exception(type, value, trace)
+			except: pass
+		message = str(errortype) + ' -> ' + str(errormessage)
+		parameters = [filename, linenumber, name, message]
 		parameters = ' | '.join([str(parameter) for parameter in parameters])
 		xbmc.log('FENOM SCRAPERS ORION [ERROR]: ' + parameters, xbmc.LOGERROR)
 
@@ -166,7 +183,7 @@ class Orionoid:
 				else: return '%0.1f GB' % (size / float(Orionoid.SizeGigaByte))
 			else:
 				return size / float(Orionoid.SizeGigaByte)
-		return None
+		return 0
 
 	def _seeds(self, data):
 		seeds = data['stream']['seeds']
@@ -187,11 +204,15 @@ class Orionoid:
 		return '+' + str(int(popularity)) + '%'
 
 	def _domain(self, data):
-		elements = OrionTools.urlParseQs(self._link(data))
-		domain = elements.netloc or elements.path
-		domain = domain.split('@')[-1].split(':')[0]
-		domain = re.sub('(.*?\.).{4,}\..{1,}', '\\1', domain)
-		return domain.lower()
+		try:
+			elements = OrionTools.urlParse(self._link(data))
+			domain = elements.netloc or elements.path
+			domain = domain.split('@')[-1].split(':')[0]
+			domain = re.sub('(.*?\.).{4,}\..{1,}', '\\1', domain)
+			return domain.lower()
+		except:
+			self._error()
+			return None
 
 	def _debrid(self, data, hosters):
 		link = self._link(data)
@@ -202,15 +223,12 @@ class Orionoid:
 				if hoster in link: return True
 		return False
 
-	def sources(self, url, hostDict):
+	def sources(self, data, hostDict):
 		sources = []
 		try:
-			if url == None: raise Exception()
+			if not data: raise Exception()
 			orion = Orion(OrionTools.base64From(OrionTools.base64From(OrionTools.base64From(self.key))).replace(' ', ''))
 			if not orion.userEnabled() or not orion.userValid(): raise Exception()
-
-			data = OrionTools.urlParseQs(url)
-			data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title'] if 'title' in data else None
 			titleEpisode = data['title'] if 'tvshowtitle' in data else None
@@ -299,14 +317,18 @@ class Orionoid:
 						'language' : self._language(data),
 						'url' : self._link(data),
 						'name' : self._name(data),
-						'size' : self._size(data, string = False),
 						'seeders' : data['stream']['seeds'],
 						'info' : ' | '.join(info) if len(info) > 0 else None,
-						'name_info' : details,
 						'direct' : data['access']['direct'],
 						'debridonly' : self._debrid(data, hostDict),
 					}
 					if data['file']['hash']: item['hash'] = data['file']['hash']
+
+					if details: item['name_info'] = details
+					else: item['name_info'] = ' ' # Not an empty string, since there is a bug in Fen.
+
+					size = self._size(data, string = False)
+					if size: item['size'] = size
 
 					sources.append(item)
 				except: self._error()

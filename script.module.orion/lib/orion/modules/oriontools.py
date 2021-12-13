@@ -39,6 +39,7 @@ import traceback
 import webbrowser
 import subprocess
 import xbmc
+import xbmcgui
 import xbmcaddon
 import xbmcvfs
 
@@ -949,6 +950,22 @@ class OrionTools:
 		result = xbmc.executeJSONRPC(query)
 		if decode: result = self.jsonFrom(self.unicode(result))
 		return result
+
+	##############################################################################
+	# PROPERTY
+	##############################################################################
+
+	@classmethod
+	def property(self, id, window = 10000):
+		xbmcgui.Window(window).getProperty(id)
+
+	@classmethod
+	def propertySet(self, id, value, window = 10000):
+		xbmcgui.Window(window).setProperty(id, value)
+
+	@classmethod
+	def propertyClear(self, id, window = 10000):
+		xbmcgui.Window(window).clearProperty(id)
 
 	##############################################################################
 	# TO

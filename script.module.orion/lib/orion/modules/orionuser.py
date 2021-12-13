@@ -102,7 +102,7 @@ class OrionUser:
 	def key(self, default = None):
 		try: key = self.mData['key']
 		except: key = self.settingsKey()
-		if key == None or key == '': return default
+		if key is None or key == '': return default
 		else: return key
 
 	def label(self):
@@ -130,6 +130,20 @@ class OrionUser:
 	def verified(self, default = False):
 		try: return self.mData['status'] == OrionUser.StatusVerified
 		except: return default
+
+	##############################################################################
+	# TOKEN
+	##############################################################################
+
+	def token(self, default = None):
+		try: token = self.mData['token']
+		except: token = None
+		if token is None or token == '': return default
+		else: return token
+
+	def tokenSet(self, token):
+		if not OrionTools.isDictionary(self.mData): self.mData = {}
+		self.mData['token'] = token
 
 	##############################################################################
 	# TIME
@@ -458,6 +472,27 @@ class OrionUser:
 			data = api.data()
 			if data and 'key' in data and not data['key'] == None and not data['key'] == '':
 				return data['key']
+		return None
+
+	##############################################################################
+	# AUTHENTICATE
+	##############################################################################
+
+	@classmethod
+	def authenticate(self, code = None):
+		api = OrionApi()
+		if api.userAuthenticate(code = code):
+			data = api.data()
+			if data and 'token' in data:
+				self.instance().tokenSet(data['token'])
+				if api.userRetrieve():
+					data = api.data()
+					if data and 'key' in data and not data['key'] == None and not data['key'] == '':
+						return data['key']
+			else:
+				return data
+		elif api.statusError() and api.type() in OrionApi.TypesEssential:
+			return False
 		return None
 
 	##############################################################################

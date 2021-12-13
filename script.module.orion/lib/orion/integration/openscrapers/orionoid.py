@@ -19,7 +19,11 @@ import sys
 import os
 import re
 import xbmc
+import xbmcvfs
 import xbmcaddon
+
+try: xrange # Python 2
+except NameError: xrange = range # Python 3
 
 class source:
 
@@ -60,7 +64,8 @@ class source:
 
 	def __init__(self):
 		self.addon = xbmcaddon.Addon('script.module.openscrapers')
-		profile = xbmc.translatePath(OrionTools.unicodeDecode(self.addon.getAddonInfo('profile')))
+		try: profile = xbmcvfs.translatePath(OrionTools.unicodeDecode(self.addon.getAddonInfo('profile')))
+		except: profile = xbmc.translatePath(OrionTools.unicodeDecode(self.addon.getAddonInfo('profile')))
 		try: os.mkdir(profile)
 		except: pass
 		self.priority = 1
@@ -86,13 +91,23 @@ class source:
 		except: return None
 
 	def _error(self):
-		type, value, traceback = sys.exc_info()
-		filename = traceback.tb_frame.f_code.co_filename
-		linenumber = traceback.tb_lineno
-		name = traceback.tb_frame.f_code.co_name
-		errortype = type.__name__
-		errormessage = str(errortype) + ' -> ' + str(value.message)
-		parameters = [filename, linenumber, name, errormessage]
+		type, value, trace = sys.exc_info()
+		try: filename = trace.tb_frame.f_code.co_filename
+		except: filename = None
+		try: linenumber = trace.tb_lineno
+		except: linenumber = None
+		try: name = trace.tb_frame.f_code.co_name
+		except: name = None
+		try: errortype = type.__name__
+		except: errortype = None
+		try: errormessage = value.message
+		except:
+			try:
+				import traceback
+				errormessage = traceback.format_exception(type, value, trace)
+			except: pass
+		message = str(errortype) + ' -> ' + str(errormessage)
+		parameters = [filename, linenumber, name, message]
 		parameters = ' | '.join([str(parameter) for parameter in parameters])
 		xbmc.log('OPEN SCRAPERS ORION [ERROR]: ' + parameters, xbmc.LOGERROR)
 

@@ -160,7 +160,7 @@ class OrionItem:
 		if access:
 			streams = []
 			for stream in self.mData['streams']:
-				if not 'id' in stream or not stream['id']:
+				if not 'id' in stream or not stream['id'] or ('force' in stream and stream['force']):
 					streams.append(stream)
 				elif 'id' in stream and stream['id']:
 					try:
@@ -205,12 +205,12 @@ class OrionItem:
 				link = stream['links']
 				if OrionTools.isArray(link):
 					for i in link:
-						if not OrionTools.linkIsMagnet(link):
+						if not OrionTools.linkIsMagnet(i):
 							link = i
 							break
 					if OrionTools.isArray(link):
 						link = link[0]
-				if link == None or link == '': continue
+				if not link: continue
 				magnet = OrionTools.linkIsMagnet(link)
 
 				# Not a standard torrent magnet of HTTP/FTP link
@@ -222,7 +222,9 @@ class OrionItem:
 					if not '.' in link.split('://')[1].split('/')[0]: continue
 
 					# Streams with cookie/session/headers
-					if '|' in link: continue
+					if '|' in link:
+						data = link.split('|')[-1].lower()
+						if 'cookie' in data or 'auth' in data: continue
 
 					# Very long links which are most likely invalid or contain other cookie/session/headers data
 					if len(link) > OrionItem.LimitLink: continue

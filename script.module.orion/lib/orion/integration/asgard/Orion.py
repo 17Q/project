@@ -68,15 +68,23 @@ class Orionoid(object):
 		self.key = 'VTNsQ1IwbEZVV2RTVTBKSlNVVlJaMUZUUWxsSlJHTm5VbE5DVTBsRlJXZFRhVUpPU1VWdloxUkRRa1JKUkdkblRtbENUMGxGVFdkUFUwSkVTVVpSWjFSRFFrbEpSVWxuVW1sQk5VbEdTV2RUUTBKTg=='
 
 	def _error(self):
-		type, value, traceobject = sys.exc_info()
-		filename = traceobject.tb_frame.f_code.co_filename
-		linenumber = traceobject.tb_lineno
-		name = traceobject.tb_frame.f_code.co_name
-		errortype = type.__name__
-		errormessage = str(errortype) + ' -> '
-		try: errormessage += value.message
-		except: errormessage += str(traceback.format_exception(type, value, traceobject))
-		parameters = [filename, linenumber, name, errormessage]
+		type, value, trace = sys.exc_info()
+		try: filename = trace.tb_frame.f_code.co_filename
+		except: filename = None
+		try: linenumber = trace.tb_lineno
+		except: linenumber = None
+		try: name = trace.tb_frame.f_code.co_name
+		except: name = None
+		try: errortype = type.__name__
+		except: errortype = None
+		try: errormessage = value.message
+		except:
+			try:
+				import traceback
+				errormessage = traceback.format_exception(type, value, trace)
+			except: pass
+		message = str(errortype) + ' -> ' + str(errormessage)
+		parameters = [filename, linenumber, name, message]
 		parameters = ' | '.join([str(parameter) for parameter in parameters])
 		xbmc.log('ASGARD ORION [ERROR]: ' + parameters, xbmc.LOGERROR)
 

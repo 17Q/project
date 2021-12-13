@@ -377,3 +377,12 @@ class OrionInterface:
 				mask[i] = '.' + mask[i]
 		mask = '|'.join(mask)
 		return xbmcgui.Dialog().browse(type, self._dialogTitle(title), 'files', mask, True, False, default, multiple)
+
+	##############################################################################
+	# WINDOW
+	##############################################################################
+
+	@classmethod
+	def window(self, file, path = None, skin = 'default', resolution = '720p'):
+		if path is None: path = OrionTools.addonPath()
+		return xbmcgui.WindowXMLDialog(file, path, skin, resolution)

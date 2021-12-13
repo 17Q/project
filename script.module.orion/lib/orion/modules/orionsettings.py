@@ -1251,9 +1251,7 @@ class OrionSettings:
 			if choice: return
 			OrionUser.anonymous()
 		else:
-			while True:
-				if OrionNavigator.settingsAccountLogin(settings = False, refresh = False):
-					break
+			if not OrionNavigator.settingsAccountLogin(settings = False, refresh = False): return
 		OrionInterface.containerRefresh()
 
 		# Limit

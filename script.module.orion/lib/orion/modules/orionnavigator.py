@@ -262,10 +262,10 @@ class OrionNavigator:
 			if OrionUser.instance().subscriptionPackageAnonymous():
 				choice = OrionInterface.dialogOption(title = 32271, message = 33047, labelConfirm = 32250, labelDeny = 32251)
 			if choice:
-				token = OrionInterface.dialogInput(title = 32272)
+				code = OrionInterface.dialogInput(title = 32272)
 				OrionInterface.loaderShow()
 				api = OrionApi()
-				api.couponRedeem(token = token)
+				api.couponRedeem(code = code)
 				if api.statusSuccess():
 					user = OrionUser.instance()
 					user.update()
@@ -312,12 +312,12 @@ class OrionNavigator:
 		OrionTools.linkOpen(dialog = False)
 
 	@classmethod
-	def dialogFree(self):
+	def dialogFree(self, interface = True):
 		OrionInterface.dialogConfirm(title = 32248, message = (OrionTools.translate(33033) % (OrionInterface.fontBold(str(OrionUser.LinksAnonymous)), OrionInterface.fontBold(str(OrionUser.LinksFree)))) +  OrionInterface.fontNewline() + '     ' + OrionInterface.fontBold(OrionTools.link()))
 		if OrionInterface.dialogOption(title = 32248, message = 33034):
-			OrionUser.anonymous()
+			key = OrionUser.anonymous(interface = interface)
 			OrionInterface.containerRefresh()
-			return True
+			return key
 		return False
 
 	@classmethod
@@ -330,6 +330,7 @@ class OrionNavigator:
 
 	@classmethod
 	def settingsAccountLogin(self, key = None, settings = True, refresh = True, free = True, revoke = True):
+		user = None
 		fixed = not key is None
 		default = {'key' : key, 'email' : None, 'username' : None, 'password' : None}
 		while True:
@@ -339,6 +340,8 @@ class OrionNavigator:
 			else:
 				default = self.settingsAccountKey(loader = True, hide = False, default = default, free = free, revoke = revoke)
 				if default is None: break
+				elif default is True: continue
+				elif default is False: default = {'key' : key, 'email' : None, 'username' : None, 'password' : None}
 				OrionInterface.loaderShow()
 				key = default['key'] if default else None
 
@@ -369,7 +372,7 @@ class OrionNavigator:
 		if settings: OrionSettings.launch(category = OrionSettings.CategoryAccount)
 		if refresh: OrionInterface.containerRefresh()
 		OrionInterface.loaderHide()
-		return valid and user.valid(True)
+		return valid and user and user.valid(True)
 
 	@classmethod
 	def settingsAccountKey(self, loader = True, hide = True, default = None, free = True, revoke = True, notification = True):
@@ -383,15 +386,15 @@ class OrionNavigator:
 		if instance.valid(): free = False
 		else: revoke = False
 
-		items = [32273, 32274, 32275]
+		items = [33082, 32273, 32274, 32275]
 		if free: items.insert(0, 32318)
 		if revoke: items.insert(0, 32319)
 
 		choice = OrionInterface.dialogOptions(title = 32034, items = items)
 
 		if free and choice == (1 if revoke else 0):
-			self.dialogFree()
-			return None
+			key = self.dialogFree(interface = False)
+			return {'key' : key} if key else True
 		if revoke and choice == 0:
 			if notification: OrionInterface.dialogNotification(title = 32034, message = 33070, icon = OrionInterface.IconWarning)
 			return False
@@ -400,13 +403,15 @@ class OrionNavigator:
 		if revoke: choice -= 1
 
 		if choice == 0:
+			key = self.settingsAccountCode()
+		elif choice == 1:
 			key = default['key']
 			if not key: key = instance.key()
 			key = self.settingsAccountInput(title = 32018, default = key)
 			if not key: return None # Canceled
-		elif choice > 0:
+		elif choice > 1:
 			password = default['password']
-			if choice == 1:
+			if choice == 2:
 				title = 32020
 				user = default['email']
 			else:
@@ -422,7 +427,7 @@ class OrionNavigator:
 			key = instance.login(user = user, password = password)
 			if loader and hide: OrionInterface.loaderHide()
 
-			if choice == 1:
+			if choice == 2:
 				email = user
 				username = None
 			else:
@@ -436,6 +441,42 @@ class OrionNavigator:
 	@classmethod
 	def settingsAccountInput(self, title, default = ''):
 		return OrionInterface.dialogInput(title = title, default = default)
+
+	@classmethod
+	def settingsAccountCode(self):
+		OrionInterface.loaderShow()
+		instance = OrionUser.instance()
+		data = instance.authenticate()
+		code = data['code']
+		key = None
+
+		OrionTools.propertySet(id = 'OrionAuthenticationLink', value = data['link'])
+		OrionTools.propertySet(id = 'OrionAuthenticationCode', value = data['code'])
+		OrionTools.propertySet(id = 'OrionAuthenticationQr', value = data['qr'])
+		window = OrionInterface.window(file = 'authentication.xml')
+		window.show()
+
+		OrionTools.sleep(0.1)
+		OrionInterface.loaderHide()
+		dialog = OrionInterface.dialogId()
+		duration = 0
+		interval = 0.5
+		while True:
+			if not OrionInterface.dialogId() == dialog: break
+			duration += interval
+			if duration > 3:
+				duration = 0
+				data = instance.authenticate(code = code)
+				if data and OrionTools.isString(data):
+					key = data
+					break
+				elif data is False: # Expired or rejected.
+					break
+			OrionTools.sleep(interval)
+		try: window.close()
+		except: pass
+
+		return key
 
 	@classmethod
 	def settingsAccountRefresh(self, launch = True, loader = True, notification = False, wait = True):

@@ -177,8 +177,9 @@ class OrionPlatform:
 	def _detectAndroid(self):
 		try:
 			system = platform.system().lower()
-			distribution = platform.linux_distribution()
-			if OrionPlatform.SystemAndroid in system or OrionPlatform.SystemAndroid in system or (len(distribution) > 0 and OrionTools.isString(distribution[0]) and OrionPlatform.SystemAndroid in distribution[0].lower()):
+			try: distribution = platform.linux_distribution()
+			except: distribution = None
+			if OrionPlatform.SystemAndroid in system or OrionPlatform.SystemAndroid in system or (distribution and len(distribution) > 0 and OrionTools.isString(distribution[0]) and OrionPlatform.SystemAndroid in distribution[0].lower()):
 				return True
 			if system == OrionPlatform.SystemLinux:
 				id = ''
@@ -221,9 +222,13 @@ class OrionPlatform:
 				self.mSystemType = OrionPlatform.SystemAndroid
 				self.mSystemName =  self.mSystemType.capitalize()
 
-				distribution = platform.linux_distribution()
-				self.mVersionShort = distribution[1]
-				self.mVersionFull = distribution[2]
+				try:
+					distribution = platform.linux_distribution()
+					self.mVersionShort = distribution[1]
+					self.mVersionFull = distribution[2]
+				except:
+					self.mVersionShort = None
+					self.mVersionFull = None
 			elif self._detectMacintosh():
 				self.mFamilyType = OrionPlatform.FamilyUnix
 				self.mFamilyName = self.mFamilyType.capitalize()
@@ -241,12 +246,18 @@ class OrionPlatform:
 				self.mSystemType = OrionPlatform.SystemLinux
 				self.mSystemName =  self.mSystemType.capitalize()
 
-				distribution = platform.linux_distribution()
-				self.mDistributionType = distribution[0].lower().replace('"', '').replace(' ', '')
-				self.mDistributionName = distribution[0].replace('"', '')
+				try:
+					distribution = platform.linux_distribution()
+					self.mDistributionType = distribution[0].lower().replace('"', '').replace(' ', '')
+					self.mDistributionName = distribution[0].replace('"', '')
 
-				self.mVersionShort = distribution[1]
-				self.mVersionFull = distribution[2]
+					self.mVersionShort = distribution[1]
+					self.mVersionFull = distribution[2]
+				except:
+					self.mVersionShort = None
+					self.mVersionFull = None
+					self.mVersionShort = None
+					self.mVersionFull = None
 
 			machine = platform.machine().lower()
 			if '64' in machine: self.mArchitecture = OrionPlatform.Architecture64bit

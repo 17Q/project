@@ -39,7 +39,7 @@ class OrionApi:
 
 	# Used by OrionSettings.
 	# Determines which API results to not show a notification for.
-	TypesEssential = ['userlogin', 'abuseregister', 'abuselogin']
+	TypesEssential = ['userlogin', 'userauth', 'userauthexpired', 'userauthinvalid', 'userauthinreject', 'abuseregister', 'abuselogin']
 	TypesNonessential = ['exception', 'success', 'streammissing']
 	TypesBlock = ['streamvoteabuse', 'streamremoveabuse']
 	TypesAuthentication = ['userkey', 'userlogin']
@@ -50,6 +50,8 @@ class OrionApi:
 	ParameterKeyApp = 'keyapp'
 	ParameterKeyUser = 'keyuser'
 	ParameterKey = 'key'
+	ParameterToken = 'token'
+	ParameterCode = 'code'
 	ParameterVersion = 'version'
 	ParameterId = 'id'
 	ParameterEmail = 'email'
@@ -63,7 +65,6 @@ class OrionApi:
 	ParameterType = 'type'
 	ParameterItem = 'item'
 	ParameterStream = 'stream'
-	ParameterToken = 'token'
 	ParameterDescription = 'description'
 	ParameterMessage = 'message'
 	ParameterData = 'data'
@@ -102,6 +103,7 @@ class OrionApi:
 	ActionAnonymous = 'anonymous'
 	ActionDownload = 'download'
 	ActionLogin = 'login'
+	ActionAuthenticate = 'authenticate'
 	ActionRemove = 'remove'
 	ActionIdentifier = 'identifier'
 	ActionSegment = 'segment'
@@ -206,14 +208,18 @@ class OrionApi:
 			from orion.modules.orionuser import OrionUser
 			user = OrionUser.instance()
 			keyUser = user.key()
-			if not keyUser is None and not keyUser == '': parameters[OrionApi.ParameterKeyUser] = keyUser
+			if not keyUser is None and not keyUser == '':
+				parameters[OrionApi.ParameterKeyUser] = keyUser
+			else:
+				token = user.token()
+				if not token is None and not token == '': parameters[OrionApi.ParameterToken] = token
 
 			parameters[OrionApi.ParameterVersion] = OrionTools.addonVersion()
 
 			if debug:
 				query = copy.deepcopy(parameters)
 				if query:
-					truncate = [OrionApi.ParameterId, OrionApi.ParameterPassword, OrionApi.ParameterKey, OrionApi.ParameterKeyApp, OrionApi.ParameterKeyUser, OrionApi.ParameterData, OrionApi.ParameterLink, OrionApi.ParameterLinks, OrionApi.ParameterFiles]
+					truncate = [OrionApi.ParameterId, OrionApi.ParameterPassword, OrionApi.ParameterKey, OrionApi.ParameterKeyApp, OrionApi.ParameterKeyUser, OrionApi.ParameterToken, OrionApi.ParameterData, OrionApi.ParameterLink, OrionApi.ParameterLinks, OrionApi.ParameterFiles]
 					for key, value in OrionTools.iterator(query):
 						if key in truncate: query[key] = '-- truncated --'
 				queryString = OrionTools.jsonTo(query)
@@ -233,7 +239,7 @@ class OrionApi:
 
 			# No internet connection or domain name issues.
 			if not result and networker.errorTypeNetwork():
-				if not silent:
+				if not silent and OrionSettings.silentAllow(self.mType):
 					if networker.errorCodeConnection(): message = 33071
 					elif networker.errorCodeResolve(): message = 33072
 					else: message = 33073
@@ -467,6 +473,11 @@ class OrionApi:
 	def userLogin(self, user, password):
 		return self._request(mode = OrionApi.ModeUser, action = OrionApi.ActionLogin, parameters = {OrionApi.ParameterUser : user, OrionApi.ParameterPassword : password})
 
+	def userAuthenticate(self, code = None):
+		parameters = {}
+		if code: parameters[OrionApi.ParameterCode] = code
+		return self._request(mode = OrionApi.ModeUser, action = OrionApi.ActionAuthenticate, parameters = parameters)
+
 	def userAnonymous(self):
 		x = [OrionTools.randomInteger(1,9) for i in range(3)]
 		return self._request(mode = OrionApi.ModeUser, action = OrionApi.ActionAnonymous, parameters = {OrionApi.ParameterKey : str(str(x[0])+str(x[1])+str(x[2])+str(x[0]+x[1]*x[2]))[::-1]}, silent = False)
@@ -501,8 +512,8 @@ class OrionApi:
 	# COUPON
 	##############################################################################
 
-	def couponRedeem(self, token):
-		return self._request(mode = OrionApi.ModeCoupon, action = OrionApi.ActionRedeem, parameters = {OrionApi.ParameterToken : token})
+	def couponRedeem(self, code):
+		return self._request(mode = OrionApi.ModeCoupon, action = OrionApi.ActionRedeem, parameters = {OrionApi.ParameterCode : code})
 
 	##############################################################################
 	# ADDON

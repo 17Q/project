@@ -21,6 +21,9 @@ import re
 import xbmc
 import xbmcaddon
 
+try: xrange # Python 2
+except NameError: xrange = range # Python 3
+
 class source:
 
 	TimeDays = 86400

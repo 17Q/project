@@ -154,7 +154,18 @@ class OrionApp:
 	##############################################################################
 
 	def popularityCount(self, default = None):
-		try: return self.mData['popularity']['percent']
+		return self.popularityGlobal(default = default)
+
+	def popularityGlobal(self, default = None):
+		try: return self.mData['popularity']['global']
+		except: return default
+
+	def popularityFree(self, default = None):
+		try: return self.mData['popularity']['free']
+		except: return default
+
+	def popularityPremium(self, default = None):
+		try: return self.mData['popularity']['premium']
 		except: return default
 
 	def popularityPercent(self, default = None):
