@@ -369,9 +369,9 @@ class navigator:
         else:
             self.addDirectoryItem('[B]Orion[/B] : Settings', 'orionsettings', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 
-        self.addDirectoryItem('[B]Trakt[/B] : Authorize Patriot With Trakt', 'authTrakt', 'trakt.png', 'DefaultAddonProgram.png')
+        self.addDirectoryItem('[B]Configure Patriot Scraper Settings[/B] : PatriotScraper Settings', 'patriotscrapersettings', 'tools.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem('[B]ResolveURL[/B] : Configure ResolveURL Settings', 'smuSettings', 'tools.png', 'DefaultAddonProgram.png')
-        self.addDirectoryItem('[B]Configure Oath Scraper Settings[/B] : OathScraper Settings', 'oathscrapersettings', 'tools.png', 'DefaultAddonProgram.png')
+        self.addDirectoryItem('[B]Trakt[/B] : (Re)Authorize Patriot With Trakt', 'authTrakt', 'trakt.png', 'DefaultAddonProgram.png')
 
         self.endDirectory()
 

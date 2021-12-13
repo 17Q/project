@@ -408,9 +408,9 @@ elif action == 'smuSettings':
         resolveurl.display_settings()
     except: pass
 
-elif action == 'oathscrapersettings':
+elif action == 'patriotscrapersettings':
     from resources.lib.modules import control
-    control.openSettings('0.0', 'script.module.oathscrapers')
+    control.openSettings('0.0', 'script.module.patriotscrapers')
 
 elif action == 'installOrion':
     from resources.lib.modules import control

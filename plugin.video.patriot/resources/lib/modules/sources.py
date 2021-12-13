@@ -1388,32 +1388,32 @@ class sources:
 
         scraperSetting = control.setting('module.provider.alt')
 
-        import oathscrapers
-        sourceDir1 = oathscrapers.sources()
+        import patriotscrapers
+        sourceDir1 = patriotscrapers.sources()
         from resources.lib import sources
         sourceDir2 = sources.sources()
 
-        oas_module_name = 'OathScrapers (' + str(control.addon('script.module.oathscrapers').getSetting('package.folder')) + ' set):' \
-                          if control.addon('script.module.oathscrapers').getSetting('package.folder') != 'Oathscrapers' else 'OathScrapers:'
+        oas_module_name = 'PatriotScrapers (' + str(control.addon('script.module.patriotscrapers').getSetting('package.folder')) + ' set):' \
+                          if control.addon('script.module.patriotscrapers').getSetting('package.folder') != 'Patriotscrapers' else 'PatriotScrapers:'
 
         try:
-            if scraperSetting == 'OathScrapers':
+            if scraperSetting == 'PatriotScrapers':
                 self.sourceDict = sourceDir1
                 self.module_name = oas_module_name
             elif scraperSetting == 'Built-in':
                 self.sourceDict = sourceDir2
                 self.module_name = 'Built-in providers:'
-            elif scraperSetting == 'OathScrapers + Built-in':
+            elif scraperSetting == 'PatriotScrapers + Built-in':
                 self.sourceDict = sourceDir1 + sourceDir2
                 self.module_name = 'Built-in + ' + oas_module_name
             else:
                 self.sourceDict = sourceDir1
                 self.module_name = oas_module_name
-                control.setSetting('module.provider', 'OathScrapers')
+                control.setSetting('module.provider', 'PatriotScrapers')
         except:
             self.sourceDict = sourceDir1
             self.module_name = oas_module_name
-            control.setSetting('module.provider', 'OathScrapers')
+            control.setSetting('module.provider', 'PatriotScrapers')
 
         try:
             self.hostDict = resolveurl.relevant_resolvers(order_matters=True)

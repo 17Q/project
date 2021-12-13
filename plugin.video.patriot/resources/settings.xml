@@ -190,8 +190,8 @@
 
     <category label="32345">
         <setting type="lsep" label="32083" />
-        <setting id="module.provider.alt" type="select" label="32084" values="OathScrapers|Built-in|OathScrapers + Built-in" default="OathScrapers" />
-        <setting id="open.Osettings" subsetting="true" type="action" label="32085" option="close" action="RunPlugin(plugin://script.module.oathscrapers/?mode=oathscrapersettings)" />
+        <setting id="module.provider.alt" type="select" label="32084" values="PatriotScrapers|Built-in|PatriotScrapers + Built-in" default="PatriotScrapers" />
+        <setting id="open.Osettings" subsetting="true" type="action" label="32085" option="close" action="RunPlugin(plugin://script.module.patriotscrapers/?mode=patriotscrapersettings)" />
         <setting id="clear.providers.cache" subsetting="true" type="action" label="32087" action="RunPlugin(plugin://plugin.video.patriot/?action=clearCacheProviders)" />
         <setting type="lsep" label="32088" />
         <setting id="provider.orionoid" type="bool" label="ORION" default="false" />

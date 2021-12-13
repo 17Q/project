@@ -453,7 +453,7 @@ def clean_settings(info=True):#Fen code
         content += '\n</settings>'
         return content
     try:
-        for addon_id in ('plugin.video.patriot', 'script.module.oathscrapers'):
+        for addon_id in ('plugin.video.patriot', 'script.module.patriotscrapers'):
             removed_settings = []
             active_settings = []
             current_user_settings = []

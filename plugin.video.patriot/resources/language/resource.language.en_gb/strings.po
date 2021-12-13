@@ -344,7 +344,7 @@ msgid "[B]LambdaScrapers[/B] : Settings"
 msgstr ""
 
 msgctxt "#32079"
-msgid "[B]OathScrapers[/B] : Settings"
+msgid "[B]PatriotScrapers[/B] : Settings"
 msgstr ""
 
 msgctxt "#32080"
@@ -368,7 +368,7 @@ msgid "Provider Source:"
 msgstr ""
 
 msgctxt "#32085"
-msgid "OathScrapers Settings"
+msgid "PatriotScrapers Settings"
 msgstr ""
 
 msgctxt "#32086"
@@ -464,7 +464,7 @@ msgid "[B]Patriot[/B] : Clean Settings file"
 msgstr ""
 
 msgctxt "#32109"
-msgid "[B]Oathscrapers[/B] : Clean Settings file"
+msgid "[B]Patriotscrapers[/B] : Clean Settings file"
 msgstr ""
 
 msgctxt "#32110"
