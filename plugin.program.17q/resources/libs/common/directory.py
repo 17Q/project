@@ -40,20 +40,6 @@ def set_view():
         xbmc.executebuiltin("Container.SetViewMode({0})".format(view_type))
 
 
-def add_separator(middle='', fanart=CONFIG.ADDON_FANART, icon=CONFIG.ADDON_ICON, themeit=CONFIG.THEME3):
-    if CONFIG.HIDESPACERS == 'No':
-        char = CONFIG.SPACER  # '=' by default
-        ret = char * 40  # 40 of them
-
-        # if there should be a label
-        if not middle == '':
-            middle = '[ {0} ]'.format(middle)
-            fluff = int((40 - len(middle)) / 2)
-            ret = "{0}{1}{2}".format(ret[:fluff], middle, ret[:fluff + 2])
-
-        add_file(ret[:40], fanart=fanart, icon=icon, themeit=themeit)
-
-
 def add_file(display, params=None, menu=None, description=CONFIG.ADDONTITLE, overwrite=True,
              fanart=CONFIG.ADDON_FANART, icon=CONFIG.ADDON_ICON, themeit=None, isFolder=False):
 

@@ -72,7 +72,6 @@ def apk_menu(url=None):
 
     if check_for_fm():
         directory.add_dir('Official Kodi APK\'s', {'mode': 'kodiapk'}, icon=CONFIG.ICONAPK, themeit=CONFIG.THEME1)
-        directory.add_separator()
 
     response = tools.open_url(CONFIG.APKFILE)
     url_response = tools.open_url(url)
@@ -92,9 +91,9 @@ def apk_menu(url=None):
                         directory.add_dir("[B]{0}[/B]".format(aname), {'mode': 'apk', 'name': aname, 'url': url}, description=description, icon=icon, fanart=fanart, themeit=CONFIG.THEME3)
                     else:
                         x += 1
-                        directory.add_file(aname, {'mode': 'apkinstall', 'name': aname, 'url': url}, description=description, icon=icon, fanart=fanart, themeit=CONFIG.THEME2)
+                        directory.add_file(aname, {'mode': 'apkinstall', 'name': aname, 'url': url}, description=description, icon=icon, fanart=fanart, themeit=CONFIG.THEME1)
                     if x == 0:
-                        directory.add_file("No addons added to this menu yet!", themeit=CONFIG.THEME2)
+                        directory.add_file("No addons added to this menu yet!", themeit=CONFIG.THEME1)
             else:
                 logging.log("[APK Menu] ERROR: Invalid Format.", level=xbmc.LOGERROR)
         else:
@@ -123,7 +122,7 @@ def youtube_menu(url=None):
                     if section.lower() == "yes":
                         directory.add_dir("[B]{0}[/B]".format(name), {'mode': 'youtube', 'name': name, 'url': url}, description=description, icon=icon, fanart=fanart, themeit=CONFIG.THEME3)
                     else:
-                        directory.add_file(name, {'mode': 'viewVideo', 'url': url}, description=description, icon=icon, fanart=fanart, themeit=CONFIG.THEME2)
+                        directory.add_file(name, {'mode': 'viewVideo', 'url': url}, description=description, icon=icon, fanart=fanart, themeit=CONFIG.THEME1)
             else:
                 logging.log("[YouTube Menu] ERROR: Invalid Format.")
         else:
@@ -138,8 +137,6 @@ def youtube_menu(url=None):
 
 def net_tools():
     directory.add_dir('Speed Test', {'mode': 'speedtest'}, icon=CONFIG.ICONSPEED, themeit=CONFIG.THEME1)
-    if CONFIG.HIDESPACERS == 'No':
-        directory.add_separator()
     directory.add_dir('View IP Address & MAC Address', {'mode': 'viewIP'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME1)
 
 
@@ -165,7 +162,6 @@ def speed_test():
         speedimg.sort(key=lambda f: os.path.getmtime(f), reverse=True)
         if len(speedimg) > 0:
             directory.add_file('Clear Results', {'mode': 'clearspeedtest'}, icon=CONFIG.ICONSPEED, themeit=CONFIG.THEME3)
-            directory.add_separator('Previous Runs', icon=CONFIG.ICONSPEED, themeit=CONFIG.THEME3)
             for item in speedimg:
                 created = date.fromtimestamp(os.path.getmtime(item)).strftime('%m/%d/%Y %H:%M:%S')
                 img = item.replace(os.path.join(CONFIG.SPEEDTEST, ''), '')
@@ -353,11 +349,10 @@ def trakt_menu():
 
     keep_trakt = '[COLOR springgreen]ON[/COLOR]' if CONFIG.KEEPTRAKT == 'true' else '[COLOR red]OFF[/COLOR]'
     last = str(CONFIG.TRAKTSAVE) if not CONFIG.TRAKTSAVE == '' else 'Trakt hasn\'t been saved yet.'
-    directory.add_file('[I]Register FREE Account at https://www.trakt.tv/[/I]', icon=CONFIG.ICONTRAKT, themeit=CONFIG.THEME3)
+    directory.add_file('[I]Sign up for a free Trakt account at https://trakt.tv/auth/join[/I]', icon=CONFIG.ICONTRAKT, themeit=CONFIG.THEME3)
     directory.add_file('Save Trakt Data: {0}'.format(keep_trakt), {'mode': 'togglesetting', 'name': 'keeptrakt'}, icon=CONFIG.ICONTRAKT, themeit=CONFIG.THEME3)
     if CONFIG.KEEPTRAKT == 'true':
         directory.add_file('Last Save: {0}'.format(str(last)), icon=CONFIG.ICONTRAKT, themeit=CONFIG.THEME3)
-    directory.add_separator(icon=CONFIG.ICONTRAKT, themeit=CONFIG.THEME3)
 
     for trakt in traktit.ORDER:
         if xbmc.getCondVisibility('System.HasAddon({0})'.format(traktit.TRAKTID[trakt]['plugin'])):
@@ -388,7 +383,6 @@ def trakt_menu():
             else:
                 directory.add_file('[COLOR springgreen]Saved Data: {0}[/COLOR]'.format(user), icon=icon, fanart=fanart, menu=menu2)
 
-    directory.add_separator()
     directory.add_file('Save All Trakt Data', {'mode': 'savetrakt', 'name': 'all'}, icon=CONFIG.ICONTRAKT, themeit=CONFIG.THEME3)
     directory.add_file('Recover All Saved Trakt Data', {'mode': 'restoretrakt', 'name': 'all'}, icon=CONFIG.ICONTRAKT, themeit=CONFIG.THEME3)
     directory.add_file('Import Trakt Data', {'mode': 'importtrakt', 'name': 'all'}, icon=CONFIG.ICONTRAKT, themeit=CONFIG.THEME3)
@@ -406,7 +400,6 @@ def debrid_menu():
     directory.add_file('Save Debrid Data: {0}'.format(keep_debrid), {'mode': 'togglesetting', 'name': 'keepdebrid'}, icon=CONFIG.ICONDEBRID, themeit=CONFIG.THEME3)
     if CONFIG.KEEPDEBRID == 'true':
         directory.add_file('Last Save: {0}'.format(str(last)), icon=CONFIG.ICONDEBRID, themeit=CONFIG.THEME3)
-    directory.add_separator(icon=CONFIG.ICONDEBRID, themeit=CONFIG.THEME3)
 
     for debrid in debridit.ORDER:
         if xbmc.getCondVisibility('System.HasAddon({0})'.format(debridit.DEBRIDID[debrid]['plugin'])):
@@ -437,7 +430,6 @@ def debrid_menu():
             else:
                 directory.add_file('[COLOR springgreen]Saved Data: {0}[/COLOR]'.format(user), icon=icon, fanart=fanart, menu=menu2)
 
-    directory.add_separator(themeit=CONFIG.THEME3)
     directory.add_file('Save All Debrid Data', {'mode': 'savedebrid', 'name': 'all'}, icon=CONFIG.ICONDEBRID, themeit=CONFIG.THEME3)
     directory.add_file('Recover All Saved Debrid Data', {'mode': 'restoredebrid', 'name': 'all'}, icon=CONFIG.ICONDEBRID, themeit=CONFIG.THEME3)
     directory.add_file('Import Debrid Data', {'mode': 'importdebrid', 'name': 'all'}, icon=CONFIG.ICONDEBRID, themeit=CONFIG.THEME3)
@@ -450,11 +442,10 @@ def login_menu():
 
     keep_login = '[COLOR springgreen]ON[/COLOR]' if CONFIG.KEEPLOGIN == 'true' else '[COLOR red]OFF[/COLOR]'
     last = str(CONFIG.LOGINSAVE) if not CONFIG.LOGINSAVE == '' else 'Login data hasn\'t been saved yet.'
-    directory.add_file('[I]Several of these addons are PAID services.[/I]', icon=CONFIG.ICONLOGIN, themeit=CONFIG.THEME3)
+    directory.add_file('[I]Personal API keys provide quicker API responses.[/I]', icon=CONFIG.ICONLOGIN, themeit=CONFIG.THEME3)
     directory.add_file('Save API Keys: {0}'.format(keep_login), {'mode': 'togglesetting', 'name': 'keeplogin'}, icon=CONFIG.ICONLOGIN, themeit=CONFIG.THEME3)
     if CONFIG.KEEPLOGIN == 'true':
         directory.add_file('Last Save: {0}'.format(str(last)), icon=CONFIG.ICONLOGIN, themeit=CONFIG.THEME3)
-    directory.add_separator(icon=CONFIG.ICONLOGIN, themeit=CONFIG.THEME3)
 
     for login in loginit.ORDER:
         if xbmc.getCondVisibility('System.HasAddon({0})'.format(loginit.LOGINID[login]['plugin'])):
@@ -485,7 +476,6 @@ def login_menu():
             else:
                 directory.add_file('[COLOR springgreen]Saved Data: {0}[/COLOR]'.format(user), icon=icon, fanart=fanart, menu=menu2)
 
-    directory.add_separator(themeit=CONFIG.THEME3)
     directory.add_file('Save All Login Info', {'mode': 'savelogin', 'name': 'all'}, icon=CONFIG.ICONLOGIN, themeit=CONFIG.THEME3)
     directory.add_file('Recover All Saved Login Info', {'mode': 'restorelogin', 'name': 'all'}, icon=CONFIG.ICONLOGIN, themeit=CONFIG.THEME3)
     directory.add_file('Import Login Info', {'mode': 'importlogin', 'name': 'all'}, icon=CONFIG.ICONLOGIN, themeit=CONFIG.THEME3)
@@ -547,7 +537,6 @@ def remove_addon_data_menu():
         directory.add_file('[COLOR red][B][REMOVE][/B][/COLOR] All Addon_Data for Uninstalled Addons', {'mode': 'removedata', 'name': 'uninstalled'}, themeit=CONFIG.THEME2)
         directory.add_file('[COLOR red][B][REMOVE][/B][/COLOR] All Empty Folders in Addon_Data', {'mode': 'removedata', 'name': 'empty'}, themeit=CONFIG.THEME2)
         directory.add_file('[COLOR red][B][REMOVE][/B][/COLOR] {0} Addon_Data'.format(CONFIG.ADDONTITLE), {'mode': 'resetaddon'}, themeit=CONFIG.THEME2)
-        directory.add_separator(themeit=CONFIG.THEME3)
         fold = glob.glob(os.path.join(CONFIG.ADDON_DATA, '*/'))
         for folder in sorted(fold, key = lambda x: x):
             foldername = folder.replace(CONFIG.ADDON_DATA, '').replace('\\', '').replace('/', '')

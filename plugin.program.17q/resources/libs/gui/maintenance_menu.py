@@ -103,61 +103,38 @@ class MaintenanceMenu:
             {'mode': 'togglecache', 'name': 'includevideo'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
 
         if includeall == 'true':
-            includegaia = 'true'
-            includeexodusredux = 'true'
-            includethecrew = 'true'
-            includeyoda = 'true'
+            includepatriot = 'true'
+            includetheoath = 'true'
             includevenom = 'true'
-            includenumbers = 'true'
-            includescrubs = 'true'
             includeseren = 'true'
         else:
-            includeexodusredux = 'true' if CONFIG.INCLUDEEXODUSREDUX == 'true' else 'false'
-            includegaia = 'true' if CONFIG.INCLUDEGAIA == 'true' else 'false'
-            includethecrew = 'true' if CONFIG.INCLUDETHECREW == 'true' else 'false'
-            includeyoda = 'true' if CONFIG.INCLUDEYODA == 'true' else 'false'
+            includepatriot = 'true' if CONFIG.INCLUDEPATRIOT == 'true' else 'false'
+            includetheoath = 'true' if CONFIG.INCLUDETHEOATH == 'true' else 'false'
             includevenom = 'true' if CONFIG.INCLUDEVENOM == 'true' else 'false'
-            includenumbers = 'true' if CONFIG.INCLUDENUMBERS == 'true' else 'false'
-            includescrubs = 'true' if CONFIG.INCLUDESCRUBS == 'true' else 'false'
             includeseren = 'true' if CONFIG.INCLUDESEREN == 'true' else 'false'
 
         if includevid == 'true':
             directory.add_file(
                 '--- Include All Video Addons: {0}'.format(includeall.replace('true', on).replace('false', off)),
                 {'mode': 'togglecache', 'name': 'includeall'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
-            if xbmc.getCondVisibility('System.HasAddon(plugin.video.exodusredux)'):
+            if xbmc.getCondVisibility('System.HasAddon(plugin.video.patriot)'):
                 directory.add_file(
-                    '--- Include Exodus Redux: {0}'.format(
-                        includeexodusredux.replace('true', on).replace('false', off)),
-                    {'mode': 'togglecache', 'name': 'includeexodusredux'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
-            if xbmc.getCondVisibility('System.HasAddon(plugin.video.gaia)'):
+                    '--- Include Patriot: {0}'.format(
+                        includepatriot.replace('true', on).replace('false', off)),
+                    {'mode': 'togglecache', 'name': 'includepatriot'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
+            if xbmc.getCondVisibility('System.HasAddon(plugin.video.theoath)'):
                 directory.add_file(
-                    '--- Include Gaia: {0}'.format(includegaia.replace('true', on).replace('false', off)),
-                    {'mode': 'togglecache', 'name': 'includegaia'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
-            if xbmc.getCondVisibility('System.HasAddon(plugin.video.numbersbynumbers)'):
-                directory.add_file(
-                    '--- Include NuMb3r5: {0}'.format(includenumbers.replace('true', on).replace('false', off)),
-                    {'mode': 'togglecache', 'name': 'includenumbers'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
-            if xbmc.getCondVisibility('System.HasAddon(plugin.video.scrubsv2)'):
-                directory.add_file(
-                    '--- Include Scrubs v2: {0}'.format(includescrubs.replace('true', on).replace('false', off)),
-                    {'mode': 'togglecache', 'name': 'includescrubs'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
+                    '--- Include The Oath: {0}'.format(
+                        includetheoath.replace('true', on).replace('false', off)),
+                    {'mode': 'togglecache', 'name': 'includetheoath'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
             if xbmc.getCondVisibility('System.HasAddon(plugin.video.seren)'):
                 directory.add_file(
                     '--- Include Seren: {0}'.format(includeseren.replace('true', on).replace('false', off)),
                     {'mode': 'togglecache', 'name': 'includeseren'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
-            if xbmc.getCondVisibility('System.HasAddon(plugin.video.thecrew)'):
-                directory.add_file(
-                    '--- Include THE CREW: {0}'.format(includethecrew.replace('true', on).replace('false', off)),
-                    {'mode': 'togglecache', 'name': 'includethecrew'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
             if xbmc.getCondVisibility('System.HasAddon(plugin.video.venom)'):
                 directory.add_file(
                     '--- Include Venom: {0}'.format(includevenom.replace('true', on).replace('false', off)),
                     {'mode': 'togglecache', 'name': 'includevenom'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
-            if xbmc.getCondVisibility('System.HasAddon(plugin.video.yoda)'):
-                directory.add_file(
-                    '--- Include Yoda: {0}'.format(includeyoda.replace('true', on).replace('false', off)),
-                    {'mode': 'togglecache', 'name': 'includeyoda'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
             directory.add_file('--- Enable All Video Addons', {'mode': 'togglecache', 'name': 'true'}, icon=CONFIG.ICONMAINT,
                                themeit=CONFIG.THEME3)
             directory.add_file('--- Disable All Video Addons', {'mode': 'togglecache', 'name': 'false'}, icon=CONFIG.ICONMAINT,

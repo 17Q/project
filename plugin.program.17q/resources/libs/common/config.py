@@ -70,8 +70,6 @@ class Config:
         self.ICONLOGIN = uservar.ICONLOGIN if not uservar.ICONLOGIN.endswith('://') else self.ADDON_ICON
         self.ICONCONTACT = uservar.ICONCONTACT if not uservar.ICONCONTACT.endswith('://') else self.ADDON_ICON
         self.ICONSETTINGS = uservar.ICONSETTINGS if not uservar.ICONSETTINGS.endswith('://') else self.ADDON_ICON
-        self.HIDESPACERS = uservar.HIDESPACERS
-        self.SPACER = uservar.SPACER
         self.COLOR1 = uservar.COLOR1
         self.COLOR2 = uservar.COLOR2
         self.THEME1 = uservar.THEME1
@@ -228,14 +226,10 @@ class Config:
         # Video Cache variables
         self.INCLUDEVIDEO = self.get_setting('includevideo')
         self.INCLUDEALL = self.get_setting('includeall')
-        self.INCLUDEEXODUSREDUX = self.get_setting('includeexodusredux')
-        self.INCLUDEGAIA = self.get_setting('includegaia')
-        self.INCLUDESEREN = self.get_setting('includeseren')
-        self.INCLUDETHECREW = self.get_setting('includethecrew')
-        self.INCLUDEYODA = self.get_setting('includeyoda')
+        self.INCLUDEPATRIOT = self.get_setting('includepatriot')
+        self.INCLUDETHEOATH = self.get_setting('includetheoath')
         self.INCLUDEVENOM = self.get_setting('includevenom')
-        self.INCLUDENUMBERS = self.get_setting('includenumbers')
-        self.INCLUDESCRUBS = self.get_setting('includescrubs')
+        self.INCLUDESEREN = self.get_setting('includeseren')
         
         # Notification variables
         self.NOTIFY = self.get_setting('notify')

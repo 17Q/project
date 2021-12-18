@@ -303,10 +303,24 @@ class Router:
         elif mode == 'viewwizlog':  # View wizard.log
             from resources.libs.gui import window
             window.show_log_viewer(log_file=CONFIG.WIZLOG)
+            
+#         elif mode == 'viewerrorlog':  # View errors in log
+#             logging.error_checking()
+#         elif mode == 'viewerrorlast':  # View last error in log
+#             logging.error_checking(last=True)
+            
         elif mode == 'viewerrorlog':  # View errors in log
-            logging.error_checking()
+            logging.view_log_file()
         elif mode == 'viewerrorlast':  # View last error in log
             logging.error_checking(last=True)
+
+#         elif mode == 'viewerrorlog':  # View errors in log
+#             from resources.libs.gui import window
+#             window.show_log_viewer(log_file=CONFIG.WIZLOG)
+#         elif mode == 'viewerrorlast':  # View last error in log
+#             from resources.libs.gui import window
+#             window.show_log_viewer(log_file=CONFIG.WIZLOG)
+            
         elif mode == 'clearwizlog':  # Clear wizard.log
             from resources.libs.common import tools
             tools.remove_file(CONFIG.WIZLOG)

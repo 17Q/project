@@ -116,9 +116,7 @@ class AdvancedMenu:
         
         if TEMPADVANCEDFILE:
             import json
-
-            directory.add_separator(icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
-            
+          
             try:
                 advanced_json = json.loads(TEMPADVANCEDFILE)
             except:
@@ -158,7 +156,6 @@ class AdvancedMenu:
         directory.add_file('Changes will not be reflected until Kodi is restarted.', icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
         directory.add_file('Click here to restart Kodi.', {'mode': 'forceclose'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
         directory.add_file('More categories coming soon :)', icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
-        directory.add_separator(middle='CATEGORIES')
         # directory.add_dir('Troubleshooting', {'mode': 'advanced_settings', 'action': 'show_section', 'tags': 'loglevel|jsonrpc'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
         # directory.add_dir('Playback', {'mode': 'advanced_settings', 'action': 'show_section', 'tags': 'skiploopfilter|video|audio|edl|pvr|epg|forcedswaptime'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
         # directory.add_dir('Video Library', {'mode': 'advanced_settings', 'action': 'show_section', 'tags': 'videoextensions|discstubextensions|languagecodes|moviestacking|folderstacking|cleandatetime|cleanstrings|tvshowmatching|tvmultipartmatching'}, icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
@@ -189,10 +186,8 @@ class AdvancedMenu:
 
         if len(self.tags) == 0:
             directory.add_file('No settings for this category exist in your current advancedsettings.xml file.', icon=CONFIG.ICONMAINT, themeit=CONFIG.THEME3)
-            directory.add_separator()
             
         for category in self.tags:
-            directory.add_separator(category.upper())
 
             for tag in self.tags[category]:
                 value = self.tags[category][tag]

@@ -40,23 +40,15 @@ def get_cache_size():
     PROFILEADDONDATA = os.path.join(CONFIG.PROFILE, 'addon_data')
 
     dbfiles = [
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'cache.meta.5.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'cache.providers.13.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'cache.meta.5.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'cache.providers.13.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'cache.meta.5.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'cache.providers.13.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'cache.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'meta.5.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'providers.13.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'cache.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'meta.5.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'providers.13.db')),
         (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'cache.meta.5.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'cache.providers.13.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'cache.meta.5.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'cache.providers.13.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.gaia', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.gaia', 'meta.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'metadata.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'providers.db')),
         (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.seren', 'cache.db')),
         (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.seren', 'torrentScrape.db')),
         (os.path.join(CONFIG.ADDON_DATA, 'script.module.simplecache', 'simplecache.db'))]
@@ -103,32 +95,21 @@ def get_cache_size():
         if CONFIG.INCLUDEALL == 'true':
             files = dbfiles
         else:
-            if CONFIG.INCLUDEEXODUSREDUX == 'true':
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'meta.5.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'providers.13.db'))
+            if CONFIG.INCLUDEPATRIOT == 'true':
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'cache.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'meta.5.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'providers.13.db'))
+            if CONFIG.INCLUDETHEOATH == 'true':
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'cache.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'meta.5.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'providers.13.db'))
             if CONFIG.INCLUDEVENOM == 'true':
                 files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'meta.5.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'providers.13.db'))
-            if CONFIG.INCLUDENUMBERS == 'true':
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'meta.5.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'providers.13.db'))
-            if CONFIG.INCLUDESCRUBS == 'true':
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'meta.5.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'providers.13.db'))
-            if CONFIG.INCLUDEGAIA == 'true':
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.gaia', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.gaia', 'meta.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'metadata.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'providers.db'))
             if CONFIG.INCLUDESEREN == 'true':
                 files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.seren', 'cache.db'))
                 files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.seren', 'torrentScrape.db'))
-            if CONFIG.INCLUDETHECREW == 'true':
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'meta.5.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'providers.13.db'))
         if len(files) > 0:
             for item in files:
                 if not os.path.exists(item):
@@ -250,23 +231,15 @@ def clear_function_cache(over=False):
 def clear_cache(over=None):
     PROFILEADDONDATA = os.path.join(CONFIG.PROFILE, 'addon_data')
     dbfiles = [
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.gaia', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.gaia', 'meta.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'meta.5.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'cache.providers.13.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'meta.5.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'cache.providers.13.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'cache.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'meta.5.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'providers.13.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'cache.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'meta.5.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'providers.13.db')),
         (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'meta.5.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'cache.providers.13.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'meta.5.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'cache.providers.13.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'cache.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'meta.5.db')),
-        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'cache.providers.13.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'metadata.db')),
+        (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'providers.db')),
         (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.seren', 'cache.db')),
         (os.path.join(CONFIG.ADDON_DATA, 'plugin.video.seren', 'torrentScrape.db')),
         (os.path.join(CONFIG.ADDON_DATA, 'script.module.simplecache', 'simplecache.db'))]
@@ -336,29 +309,18 @@ def clear_cache(over=None):
         if CONFIG.INCLUDEALL == 'true':
             files = dbfiles
         else:
-            if CONFIG.INCLUDEEXODUSREDUX == 'true':
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'meta.5.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.exodusredux', 'providers.13.db'))
+            if CONFIG.INCLUDEPATRIOT == 'true':
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'cache.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'meta.5.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.patriot', 'providers.13.db'))
+            if CONFIG.INCLUDETHEOATH == 'true':
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'cache.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'meta.5.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.theoath', 'providers.13.db'))
             if CONFIG.INCLUDEVENOM == 'true':
                 files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'meta.5.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'providers.13.db'))
-            if CONFIG.INCLUDENUMBERS == 'true':
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'meta.5.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.numbersbynumbers', 'providers.13.db'))
-            if CONFIG.INCLUDESCRUBS == 'true':
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'meta.5.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.scrubsv2', 'providers.13.db'))
-            if CONFIG.INCLUDETHECREW == 'true':
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'meta.5.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.thecrew', 'providers.13.db'))
-            if CONFIG.INCLUDEGAIA == 'true':
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.gaia', 'cache.db'))
-                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.gaia', 'meta.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'metadata.db'))
+                files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.venom', 'providers.db'))
             if CONFIG.INCLUDESEREN == 'true':
                 files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.seren', 'cache.db'))
                 files.append(os.path.join(CONFIG.ADDON_DATA, 'plugin.video.seren', 'torrentScrape.db'))
@@ -485,8 +447,8 @@ def force_text():
 
 
 def toggle_cache(state):
-    cachelist = ['includevideo', 'includeall', 'includeexodusredux', 'includegaia', 'includenumbers', 'includescrubs', 'includeseren', 'includethecrew', 'includevenom']
-    titlelist = ['Include Video Addons', 'Include All Addons', 'Include Exodus Redux', 'Include Gaia', 'Include NuMb3r5', 'Include Scrubs v2', 'Include Seren', 'Include THE CREW', 'Include Venom']
+    cachelist = ['includevideo', 'includeall', 'includepatriot', 'includetheoath', 'includevenom', 'includeseren']
+    titlelist = ['Include Video Addons', 'Include All Addons', 'Include Patriot', 'Include The Oath', 'Include Venom', 'Include Seren']
     if state in ['true', 'false']:
         for item in cachelist:
             CONFIG.set_setting(item, state)

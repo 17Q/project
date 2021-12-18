@@ -13,7 +13,7 @@ ART = os.path.join(PATH, 'resources', 'media')
 #########################################################
 #        User Edit Variables                            #
 #########################################################
-ADDONTITLE = '[COLOR limegreen][B]17Q[/B][/COLOR]Wizard'
+ADDONTITLE = '[COLOR limegreen][B]17Q[/B][/COLOR] Wizard for Matrix'
 BUILDERNAME = '17Q'
 EXCLUDES = [ADDON_ID, 'repository.17q']
 # Text File with build info in it. Please read https://github.com/a4k-openproject/plugin.program.openwizard/wiki/Installing-Builds
@@ -53,29 +53,29 @@ ICONREAL = os.path.join(ART, 'keepdebrid.png')
 ICONLOGIN = os.path.join(ART, 'keeplogin.png')
 ICONCONTACT = os.path.join(ART, 'information.png')
 ICONSETTINGS = os.path.join(ART, 'settings.png')
-# Hide the section separators 'Yes' or 'No'
-HIDESPACERS = 'No'
-# Character used in separator
-SPACER = '='
 
 # You can edit these however you want, just make sure that you have a %s in each of the
 # THEME's so it grabs the text from the menu item
-COLOR1 = 'limegreen'
-COLOR2 = 'white'
+COLOR1 = 'white'
+COLOR2 = 'limegreen'
+
 # Primary menu items   / {0} is the menu item and is required
-THEME1 = u'[COLOR {color1}][I]([COLOR {color1}][B]Open[/B][/COLOR][COLOR {color2}]Wizard[COLOR {color1}])[/I][/COLOR] [COLOR {color2}]{{}}[/COLOR]'.format(color1=COLOR1, color2=COLOR2)
+# THEME1 = u'[COLOR {color1}][I]([COLOR {color1}][B]Open[/B][/COLOR][COLOR {color2}]Wizard[COLOR {color1}])[/I][/COLOR] [COLOR {color2}]{{}}[/COLOR]'.format(color1=COLOR1, color2=COLOR2)
+THEME1 = u'[COLOR {color1}]{{}}[/COLOR]'.format(color1=COLOR1)
+
 # Build Names          / {0} is the menu item and is required
-THEME2 = u'[COLOR {color1}]{{}}[/COLOR]'.format(color1=COLOR1)
+THEME2 = u'[COLOR {color2}]{{}}[/COLOR]'.format(color2=COLOR2)
 # Alternate items      / {0} is the menu item and is required
 THEME3 = u'[COLOR {color1}]{{}}[/COLOR]'.format(color1=COLOR1)
 # Current Build Header / {0} is the menu item and is required
-THEME4 = u'[COLOR {color1}]Current Build:[/COLOR] [COLOR {color2}]{{}}[/COLOR]'.format(color1=COLOR1, color2=COLOR2)
+THEME4 = u'[COLOR {color2}]Current Build:[/COLOR] [COLOR {color1}]{{}}[/COLOR]'.format(color2=COLOR2, color1=COLOR1)
 # Current Theme Header / {0} is the menu item and is required
 THEME5 = u'[COLOR {color1}]Current Theme:[/COLOR] [COLOR {color2}]{{}}[/COLOR]'.format(color1=COLOR1, color2=COLOR2)
 
+
 # Message for Contact Page
 # Enable 'Contact' menu item 'Yes' hide or 'No' dont hide
-HIDECONTACT = 'No'
+HIDECONTACT = 'Yes'
 # You can add \n to do line breaks
 CONTACT = 'Thank you for choosing 17Q Wizard.\n\nContact us on Github at https://github.com/17q'
 # Images used for the contact window.  http:// for default icon and fanart
@@ -114,7 +114,7 @@ NOTIFICATION = 'https://raw.githubusercontent.com/17q/project/master/builds/noti
 HEADERTYPE = 'Text'
 # Font size of header
 FONTHEADER = 'Font14'
-HEADERMESSAGE = '[COLOR limegreen][B]17Q[/B][/COLOR]Wizard'
+HEADERMESSAGE = '[COLOR limegreen][B]17Q[/B][/COLOR] Wizard for Matrix'
 # url to image if using Image 424x180
 HEADERIMAGE = 'http://'
 # Font for Notification Window

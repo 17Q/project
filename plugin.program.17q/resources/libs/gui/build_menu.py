@@ -86,7 +86,6 @@ class BuildMenu:
             directory.add_file('Kodi Version: {0}'.format(CONFIG.KODIV), icon=CONFIG.ICONBUILDS,
                                themeit=CONFIG.THEME3)
             directory.add_dir('Save Data Menu', {'mode': 'savedata'}, icon=CONFIG.ICONSAVE, themeit=CONFIG.THEME3)
-            directory.add_separator()
             directory.add_file('URL for txt file not valid', icon=CONFIG.ICONBUILDS, themeit=CONFIG.THEME3)
             directory.add_file('{0}'.format(CONFIG.BUILDFILE), icon=CONFIG.ICONBUILDS, themeit=CONFIG.THEME3)
             return
@@ -107,7 +106,6 @@ class BuildMenu:
 
         directory.add_file('Kodi Version: {0}'.format(CONFIG.KODIV), icon=CONFIG.ICONBUILDS, themeit=CONFIG.THEME3)
         directory.add_dir('Save Data Menu', {'mode': 'savedata'}, icon=CONFIG.ICONSAVE, themeit=CONFIG.THEME3)
-        directory.add_separator()
 
         if len(match) >= 1:
             if CONFIG.SEPARATE == 'true':
@@ -166,7 +164,6 @@ class BuildMenu:
                 build = '{0} [COLOR red][CURRENT v{1}][/COLOR]'.format(build, CONFIG.BUILDVERSION)
                 
             directory.add_file(build, description=description, fanart=fanart, icon=icon, themeit=CONFIG.THEME4)
-            directory.add_separator()
             directory.add_dir('Save Data Menu', {'mode': 'savedata'}, icon=CONFIG.ICONSAVE, themeit=CONFIG.THEME3)
             directory.add_file('Build Information', {'mode': 'buildinfo', 'name': name}, description=description, fanart=fanart,
                                icon=icon, themeit=CONFIG.THEME3)
@@ -180,7 +177,6 @@ class BuildMenu:
                     '[I]Build designed for Kodi v{0} (installed: v{1})[/I]'.format(str(kodi), str(CONFIG.KODIV)),
                     fanart=fanart, icon=icon, themeit=CONFIG.THEME3)
                     
-            directory.add_separator('INSTALL')
             directory.add_file('Install', {'mode': 'install', 'action': 'build', 'name': name}, description=description, fanart=fanart,
                                icon=icon, themeit=CONFIG.THEME1)
                                
@@ -189,7 +185,6 @@ class BuildMenu:
                                    icon=icon, themeit=CONFIG.THEME1)
                                    
             if themecheck:
-                directory.add_separator('THEMES', fanart=fanart, icon=icon)
 
                 response = tools.open_url(themefile)
                 theme = response.text
