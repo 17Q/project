@@ -49,6 +49,8 @@ class navigator:
 
 
     def root(self):
+        api_keys.get_api()
+        
         if self.getMenuEnabled('navi.movies') == True:
             self.addDirectoryItem(32001, 'movieNavigator', 'movies.png', 'DefaultMovies.png')
 

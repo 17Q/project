@@ -117,7 +117,9 @@ deleteDir = xbmcvfs.rmdir
 
 listDir = xbmcvfs.listdir
 
-transPath = xbmc.translatePath if getKodiVersion() < 19 else xbmcvfs.translatePath
+#transPath = xbmc.translatePath if getKodiVersion() < 19 else xbmcvfs.translatePath
+
+transPath = xbmcvfs.translatePath if getKodiVersion() < 19 else xbmcvfs.translatePath
 
 skinPath = transPath('special://skin/')
 

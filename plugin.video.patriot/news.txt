@@ -1,5 +1,9 @@
 [B]Updates[/B]
 
+[B]December 17, 2021[/B]
+[B]Version 1.0.4[/B]
+- Update code
+
 [B]December 13, 2021[/B]
 [B]Version 1.0.3[/B]
 - Code cleanup
