@@ -22,6 +22,8 @@ from __future__ import absolute_import, division, print_function
 
 import re, sys, gzip, time, random, base64
 
+import requests
+
 import simplejson as json
 
 from resources.lib.modules import cache, control, dom_parser, log_utils
@@ -690,3 +692,42 @@ def _get_keyboard(default="", heading="", hidden=False):
 
 def removeNonAscii(s):
     return "".join(i for i in s if ord(i) < 128)
+
+
+def scrapePage(url, referer=None, headers=None, post=None, cookie=None):
+    try:
+        if not url:
+            return
+        url =  "https:" + url if url.startswith('//') else url
+        with requests.Session() as session:
+            if headers:
+                session.headers.update(headers)
+            if (referer and not 'Referer' in session.headers):
+                session.headers.update({'Referer': referer})
+            else:
+                elements = urlparse(url)
+                base = '%s://%s' % (elements.scheme, (elements.netloc or elements.path))
+                session.headers.update({'Referer': base})
+            if (cookie and not 'Cookie' in session.headers): # not tested yet, just placed as a idea reminder.
+                session.headers.update({'Cookie': cookie})
+            if not 'User-Agent' in session.headers:
+                session.headers.update({'User-Agent': UserAgent})
+            if post:
+                page = session.post(url, data=post, timeout=10)
+            else:
+                page = session.get(url, timeout=10)
+            page.encoding = 'utf-8'
+            page.raise_for_status()
+        return page
+    except Exception:
+        #log_utils.log('scrapePage', 1)
+        return
+
+
+def url_ok(url): #  Old Code Saved.
+    r = scrapePage(url)
+    if r.status_code == 200 or r.status_code == 301:
+        return True
+    else:
+        return False
+

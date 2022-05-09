@@ -1,5 +1,10 @@
 [B]Updates[/B]
 
+[B]May 9, 2022[/B]
+[B]Version 1.0.6[/B]
+- Add Channels
+- Edit Movie Boxsets and Trilogies
+
 [B]December 17, 2021[/B]
 [B]Version 1.0.5[/B]
 - Revert control code

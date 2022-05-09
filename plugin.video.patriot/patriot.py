@@ -194,6 +194,22 @@ elif action == 'viewLog':
     from resources.lib.modules import log_utils
     log_utils.view_log()
 
+elif action == 'channelsNavigator':
+    from resources.lib.indexers import channels
+    channels.channels().get()
+
+elif action == 'channelsMenu':
+    from resources.lib.indexers import channels
+    channels.channels().get()
+
+elif action == 'channelsCategory':
+    from resources.lib.indexers import channels
+    channels.channels().scrapeCategory(url)
+
+elif action == 'channelsChannel':
+    from resources.lib.indexers import channels
+    channels.channels().scrapeChannel(url)
+
 elif action == 'movies':
     from resources.lib.indexers import movies
     movies.movies().get(url)

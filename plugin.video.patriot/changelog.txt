@@ -1,4 +1,8 @@
 
+[B]Version 1.0.6[/B]
+- Add Channels
+- Edit Movie Boxsets and Trilogies
+
 [B]Version 1.0.5[/B]
 - Revert control code
 

@@ -57,6 +57,9 @@ class navigator:
         if self.getMenuEnabled('navi.tvShows') == True:
             self.addDirectoryItem(32002, 'tvNavigator', 'tvshows.png', 'DefaultTVShows.png')
 
+        if self.getMenuEnabled('navi.channels') == True:
+            self.addDirectoryItem(32007, 'channelsNavigator', 'livetv.png', 'DefaultMovies.png')
+
         if self.getMenuEnabled('navi.movieWidget') == True:
             self.addDirectoryItem('My Movies (Trakt)', 'mymovieNavigator', 'mymovies.png', 'DefaultVideoPlaylists.png')
 #         if not control.setting('lists.widget') == '0':
