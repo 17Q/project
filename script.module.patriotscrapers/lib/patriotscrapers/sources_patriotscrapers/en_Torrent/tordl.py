@@ -9,6 +9,7 @@ import re
 from patriotscrapers import parse_qs, urljoin, urlencode, quote_plus
 from patriotscrapers.modules import debrid
 from patriotscrapers.modules import client
+from patriotscrapers.modules import cleantitle
 from patriotscrapers.modules import source_utils
 from patriotscrapers.modules import log_utils
 #from patriotscrapers import cfScraper
@@ -91,6 +92,7 @@ class source:
                     links = client.replaceHTMLCodes(links).lstrip('/')
                     hash = links.split('/')[0]
                     name = links.split('/')[1].replace('-', '.').replace('+', '.')
+                    name = cleantitle.get_title(name)
 
                     if not source_utils.is_match(name, title, hdlr, self.aliases):
                         continue

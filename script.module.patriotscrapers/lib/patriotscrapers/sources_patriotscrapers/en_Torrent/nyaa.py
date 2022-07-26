@@ -6,7 +6,7 @@
 
 import re
 
-from patriotscrapers import parse_qs, urljoin, urlencode, quote_plus, unquote_plus, unquote
+from patriotscrapers import parse_qs, urljoin, urlencode, quote_plus, unquote_plus
 from patriotscrapers.modules import cleantitle
 from patriotscrapers.modules import client
 from patriotscrapers.modules import debrid
@@ -110,7 +110,7 @@ class source:
                         for link in links:
                             try:
                                 url = unquote_plus(link[0]).replace('&amp;', '&').replace(' ', '.').split('&tr')[0]
-                                name = unquote(url.split('&dn=')[1])
+                                name = cleantitle.get_title(url.split('&dn=')[1])
 
                                 if not source_utils.is_match(name, title, aliases=self.aliases):
                                     continue

@@ -183,6 +183,7 @@ class source:
             else:
                 name_size = client.replaceHTMLCodes(name)
                 name = re.sub(r'\[.*?\]', '', name_size)
+            name = cleantitle.get_title(name)
 
 
             links = zip(client.parseDOM(r, 'h4', attrs={'class': 'links'}), client.parseDOM(r, 'pre', attrs={'class': 'links'}))
@@ -214,7 +215,7 @@ class source:
                     continue
                 self.sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
         except:
-            log_utils.log('RMZ - Exception', 1)
+            #log_utils.log('RMZ - Exception', 1)
             pass
 
     def resolve(self, url):

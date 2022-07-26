@@ -1,5 +1,4 @@
 """
-
    Based on Parsedom for XBMC plugins
    Copyright (C) 2010-2011 Tobias Ussing And Henrik Mosgaard Jensen
 
@@ -16,7 +15,6 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 
 import re
 import six

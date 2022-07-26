@@ -1,5 +1,9 @@
 [B]Updates[/B]
 
+[B]July 26, 2022[/B]
+[B]Version 1.0.7[/B]
+- Setting, Language edits
+
 [B]May 9, 2022[/B]
 [B]Version 1.0.6[/B]
 - Add Channels

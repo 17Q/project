@@ -11,9 +11,9 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.tvsearch = 'https://torrentapi.org/pubapi_v2.php?app_id=Oath&token={0}&mode=search&search_string={1}&format=json_extended'
-        self.msearch = 'https://torrentapi.org/pubapi_v2.php?app_id=Oath&token={0}&mode=search&search_imdb={1}&format=json_extended'
-        self.token = 'https://torrentapi.org/pubapi_v2.php?app_id=Oath&get_token=get_token'
+        self.tvsearch = 'https://torrentapi.org/pubapi_v2.php?app_id=Patriot&token={0}&mode=search&search_string={1}&format=json_extended'
+        self.msearch = 'https://torrentapi.org/pubapi_v2.php?app_id=Patriot&token={0}&mode=search&search_imdb={1}&format=json_extended'
+        self.token = 'https://torrentapi.org/pubapi_v2.php?app_id=Patriot&get_token=get_token'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
@@ -70,14 +70,14 @@ class source:
                     if not file['episode_info']['imdb'] == imdb:
                         continue
 
-                    name = file['title']
+                    name = cleantitle.get_title(file['title'])
 
                     url = file['download']
                     url = url.split('&tr')[0]
                     quality, info = source_utils.get_release_quality(name, url)
                     try:
                         dsize = float(file['size']) / 1073741824
-                        isize = '%.2f GB' % dsize
+                        isize = '%.2f GB' % round(dsize, 2)
                     except:
                         dsize, isize = 0.0, ''
                     info.insert(0, isize)

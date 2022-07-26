@@ -320,7 +320,7 @@ msgid "[I]Refresh[/I]"
 msgstr ""
 
 msgctxt "#32073"
-msgid "[B]TRAKT[/B] : Authorise"
+msgid "[B]TRAKT[/B] : Authorize"
 msgstr ""
 
 msgctxt "#32074"
@@ -732,7 +732,7 @@ msgid "ID"
 msgstr ""
 
 msgctxt "#32306"
-msgid "[B]Authorise[/B]"
+msgid "[B]Authorize[/B]"
 msgstr ""
 
 msgctxt "#32307"

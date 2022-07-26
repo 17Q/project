@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-'''
-    Patriot Add-on
+"""
+    Exodus Add-on
+    ///Updated for Patriot///
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 
 import os
@@ -240,12 +241,18 @@ def get_plugin_url(queries):
 
 def artPath():
     theme = appearance()
-    return os.path.join(xbmcaddon.Addon('plugin.video.patriot').getAddonInfo('path'), 'resources', 'artwork', theme)
+    if theme in ['-', '']: return
+    elif condVisibility('System.HasAddon(script.patriot.artwork)'):
+        return os.path.join(xbmcaddon.Addon('script.patriot.artwork').getAddonInfo('path'), 'resources', 'media', theme)
 
 
 def appearance():
-    appearance = setting('appearance.1').lower()
+    appearance = setting('appearance.1').lower() if condVisibility('System.HasAddon(script.patriot.artwork)') else setting('appearance.alt').lower()
     return appearance
+
+
+def artwork():
+    execute('RunPlugin(plugin://script.patriot.artwork)')
 
 
 def infoDialog(message, heading=addonInfo('name'), icon='', time=3000, sound=False):
@@ -287,14 +294,6 @@ def textViewer(file=None, text='', heading=addonInfo('name'), monofont=True):
 # def metaFile():
     # if condVisibility('System.HasAddon(script.patriot.metadata)'):
         # return os.path.join(xbmcaddon.Addon('script.patriot.metadata').getAddonInfo('path'), 'resources', 'data', 'meta.db')
-
-
-def metadataClean(metadata): # Filter out non-existing/custom keys. Otherise there are tons of errors in Kodi 18 log.
-    if metadata == None: return metadata
-    allowed = ['genre', 'country', 'year', 'episode', 'season', 'sortepisode', 'sortseason', 'episodeguide', 'showlink', 'top250', 'setid', 'tracknumber', 'rating', 'userrating', 'watched', 'playcount', 'overlay',
-               'cast', 'castandrole', 'director', 'mpaa', 'plot', 'plotoutline', 'title', 'originaltitle', 'sorttitle', 'duration', 'studio', 'tagline', 'writer', 'tvshowtitle', 'premiered', 'status', 'set', 'setoverview',
-               'tag', 'imdbnumber', 'code', 'aired', 'credits', 'lastplayed', 'album', 'artist', 'votes', 'path', 'trailer', 'dateadded', 'mediatype', 'dbid', 'totalteasons', 'totalepisodes']
-    return {k: v for k, v in six.iteritems(metadata) if k in allowed}
 
 
 def apiLanguage(ret_name=None):
@@ -402,6 +401,14 @@ def idle():
 
 def queueItem():
     return execute('Action(Queue)')
+
+
+def metadataClean(metadata): # Filter out non-existing/custom keys. Otherise there are tons of errors in Kodi 18 log.
+    if metadata == None: return metadata
+    allowed = ['genre', 'country', 'year', 'episode', 'season', 'sortepisode', 'sortseason', 'episodeguide', 'showlink', 'top250', 'setid', 'tracknumber', 'rating', 'userrating', 'watched', 'playcount', 'overlay',
+               'cast', 'castandrole', 'director', 'mpaa', 'plot', 'plotoutline', 'title', 'originaltitle', 'sorttitle', 'duration', 'studio', 'tagline', 'writer', 'tvshowtitle', 'premiered', 'status', 'set', 'setoverview',
+               'tag', 'imdbnumber', 'code', 'aired', 'credits', 'lastplayed', 'album', 'artist', 'votes', 'path', 'trailer', 'dateadded', 'mediatype', 'dbid', 'totalteasons', 'totalepisodes']
+    return {k: v for k, v in six.iteritems(metadata) if k in allowed}
 
 
 def installAddon(addon_id):

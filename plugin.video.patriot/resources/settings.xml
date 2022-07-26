@@ -99,7 +99,7 @@
     </category>
 
     <category label="Playback">
-        <setting id="hosts.mode" type="enum" label="32331" lvalues="32332|32333|32334" default="2" />
+        <setting id="hosts.mode" type="enum" label="32331" lvalues="32332|32333|32334" default="1" />
         <setting id="progress.dialog" type="enum" label="32335" lvalues="32336|32337" default="0" />
         <setting id="scrapers.timeout.1" type="slider" label="32312" default="10" range="10,60" option="int" />
         <setting id="preemptive.termination" type="bool" label="32618" default="false" />

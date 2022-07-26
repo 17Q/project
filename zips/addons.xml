@@ -233,7 +233,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.patriot" name=" Patriot" provider-name="17Q" version="1.0.6">
+<addon id="plugin.video.patriot" name=" Patriot" provider-name="17Q" version="1.0.7">
     <requires>
         <import addon="script.module.patriotscrapers" />
         <import addon="script.module.resolveurl" />
@@ -401,7 +401,7 @@
 	</extension>
 </addon>
 
-<addon id="script.module.patriotscrapers" name="PatriotScrapers Module" version="1.0.0" provider-name="17Q">
+<addon id="script.module.patriotscrapers" name="PatriotScrapers Module" version="1.0.1" provider-name="17Q">
     <requires>
         <import addon="script.module.beautifulsoup4" />
         <import addon="script.module.requests" />

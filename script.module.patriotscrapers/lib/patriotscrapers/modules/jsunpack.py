@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
     ResolveUrl Kodi Addon
     Copyright (C) 2013 Bstrdsmkr
@@ -33,7 +32,6 @@
 
     Unpacker for Dean Edward's p.a.c.k.e.r
 """
-
 
 import re
 import binascii
