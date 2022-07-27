@@ -76,10 +76,22 @@ class OrionItem:
 	AccessRealdebridTorrent = 'realdebridtorrent'
 	AccessRealdebridUsenet = 'realdebridusenet'
 	AccessRealdebridHoster = 'realdebridhoster'
+	AccessDebridlink = 'debridlink'
+	AccessDebridlinkTorrent = 'debridlinktorrent'
+	AccessDebridlinkUsenet = 'debridlinkusenet'
+	AccessDebridlinkHoster = 'debridlinkhoster'
+	AccessAlldebrid = 'alldebrid'
+	AccessAlldebridTorrent = 'alldebridtorrent'
+	AccessAlldebridUsenet = 'alldebridusenet'
+	AccessAlldebridHoster = 'alldebridhoster'
+	Accesses = [AccessPremiumize, AccessOffcloud, AccessRealdebrid, AccessDebridlink, AccessAlldebrid]
 
 	LookupPremiumize = 'premiumize'
 	LookupOffcloud = 'offcloud'
 	LookupRealdebrid = 'realdebrid'
+	LookupDebridlink = 'debridlink'
+	LookupAlldebrid = 'alldebrid'
+	Lookups = [LookupPremiumize, LookupOffcloud, LookupRealdebrid, LookupDebridlink, LookupAlldebrid]
 
 	FilterNone = None
 	FilterSettings = -1
@@ -321,11 +333,11 @@ class OrionItem:
 			app = OrionApp.instance().id()
 			if not OrionSettings.getFiltersEnabled(app): app = None
 
-			def pick(app, function):
+			def pick(app, function, include = True, exclude = True):
 				include = getattr(OrionSettings, function)(app, True, False)
-				if include == None: include = []
+				if include is None: include = []
 				exclude = getattr(OrionSettings, function)(app, False, True)
-				if exclude == None: exclude = []
+				if exclude is None: exclude = []
 				if len(exclude) > len(include): return include
 				else: return [('-' + value) for value in exclude]
 
@@ -396,29 +408,25 @@ class OrionItem:
 				if accessSettings in (1, 3, 5): access.append(OrionItem.AccessDirect)
 				if accessSettings in (4, 5): access.append(OrionItem.AccessIndirect)
 				if accessSettings in (1, 2, 4, 5):
-					value = OrionSettings.getFiltersInteger('filters.access.premiumize', app)
-					if value == 1: access.append(OrionItem.AccessPremiumize)
-					if value in (2, 3, 5): access.append(OrionItem.AccessPremiumizeTorrent)
-					if value in (2, 4, 6): access.append(OrionItem.AccessPremiumizeUsenet)
-					if value in (3, 4, 7): access.append(OrionItem.AccessPremiumizeHoster)
-				if accessSettings in (1, 2, 4, 5):
-					value = OrionSettings.getFiltersInteger('filters.access.offcloud', app)
-					if value == 1: access.append(OrionItem.AccessOffcloud)
-					if value in (2, 3, 5): access.append(OrionItem.AccessOffcloudTorrent)
-					if value in (2, 4, 6): access.append(OrionItem.AccessOffcloudUsenet)
-					if value in (3, 4, 7): access.append(OrionItem.AccessOffcloudHoster)
-				if accessSettings in (1, 2, 4, 5):
-					value = OrionSettings.getFiltersInteger('filters.access.realdebrid', app)
-					if value == 1: access.append(OrionItem.AccessRealdebrid)
-					if value in (2, 3, 5): access.append(OrionItem.AccessRealdebridTorrent)
-					if value in (2, 4, 6): access.append(OrionItem.AccessRealdebridUsenet)
-					if value in (3, 4, 7): access.append(OrionItem.AccessRealdebridHoster)
-			if lookup is OrionItem.FilterSettings:
-				lookup = []
-				if OrionSettings.getFiltersBoolean('filters.lookup', app):
-					if OrionSettings.getFiltersBoolean('filters.lookup.premiumize', app): lookup.append(OrionItem.LookupPremiumize)
-					if OrionSettings.getFiltersBoolean('filters.lookup.offcloud', app): lookup.append(OrionItem.LookupOffcloud)
-					if OrionSettings.getFiltersBoolean('filters.lookup.realdebrid', app): lookup.append(OrionItem.LookupRealdebrid)
+					accessTorrent = OrionSettings.getFiltersAccessTorrent(type = app, include = True)
+					if OrionItem.AccessPremiumize in accessTorrent: access.append(OrionItem.AccessPremiumizeTorrent)
+					if OrionItem.AccessOffcloud in accessTorrent: access.append(OrionItem.AccessOffcloudTorrent)
+					if OrionItem.AccessRealdebrid in accessTorrent: access.append(OrionItem.AccessRealdebridTorrent)
+					if OrionItem.AccessDebridlink in accessTorrent: access.append(OrionItem.AccessDebridlinkTorrent)
+					if OrionItem.AccessAlldebrid in accessTorrent: access.append(OrionItem.AccessAlldebridTorrent)
+					accessUsenet = OrionSettings.getFiltersAccessUsenet(type = app, include = True)
+					if OrionItem.AccessPremiumize in accessUsenet: access.append(OrionItem.AccessPremiumizeUsenet)
+					if OrionItem.AccessOffcloud in accessUsenet: access.append(OrionItem.AccessOffcloudUsenet)
+					if OrionItem.AccessRealdebrid in accessUsenet: access.append(OrionItem.AccessRealdebridUsenet)
+					if OrionItem.AccessDebridlink in accessUsenet: access.append(OrionItem.AccessDebridlinkUsenet)
+					if OrionItem.AccessAlldebrid in accessUsenet: access.append(OrionItem.AccessAlldebridUsenet)
+					accessHoster = OrionSettings.getFiltersAccessHoster(type = app, include = True)
+					if OrionItem.AccessPremiumize in accessHoster: access.append(OrionItem.AccessPremiumizeHoster)
+					if OrionItem.AccessOffcloud in accessHoster: access.append(OrionItem.AccessOffcloudHoster)
+					if OrionItem.AccessRealdebrid in accessHoster: access.append(OrionItem.AccessRealdebridHoster)
+					if OrionItem.AccessDebridlink in accessHoster: access.append(OrionItem.AccessDebridlinkHoster)
+					if OrionItem.AccessAlldebrid in accessHoster: access.append(OrionItem.AccessAlldebridHoster)
+			if lookup is OrionItem.FilterSettings: lookup = OrionSettings.getFiltersLookup(type = app, include = True)
 			if filePack is OrionItem.FilterSettings: filePack = OrionItem.ChoiceIds[OrionSettings.getFiltersInteger('filters.file.pack', app)]
 			if fileName is OrionItem.FilterSettings: fileName = OrionItem.ChoiceIds[OrionSettings.getFiltersInteger('filters.file.name', app)]
 			if fileSize is OrionItem.FilterSettings: fileSize = [OrionSettings.getFiltersInteger('filters.file.size.minimum', app), OrionSettings.getFiltersInteger('filters.file.size.maximum', app)] if OrionSettings.getFiltersBoolean('filters.file.size', app) else OrionItem.FilterNone

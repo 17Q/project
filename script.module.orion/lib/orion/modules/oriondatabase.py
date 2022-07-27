@@ -67,6 +67,7 @@ class OrionDatabase(object):
 			else:
 				if not path.endswith(OrionDatabase.Extension): path += OrionDatabase.Extension
 				self.mPath = path
+
 			if connect: self._connect()
 		except:
 			OrionTools.error()
@@ -78,10 +79,8 @@ class OrionDatabase(object):
 	def instance(self, name, default = None, path = None, create = None):
 		self.instancesInitialize()
 
-		id = name
-		if default: id += '_' + default
-		if path: id += '_' + path
-		id = OrionTools.hash(id)
+		id = name + '_' + (default if default else '') + '_' + (path if path else '')
+		id = OrionTools.hashInternal(id)
 
 		if not id in OrionDatabase.Instances:
 			OrionDatabase.Instances[id] = OrionDatabase(name = name, default = default, path = path)

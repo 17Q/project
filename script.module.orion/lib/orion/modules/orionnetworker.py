@@ -69,6 +69,12 @@ class OrionNetworker:
 	ErrorCodeConnection = 111 # Internet connection problems (111, 'Connection refused').
 	ErrorCodeResolve = -2 # Domain name could not be resolved (-2, 'Name or service not known').
 
+	CertificateProperty = 'OrionCertificate'
+	CertificateMode = None
+	CertificateFull = 1
+	CertificateBasic = 2
+	CertificateDisabled = 3
+
 	##############################################################################
 	# CONSTRUCTOR
 	##############################################################################
@@ -227,17 +233,7 @@ class OrionNetworker:
 					for key, value in OrionTools.iterator(headers):
 						request.add_header(key, value)
 
-				try:
-					self.mResponse = urlopen(request, timeout = timeout)
-				except Exception as error:
-					# SPMC (Python < 2.7.8) does not support TLS. Try to do it wihout SSL/TLS, otherwise bad luck.
-					message = OrionTools.unicodeString(error).lower()
-					if 'ssl' in message or 'cert' in message:
-						if self.mDebug: OrionTools.error()
-						secureContext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-						self.mResponse = urlopen(request, context = secureContext, timeout = timeout)
-					else:
-						raise error
+				self.mResponse = self._request(request = request, timeout = timeout)
 
 			try: self.mHeadersResponse = self.mResponse.info().dict
 			except: pass
@@ -264,3 +260,39 @@ class OrionNetworker:
 			self.mErrorCode = OrionNetworker.ErrorCodeUnknown
 			if self.mDebug: OrionTools.error()
 		return None
+
+	def _request(self, request, timeout):
+		if OrionNetworker.CertificateMode is None:
+			mode = OrionTools.property(id = OrionNetworker.CertificateProperty)
+			if mode: OrionNetworker.CertificateMode = int(mode)
+
+		try:
+			if OrionNetworker.CertificateMode == OrionNetworker.CertificateBasic:
+				# SPMC (Python < 2.7.8) does not support TLS. Try to do it wihout SSL/TLS.
+				context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+				return urlopen(request, timeout = timeout, context = context)
+			elif OrionNetworker.CertificateMode == OrionNetworker.CertificateDisabled:
+				# On Windows, the following error sometimes appears:
+				#	urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1128)
+				# This seems to be an issue with Let's Encrypt root certificate and/or how Windows deals with expired certificates.
+				# The old certificate can manually be deleted and/or replaced by the user, but we do not want them to figure out how to do that.
+				# In the worst case, just make the request without verifying SSL/TLS.
+				context = ssl.create_default_context()
+				context.check_hostname = False
+				context.verify_mode = ssl.CERT_NONE
+				return urlopen(request, timeout = timeout, context = context)
+			else:
+				return urlopen(request, timeout = timeout)
+		except Exception as error:
+			message = OrionTools.unicodeString(error).lower()
+			if 'ssl' in message or 'cert' in message:
+				if OrionNetworker.CertificateMode == OrionNetworker.CertificateDisabled:
+					raise error
+				else:
+					if OrionNetworker.CertificateMode == OrionNetworker.CertificateBasic or 'expire' in message: mode = OrionNetworker.CertificateDisabled
+					else: mode = OrionNetworker.CertificateBasic
+					OrionNetworker.CertificateMode = mode
+					OrionTools.propertySet(id = OrionNetworker.CertificateProperty, value = mode)
+					return self._request(request = request, timeout = timeout)
+			else:
+				raise error

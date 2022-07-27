@@ -498,9 +498,10 @@ class OrionNavigator:
 		disabled = ': ' + OrionInterface.fontColor(32057, OrionInterface.ColorDisabled)
 		values = getattr(OrionSettings, settingsGet)(type)
 		OrionInterface.loaderHide()
-		if values == None or len(values) == 0:
+		if values is None or len(values) == 0:
 			OrionSettings.externalLaunch(type)
 			return
+		choice = None
 		while True:
 			ids = []
 			items = []
@@ -510,7 +511,7 @@ class OrionNavigator:
 			items, ids = zip(*sorted(zip(items, ids))) # Sort alphabetically
 			ids = [None, None, None] + list(ids)
 			items = [OrionInterface.fontBold(32151), OrionInterface.fontBold(32149), OrionInterface.fontBold(32150)] + list(items)
-			choice = OrionInterface.dialogOptions(title = title, items = items)
+			choice = OrionInterface.dialogOptions(title = title, items = items, select = choice)
 			if choice <= 0:
 				break
 			elif choice == 1:
@@ -531,9 +532,10 @@ class OrionNavigator:
 		disabled = ': ' + OrionInterface.fontColor(32057, OrionInterface.ColorDisabled)
 		values = getattr(OrionSettings, settingsGet)(type)
 		OrionInterface.loaderHide()
-		if values == None or len(values) == 0:
+		if values is None or len(values) == 0:
 			OrionSettings.externalLaunch(type)
 			return
+		choice = None
 		while True:
 			ids = []
 			items = []
@@ -543,7 +545,7 @@ class OrionNavigator:
 			items, ids = zip(*sorted(zip(items, ids))) # Sort alphabetically
 			ids = [None, None, None] + list(ids)
 			items = [OrionInterface.fontBold(32151), OrionInterface.fontBold(32149), OrionInterface.fontBold(32150)] + list(items)
-			choice = OrionInterface.dialogOptions(title = title, items = items)
+			choice = OrionInterface.dialogOptions(title = title, items = items, select = choice)
 			if choice <= 0:
 				break
 			elif choice == 1:
@@ -558,17 +560,16 @@ class OrionNavigator:
 		OrionSettings.externalLaunch(type)
 
 	@classmethod
-	def settingsFiltersStreamOrigin(self, type = None):
-		OrionInterface.dialogConfirm(title = 32201, message = 33008)
-		OrionTools.sleep(0.1)
+	def settingsFiltersLookup(self, type = None):
 		OrionInterface.loaderShow()
 		enabled = ': ' + OrionInterface.fontColor(32096, OrionInterface.ColorEnabled)
 		disabled = ': ' + OrionInterface.fontColor(32057, OrionInterface.ColorDisabled)
-		values = OrionSettings.getFiltersStreamOrigin(type)
+		values = OrionSettings.getFiltersLookup(type, default = True)
 		OrionInterface.loaderHide()
-		if values == None or len(values) == 0:
+		if values is None or len(values) == 0:
 			OrionSettings.externalLaunch(type)
 			return
+		choice = None
 		while True:
 			ids = []
 			items = []
@@ -578,7 +579,89 @@ class OrionNavigator:
 			items, ids = zip(*sorted(zip(items, ids))) # Sort alphabetically
 			ids = [None, None, None] + list(ids)
 			items = [OrionInterface.fontBold(32151), OrionInterface.fontBold(32149), OrionInterface.fontBold(32150)] + list(items)
-			choice = OrionInterface.dialogOptions(title = 32201, items = items)
+			choice = OrionInterface.dialogOptions(title = 32311, items = items, select = choice)
+			if choice <= 0:
+				break
+			elif choice == 1:
+				for i in OrionTools.iteratorKeys(values):
+					values[i]['enabled'] = True
+			elif choice == 2:
+				for i in OrionTools.iteratorKeys(values):
+					values[i]['enabled'] = False
+			else:
+				values[ids[choice]]['enabled'] = not values[ids[choice]]['enabled']
+			OrionSettings.setFiltersLookup(values, type)
+		OrionSettings.externalLaunch(type)
+
+	@classmethod
+	def settingsFiltersAccess(self, type = None, stream = None):
+		OrionInterface.loaderShow()
+		enabled = ': ' + OrionInterface.fontColor(32096, OrionInterface.ColorEnabled)
+		disabled = ': ' + OrionInterface.fontColor(32057, OrionInterface.ColorDisabled)
+		values = OrionSettings.getFiltersAccess(stream = stream, type = type, default = True)
+		OrionInterface.loaderHide()
+		if values is None or len(values) == 0:
+			OrionSettings.externalLaunch(type)
+			return
+		choice = None
+		while True:
+			ids = []
+			items = []
+			for key, value in OrionTools.iterator(values):
+				ids.append(key)
+				items.append(value['name'].upper() + (enabled if value['enabled'] else disabled))
+			items, ids = zip(*sorted(zip(items, ids))) # Sort alphabetically
+			ids = [None, None, None] + list(ids)
+			items = [OrionInterface.fontBold(32151), OrionInterface.fontBold(32149), OrionInterface.fontBold(32150)] + list(items)
+			choice = OrionInterface.dialogOptions(title = 32311, items = items, select = choice)
+			if choice <= 0:
+				break
+			elif choice == 1:
+				for i in OrionTools.iteratorKeys(values):
+					values[i]['enabled'] = True
+			elif choice == 2:
+				for i in OrionTools.iteratorKeys(values):
+					values[i]['enabled'] = False
+			else:
+				values[ids[choice]]['enabled'] = not values[ids[choice]]['enabled']
+			OrionSettings.setFiltersAccess(values = values, stream = stream, type = type)
+		OrionSettings.externalLaunch(type)
+
+	@classmethod
+	def settingsFiltersAccessTorrent(self, type = None):
+		return self.settingsFiltersAccess(type = type, stream = OrionStream.TypeTorrent)
+
+	@classmethod
+	def settingsFiltersAccessUsenet(self, type = None):
+		return self.settingsFiltersAccess(type = type, stream = OrionStream.TypeUsenet)
+
+	@classmethod
+	def settingsFiltersAccessHoster(self, type = None):
+		return self.settingsFiltersAccess(type = type, stream = OrionStream.TypeHoster)
+
+	@classmethod
+	def settingsFiltersStreamOrigin(self, type = None):
+		OrionInterface.dialogConfirm(title = 32201, message = 33008)
+		OrionTools.sleep(0.1)
+		OrionInterface.loaderShow()
+		enabled = ': ' + OrionInterface.fontColor(32096, OrionInterface.ColorEnabled)
+		disabled = ': ' + OrionInterface.fontColor(32057, OrionInterface.ColorDisabled)
+		values = OrionSettings.getFiltersStreamOrigin(type)
+		OrionInterface.loaderHide()
+		if values is None or len(values) == 0:
+			OrionSettings.externalLaunch(type)
+			return
+		choice = None
+		while True:
+			ids = []
+			items = []
+			for key, value in OrionTools.iterator(values):
+				ids.append(key)
+				items.append(value['name'].upper() + (enabled if value['enabled'] else disabled))
+			items, ids = zip(*sorted(zip(items, ids))) # Sort alphabetically
+			ids = [None, None, None] + list(ids)
+			items = [OrionInterface.fontBold(32151), OrionInterface.fontBold(32149), OrionInterface.fontBold(32150)] + list(items)
+			choice = OrionInterface.dialogOptions(title = 32201, items = items, select = choice)
 			if choice <= 0:
 				break
 			elif choice == 1:
@@ -602,9 +685,10 @@ class OrionNavigator:
 		disabled = ': ' + OrionInterface.fontColor(32057, OrionInterface.ColorDisabled)
 		values = OrionSettings.getFiltersStreamSource(type)
 		OrionInterface.loaderHide()
-		if values == None or len(values) == 0:
+		if values is None or len(values) == 0:
 			OrionSettings.externalLaunch(type)
 			return
+		choice = None
 		while True:
 			ids = []
 			items = []
@@ -612,9 +696,9 @@ class OrionNavigator:
 				ids.append(key)
 				items.append('[' + types[value['type']] + '] ' + value['name'].upper() + (enabled if value['enabled'] else disabled))
 			items, ids = zip(*sorted(zip(items, ids))) # Sort alphabetically
-			ids = [None, None, None] + list(ids)
-			items = [OrionInterface.fontBold(32151), OrionInterface.fontBold(32149), OrionInterface.fontBold(32150)] + list(items)
-			choice = OrionInterface.dialogOptions(title = 32094, items = items)
+			ids = [None, None, None, None] + list(ids)
+			items = [OrionInterface.fontBold(32151), OrionInterface.fontBold(32149), OrionInterface.fontBold(32150), OrionInterface.fontBold(32326)] + list(items)
+			choice = OrionInterface.dialogOptions(title = 32094, items = items, select = choice)
 			if choice <= 0:
 				break
 			elif choice == 1:
@@ -623,6 +707,19 @@ class OrionNavigator:
 			elif choice == 2:
 				for i in OrionTools.iteratorKeys(values):
 					values[i]['enabled'] = False
+			elif choice == 3:
+				OrionInterface.dialogConfirm(title = 32327, message = 33083)
+				customTypes = [i for i in types.values()]
+				customType = OrionInterface.dialogOptions(title = 32328, items = customTypes)
+				if customType >= 0:
+					customValue = OrionInterface.dialogInput(title = 32327)
+					if customValue:
+						customType = customTypes[customType]
+						for key, value in OrionTools.iterator(types):
+							if customType == value:
+								customType = key
+								break
+						values[customValue.lower()] = {'name' : customValue.upper(), 'type' : customType, 'enabled' : True}
 			else:
 				values[ids[choice]]['enabled'] = not values[ids[choice]]['enabled']
 			OrionSettings.setFiltersStreamSource(values, type)
@@ -637,9 +734,10 @@ class OrionNavigator:
 		disabled = ': ' + OrionInterface.fontColor(32057, OrionInterface.ColorDisabled)
 		values = OrionSettings.getFiltersStreamHoster(type)
 		OrionInterface.loaderHide()
-		if values == None or len(values) == 0:
+		if values is None or len(values) == 0:
 			OrionSettings.externalLaunch(type)
 			return
+		choice = None
 		while True:
 			ids = []
 			items = []
@@ -647,9 +745,9 @@ class OrionNavigator:
 				ids.append(key)
 				items.append(value['name'].upper() + (enabled if value['enabled'] else disabled))
 			items, ids = zip(*sorted(zip(items, ids))) # Sort alphabetically
-			ids = [None, None, None] + list(ids)
-			items = [OrionInterface.fontBold(32151), OrionInterface.fontBold(32149), OrionInterface.fontBold(32150)] + list(items)
-			choice = OrionInterface.dialogOptions(title = 32173, items = items)
+			ids = [None, None, None, None] + list(ids)
+			items = [OrionInterface.fontBold(32151), OrionInterface.fontBold(32149), OrionInterface.fontBold(32150), OrionInterface.fontBold(32326)] + list(items)
+			choice = OrionInterface.dialogOptions(title = 32173, items = items, select = choice)
 			if choice <= 0:
 				break
 			elif choice == 1:
@@ -658,6 +756,11 @@ class OrionNavigator:
 			elif choice == 2:
 				for i in OrionTools.iteratorKeys(values):
 					values[i]['enabled'] = False
+			elif choice == 3:
+				OrionInterface.dialogConfirm(title = 32327, message = 33083)
+				customValue = OrionInterface.dialogInput(title = 32327)
+				if customValue:
+					values[customValue.lower()] = {'name' : customValue.upper(), 'enabled' : True}
 			else:
 				values[ids[choice]]['enabled'] = not values[ids[choice]]['enabled']
 			OrionSettings.setFiltersStreamHoster(values, type)

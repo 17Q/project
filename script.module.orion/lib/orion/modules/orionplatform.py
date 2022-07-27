@@ -85,8 +85,21 @@ class OrionPlatform:
 	@classmethod
 	def label(self):
 		instance = self.instance()
-		system = OrionTools.unicode(instance.mDistributionName) + ' ' + OrionTools.unicode(instance.mVersionShort) + ' (' + OrionTools.unicode(instance.mVersionFull) + ')'
-		return ' | '.join([OrionTools.unicode(instance.mFamilyName), OrionTools.unicode(instance.mSystemName), OrionTools.unicode(instance.mArchitecture), system])
+		system = ''
+		name = OrionTools.unicode(instance.mDistributionName)
+		if name:
+			if system: system += ' '
+			system += name
+		short = OrionTools.unicode(instance.mVersionShort)
+		if short:
+			if system: system += ' '
+			system += short
+		full = OrionTools.unicode(instance.mVersionFull)
+		if full:
+			if system: system += ' '
+			system += '(%s)' % full
+		values = [OrionTools.unicode(instance.mFamilyName), OrionTools.unicode(instance.mSystemName), OrionTools.unicode(instance.mArchitecture), system]
+		return ' | '.join([i for i in values if i])
 
 	##############################################################################
 	# FAMILY

@@ -134,6 +134,18 @@ elif action == 'settingsAccountRefresh':
 elif action == 'settingsFiltersUpdate':
 	OrionSettings.setFiltersUpdate()
 
+elif action == 'settingsFiltersLookup':
+	OrionNavigator.settingsFiltersLookup(type)
+
+elif action == 'settingsFiltersAccessTorrent':
+	OrionNavigator.settingsFiltersAccessTorrent(type)
+
+elif action == 'settingsFiltersAccessUsenet':
+	OrionNavigator.settingsFiltersAccessUsenet(type)
+
+elif action == 'settingsFiltersAccessHoster':
+	OrionNavigator.settingsFiltersAccessHoster(type)
+
 elif action == 'settingsFiltersStreamOrigin':
 	OrionNavigator.settingsFiltersStreamOrigin(type)
 
@@ -209,6 +221,9 @@ elif action == 'integrationTheoath':
 elif action == 'integrationApocalypse720':
 	OrionIntegration.executeApocalypse720()
 
+elif action == 'integrationNoLivesMatter':
+	OrionIntegration.executeNoLivesMatter()
+
 elif action == 'integrationYoda':
 	OrionIntegration.executeYoda()
 
@@ -220,6 +235,15 @@ elif action == 'integrationNymeria':
 
 elif action == 'integrationFen':
 	OrionIntegration.executeFen()
+
+elif action == 'integrationPov':
+	OrionIntegration.executePov()
+
+elif action == 'integrationKingpin':
+	OrionIntegration.executeKingPin()
+
+elif action == 'integrationEzra':
+	OrionIntegration.executeEzra()
 
 elif action == 'integrationVenom':
 	OrionIntegration.executeVenom()
@@ -269,6 +293,9 @@ elif action == 'integrationAsgard':
 elif action == 'integrationTheCrew':
 	OrionIntegration.executeTheCrew()
 
+elif action == 'integrationKodiverse':
+	OrionIntegration.executeKodiVerse()
+
 elif action == 'integrationOpenScrapers':
 	OrionIntegration.executeOpenScrapers()
 
@@ -278,6 +305,12 @@ elif action == 'integrationLambdaScrapers':
 elif action == 'integrationFenomScrapers':
 	OrionIntegration.executeFenomScrapers()
 
+elif action == 'integrationKingpinScrapers':
+	OrionIntegration.executeKingPinScrapers()
+
+elif action == 'integrationEzScrapers':
+	OrionIntegration.executeEzScrapers()
+
 elif action == 'integrationUniversalScrapers':
 	OrionIntegration.executeUniversalScrapers()
 
@@ -286,6 +319,9 @@ elif action == 'integrationUniversalDebrid':
 
 elif action == 'integrationNanScrapers':
 	OrionIntegration.executeNanScrapers()
+
+elif action == 'integrationEncrypticScrapers':
+	OrionIntegration.executeEncrypticScrapers()
 
 elif action == 'integrationElementum':
 	OrionIntegration.executeElementum()

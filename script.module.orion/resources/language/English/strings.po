@@ -438,15 +438,15 @@ msgid "Sources"
 msgstr ""
 
 msgctxt "#32107"
-msgid "Premiumize Cache"
+msgid "Torrent Cache"
 msgstr ""
 
 msgctxt "#32108"
-msgid "OffCloud Cache"
+msgid "Usenet Cache"
 msgstr ""
 
 msgctxt "#32109"
-msgid "RealDebrid Cache"
+msgid "Hoster Cache"
 msgstr ""
 
 msgctxt "#32110"
@@ -1309,6 +1309,22 @@ msgctxt "#32324"
 msgid "Unknown Error"
 msgstr ""
 
+msgctxt "#32325"
+msgid "Lookup Services"
+msgstr ""
+
+msgctxt "#32326"
+msgid "Add Custom"
+msgstr ""
+
+msgctxt "#32327"
+msgid "Custom Value"
+msgstr ""
+
+msgctxt "#32328"
+msgid "Stream Type"
+msgstr ""
+
 ##############################################################################
 # MESSAGES
 ##############################################################################
@@ -1342,7 +1358,7 @@ msgid "Orion is temporarily unreachable. Try again later."
 msgstr ""
 
 msgctxt "#33008"
-msgid "This setting is dynamically updated with new options from API searches. If a new option arrives, it is automatically enabled and added to the list. You can manually disable these options, but do it sparingly, since changed options slow down the search."
+msgid "This setting is dynamically updated with new options from API searches. If a new option arrives, it is automatically enabled and added to the list. You can manually disable these options, but do it sparingly, since custom options slow down the search."
 msgstr ""
 
 msgctxt "#33009"
@@ -1645,6 +1661,10 @@ msgctxt "#33082"
 msgid "[B]Login[/B] with [B]Code[/B] or [B]QR[/B]"
 msgstr ""
 
+msgctxt "#33083"
+msgid "Add a custom value if it is not automatically added. Custom values are not guaranteed to work if the spelling differs to values on Orion."
+msgstr ""
+
 ##############################################################################
 # HELP
 ##############################################################################
@@ -1726,19 +1746,19 @@ msgid "The maximum number of days since the usenet NZB was created. Set the valu
 msgstr ""
 
 msgctxt "#34020"
-msgid "The availability of the stream, either in the debrid cache, directly accessible without an account, or otherwise indirectly accessible hoster links. The cached status might be incorrect if the stream was not updated in a long time. Some hosters have direct links that can be immediately played without going through a URL resolver or premium service. Indirect links are all other hoster links which might require a premium service, URL resolver, or captcha input."
+msgid "The availability of the stream, either cached on a debrid server, directly accessible without any account, or otherwise indirectly accessible through hosters. The cached status might be outdated if the stream was not updated in a long time. Some hosters have direct links that can be played immediately without going through a URL resolver or premium service. Indirect links are all other hoster links which might require a premium service, URL resolver, or captcha input."
 msgstr ""
 
 msgctxt "#34021"
-msgid "The cached status of the stream on Premiumize. Only enable this option if you have a Premiumize account."
+msgid "The debrid cached status of torrent streams. Only enable debrid services that you have an account for."
 msgstr ""
 
 msgctxt "#34022"
-msgid "The cached status of the stream on OffCloud. Only enable this option if you have an OffCloud account."
+msgid "The debrid cached status of usenet streams. Only enable debrid services that you have an account for."
 msgstr ""
 
 msgctxt "#34023"
-msgid "The cached status of the stream on RealDebrid. Only enable this option if you have a RealDebrid account."
+msgid "The debrid cached status of hoster streams. Only enable debrid services that you have an account for."
 msgstr ""
 
 msgctxt "#34024"
@@ -1902,15 +1922,7 @@ msgid "Does a fresh lookup and return the latest debrid cache status. Authorize 
 msgstr ""
 
 msgctxt "#34064"
-msgid "Does a fresh cache lookup on Premiumize. Only enable this option if you have a Premiumize account."
-msgstr ""
-
-msgctxt "#34065"
-msgid "Does a fresh cache lookup on OffCloud. Only enable this option if you have a OffCloud account."
-msgstr ""
-
-msgctxt "#34066"
-msgid "Does a fresh cache lookup on RealDebrid. Only enable this option if you have a RealDebrid account."
+msgid "The debrid services for which a fresh cache lookup should be done. Only enable debrid services that you have an account for."
 msgstr ""
 
 ##############################################################################

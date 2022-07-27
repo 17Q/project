@@ -27,7 +27,7 @@ import xbmcaddon
 class Orionoid:
 
 	priority = 0
-	pack_capable = True
+	pack_capable = False # Fenom requires separate functions to scrape packs. Just retrieve packs as part of the normal scrape and label them as packs.
 	hasMovies = True
 	hasEpisodes = True
 
@@ -109,7 +109,7 @@ class Orionoid:
 		OrionTools.fileWrite(self.cachePath, OrionTools.jsonTo(data))
 
 	def _cacheLoad(self):
-		if self.cacheData == None: self.cacheData = OrionTools.jsonFrom(OrionTools.fileRead(self.cachePath))
+		if self.cacheData is None: self.cacheData = OrionTools.jsonFrom(OrionTools.fileRead(self.cachePath))
 		return self.cacheData
 
 	def _cacheFind(self, url):
@@ -230,6 +230,8 @@ class Orionoid:
 			orion = Orion(OrionTools.base64From(OrionTools.base64From(OrionTools.base64From(self.key))).replace(' ', ''))
 			if not orion.userEnabled() or not orion.userValid(): raise Exception()
 
+			foreign = source_utils.check_foreign_audio()
+
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title'] if 'title' in data else None
 			titleEpisode = data['title'] if 'tvshowtitle' in data else None
 			year = data['year'] if 'year' in data else None
@@ -246,8 +248,8 @@ class Orionoid:
 					season = int(data['season']) if 'season' in data else None
 					episode = int(data['episode']) if 'episode' in data else None
 				except: pass
-				if season == None or season == '': raise Exception()
-				if episode == None or episode == '': raise Exception()
+				if season is None or season == '': raise Exception()
+				if episode is None or episode == '': raise Exception()
 				number = 'S%02dE%02d' % (season, episode)
 			else:
 				number = year
@@ -301,7 +303,7 @@ class Orionoid:
 					details = None
 					if data['file']['name']:
 						details = source_utils.info_from_name(data['file']['name'], title, year, number, titleEpisode)
-						if source_utils.remove_lang(details): continue
+						if source_utils.remove_lang(details, foreign): continue
 
 					orion = {}
 					try: orion['stream'] = data['id']
@@ -311,6 +313,7 @@ class Orionoid:
 
 					item = {
 						'orion' : orion,
+						'scrape_provider' : 'external',
 						'provider' : self._provider(data),
 						'source' : self._source(data),
 						'quality' : self._quality(data),
@@ -324,11 +327,13 @@ class Orionoid:
 					}
 					if data['file']['hash']: item['hash'] = data['file']['hash']
 
+					# Do not add the 'package' attribute, otherwise Fen estimates the file size per episode, and Orion already does that.
+					# if data['file']['pack'] and type == Orion.TypeShow: item['package'] = 'season'
+
 					if details: item['name_info'] = details
 					else: item['name_info'] = ' ' # Not an empty string, since there is a bug in Fen.
 
-					size = self._size(data, string = False)
-					if size: item['size'] = size
+					item['size'] = self._size(data, string = False)
 
 					sources.append(item)
 				except: self._error()

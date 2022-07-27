@@ -79,6 +79,7 @@ class OrionTools:
 	RegexIgnoreCase = re.IGNORECASE
 	RegexDotAll = re.DOTALL
 	RegexMultiLine = re.MULTILINE
+	RegexDefault = RegexIgnoreCase
 
 	PrefixPlugin = 'plugin://'
 
@@ -209,11 +210,28 @@ class OrionTools:
 	@classmethod
 	def unicode(self, string):
 		try:
-			if string == None: return string
+			#if string is None: return string
 			return self.unicodeDecode(string)
 		except:
 			try: return string.encode('ascii', 'ignore')
 			except: return string
+
+	##############################################################################
+	# REGEX
+	##############################################################################
+
+	@classmethod
+	def regexExtract(self, data, expression, group = 1, all = False, flags = RegexDefault):
+		try:
+			if all:
+				match = re.findall(expression, data, flags = flags)
+				if group is None: return match
+				else: return match[group]
+			else:
+				match = re.search(expression, data, flags = flags)
+				if group is None: return match.groups()
+				else: return match.group(group)
+		except: return None
 
 	##############################################################################
 	# RANDOM
@@ -725,12 +743,17 @@ class OrionTools:
 		# https://github.com/xbmc/xbmc/pull/16707
 		try:
 			if id is None: id = self.addonId()
-			if self.kodiVersion(major = True) >= 19:
+			# xbmc.getCondVisibility does not work for IDs with capital letters (eg: plugin.video.KodiVerse).
+			'''if self.kodiVersion(major = True) >= 19:
 				return xbmc.getCondVisibility('System.HasAddon(%s)' % id) == 1
 			else:
-				return self.directoryExists(self.pathAddon(id))
+				return self.directoryExists(self.pathAddon(id))'''
+			return self.executeJson(method = 'Addons.GetAddonDetails', addon = id, parameters = {'properties' : ['installed']})['result']['addon']['installed']
 		except:
-			return False
+			try:
+				return self.directoryExists(self.pathAddon(id))
+			except:
+				return False
 
 	@classmethod
 	def addonId(self, id = None, default = None):
@@ -957,11 +980,11 @@ class OrionTools:
 
 	@classmethod
 	def property(self, id, window = 10000):
-		xbmcgui.Window(window).getProperty(id)
+		return xbmcgui.Window(window).getProperty(id)
 
 	@classmethod
 	def propertySet(self, id, value, window = 10000):
-		xbmcgui.Window(window).setProperty(id, value)
+		xbmcgui.Window(window).setProperty(id, self.unicodeString(value))
 
 	@classmethod
 	def propertyClear(self, id, window = 10000):
@@ -1053,6 +1076,11 @@ class OrionTools:
 	def hashFile(self, path):
 		return self.hash(self.fileRead(path))
 
+	# Quick hash function, but uses a random seed so hashes are different between executions.
+	@classmethod
+	def hashInternal(self, data):
+		return hash(data)
+
 	##############################################################################
 	# BASE64
 	##############################################################################
@@ -1061,11 +1089,16 @@ class OrionTools:
 	def base64From(self, data, iterations = 1, url = False):
 		import base64
 		data = self.unicodeString(data)
-		if self.pythonNew(): data = bytes(data, 'utf-8')
+		pythonNew = self.pythonNew()
+		if pythonNew: data = bytes(data, 'utf-8')
 		for i in range(iterations):
 			if url:
-				for j in OrionTools.Base64Url:
-					data = data.replace(j[1], j[0])
+				if pythonNew:
+					for j in OrionTools.Base64Url:
+						data = data.replace(bytes(j[1], 'utf-8'), bytes(j[0], 'utf-8'))
+				else:
+					for j in OrionTools.Base64Url:
+						data = data.replace(j[1], j[0])
 			data = base64.b64decode(data)
 		if self.pythonNew(): data = self.unicodeString(data)
 		return data

@@ -1,4 +1,79 @@
 
+[B]4.9.4 (2022.07.23)[/B]
+- Fixed initialization.
+
+[B]4.9.3 (2022.07.22)[/B]
+- Added POV integration.
+
+[B]4.9.2 (2022.06.24)[/B]
+- Fixed Asgard integration.
+
+[B]4.9.1 (2022.06.23)[/B]
+- Added KinPin integration.
+- Added KinPinScrapers integration.
+- Fixed local Seren integration.
+- Updated integration settings.
+- Fixed filter settings reset on Kodi restart.
+
+[B]4.9.0 (2022.06.17)[/B]
+- Added debrid support endpoint.
+- Added support for custom sources and hosters.
+- Fixed source and hoster settings selection.
+
+[B]4.8.1 (2022.05.08)[/B]
+- Added Ezra integration.
+- Added EzScrapers integration.
+- Added NoLivesMatter integration.
+- Added EncrypticScrapers integration.
+- Updated failed authentication.
+- Updated API errors.
+
+[B]4.8.0 (2022.04.27)[/B]
+- Fixed settings retrieval.
+
+[B]4.7.9 (2022.03.25)[/B]
+- New version to fix 4.7.8 upload issues.
+
+[B]4.7.8 (2022.03.25)[/B]
+- Fixed missing settings values.
+
+[B]4.7.7 (2022.03.22)[/B]
+- Fixed old settings cleanup.
+
+[B]4.7.6 (2022.03.18)[/B]
+- Improved SSL certificate handling.
+
+[B]4.7.5 (2022.03.14)[/B]
+- Added debrid cache lookup support.
+- Added debrid resolving support.
+
+[B]4.7.4 (2022.03.12)[/B]
+- Added KodiVerse integration.
+- Fixed FenomScrapers integration.
+
+[B]4.7.3 (2022.03.11)[/B]
+- API update.
+
+[B]4.7.2 (2022.03.09)[/B]
+- Windows SSL fix.
+
+[B]4.7.1 (2022.01.11)[/B]
+- Updated Fen integration.
+
+[B]4.7.0 (2022.01.08)[/B]
+- Added AllDebrid support.
+- Added DebridLink support.
+- Fixed debug report generation.
+- Improved settings reselection.
+- Rearranged filter settings.
+
+[B]4.6.9 (2021.12.21)[/B]
+- Fixed Fen integration.
+- Fixed player image art.
+
+[B]4.6.8 (2021.12.19)[/B]
+- Fixed Kodi JSON RPC playback.
+
 [B]4.6.7 (2021.11.26)[/B]
 - Fixed link splitting.
 - Fixed Fen hoster integration.

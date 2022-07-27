@@ -245,6 +245,7 @@ from orion.modules.orionuser import *
 from orion.modules.orionstats import *
 from orion.modules.oriontools import *
 from orion.modules.orionitem import *
+from orion.modules.oriondebrid import *
 from orion.modules.oriondatabase import *
 from orion.modules.orioncontainer import *
 from orion.modules.orionsettings import *
@@ -305,11 +306,21 @@ class Orion:
 	AccessRealdebridTorrent = OrionItem.AccessRealdebridTorrent		# 'realdebridtorrent'	(Cached torrent on RealDebrid)
 	AccessRealdebridUsenet = OrionItem.AccessRealdebridUsenet		# 'realdebridusenet'	(Cached usenet on RealDebrid)
 	AccessRealdebridHoster = OrionItem.AccessRealdebridHoster		# 'realdebridhoster'	(Cached hoster on RealDebrid)
+	AccessDebridlink = OrionItem.AccessDebridlink					# 'debridlink'			(Cached any on DebridLink)
+	AccessDebridlinkTorrent = OrionItem.AccessDebridlinkTorrent		# 'debridlinktorrent'	(Cached torrent on DebridLink)
+	AccessDebridlinkUsenet = OrionItem.AccessDebridlinkUsenet		# 'debridlinkusenet'	(Cached usenet on DebridLink)
+	AccessDebridlinkHoster = OrionItem.AccessDebridlinkHoster		# 'debridlinkhoster'	(Cached hoster on DebridLink)
+	AccessAlldebrid = OrionItem.AccessAlldebrid						# 'alldebrid'			(Cached any on AllDebrid)
+	AccessAlldebridTorrent = OrionItem.AccessAlldebridTorrent		# 'alldebridtorrent'	(Cached torrent on AllDebrid)
+	AccessAlldebridUsenet = OrionItem.AccessAlldebridUsenet			# 'alldebridusenet'		(Cached usenet on AllDebrid)
+	AccessAlldebridHoster = OrionItem.AccessAlldebridHoster			# 'alldebridhoster'		(Cached hoster on AllDebrid)
 
 	# Cache Lookup
 	LookupPremiumize = OrionItem.LookupPremiumize					# 'premiumize'			(Cache lookup on Premiumize)
 	LookupOffcloud = OrionItem.LookupOffcloud						# 'offcloud'			(Cache lookup on OffCloud)
 	LookupRealdebrid = OrionItem.LookupRealdebrid					# 'realdebrid'			(Cache lookup on RealDebrid)
+	LookupDebridlink = OrionItem.LookupDebridlink					# 'debridlink'			(Cache lookup on DebridLink)
+	LookupAlldebrid = OrionItem.LookupAlldebrid						# 'alldebrid'			(Cache lookup on AllDebrid)
 
 	# Stream Type
 	StreamTorrent = OrionStream.TypeTorrent							# 'torrent'				(Torrent magnet or link)
@@ -475,6 +486,24 @@ class Orion:
 	VoteUp = OrionItem.VoteUp										# 'up'					(Vote the stream up)
 	VoteDown = OrionItem.VoteDown									# 'down'				(Vote the stream down)
 
+	# Debrid
+	DebridPremiumize = OrionDebrid.TypePremiumize					# 'premiumize'			(Use Premiumize debrid service)
+	DebridOffcloud = OrionDebrid.TypeOffcloud						# 'offcloud'			(Use OffCloud debrid service)
+	DebridRealdebrid = OrionDebrid.TypeRealdebrid					# 'realdebrid'			(Use RealDebrid debrid service)
+	DebridDebridlink = OrionDebrid.TypeDebridlink					# 'debridlink'			(Use DebridLink debrid service)
+	DebridAlldebrid = OrionDebrid.TypeAlldebrid						# 'alldebrid'			(Use AllDebrid debrid service)
+
+	# File
+	FileOriginal = OrionDebrid.FileOriginal							# 'original'			(Return original file)
+	FileStream = OrionDebrid.FileStream								# 'stream'				(Return web stream file)
+	FileSequential = OrionDebrid.FileSequential						# 'sequential'			(Try web stream file and fall back to original file)
+
+	# Output
+	OutputList = OrionDebrid.OutputList								# 'list'				(Return a list of files)
+	OutputChoice = OrionDebrid.OutputChoice							# 'choice'				(Return the single best file)
+	OutputExpression = OrionDebrid.OutputExpression					# 'expression'			(Return a list of regular expressions)
+	OutputDomain = OrionDebrid.OutputDomain							# 'domain'				(Return a list of domains)
+
 	##############################################################################
 	# CONSTRUCTOR
 	##############################################################################
@@ -493,8 +522,8 @@ class Orion:
 	##############################################################################
 
 	def _encode(self, object, encoding = None, dictionary = False):
-		if encoding == None: encoding = self.mEncoding
-		if object == None:
+		if encoding is None: encoding = self.mEncoding
+		if object is None:
 			return '' if encoding == Orion.EncodingJson else None
 		elif encoding == Orion.EncodingJson:
 			if OrionTools.isArray(object):
@@ -505,9 +534,11 @@ class Orion:
 				except: return OrionTools.jsonTo(object)
 		elif encoding == Orion.EncodingStruct:
 			if OrionTools.isArray(object):
-				result = [i.data() for i in object]
-				if dictionary: return {key : value for item in result for key, value in item.items()}
-				else: return result
+				try:
+					result = [i.data() for i in object]
+					if dictionary: return {key : value for item in result for key, value in item.items()}
+					else: return result
+				except: return object
 			else:
 				try: return object.data()
 				except: return object
@@ -550,6 +581,10 @@ class Orion:
 	@classmethod
 	def lastType(self):
 		return OrionApi.lastType()
+
+	@classmethod
+	def lastTypeConnection(self):
+		return OrionApi.lastTypeConnection()
 
 	@classmethod
 	def lastTypeSubscription(self):
@@ -624,32 +659,32 @@ class Orion:
 	##############################################################################
 
 	# Retrieve the user details.
-	def user(self, encoding = None):
-		return self._encode(OrionUser.instance(), encoding = encoding)
+	def user(self, refresh = False, encoding = None):
+		return self._encode(OrionUser.instance(refresh = refresh), encoding = encoding)
 
 	# Retrieve the user display label.
-	def userLabel(self):
-		return OrionUser.instance().label()
+	def userLabel(self, refresh = False):
+		return OrionUser.instance(refresh = refresh).label()
 
 	# Check if the user has entered authentication credentials.
-	def userEnabled(self):
-		return OrionUser.instance().enabled()
+	def userEnabled(self, refresh = False):
+		return OrionUser.instance(refresh = refresh).enabled()
 
 	# Check if the user authentication credentials are valid.
-	def userValid(self):
-		return OrionUser.instance().valid()
+	def userValid(self, refresh = False):
+		return OrionUser.instance(refresh = refresh).valid()
 
 	# Check if the user has a free account.
-	def userFree(self):
-		return OrionUser.instance().subscriptionPackageFree()
+	def userFree(self, refresh = False):
+		return OrionUser.instance(refresh = refresh).subscriptionPackageFree()
 
 	# Check if the user has a free anonymous account.
-	def userAnonymous(self):
-		return OrionUser.instance().subscriptionPackageAnonymous()
+	def userAnonymous(self, refresh = False):
+		return OrionUser.instance(refresh = refresh).subscriptionPackageAnonymous()
 
 	# Check if the user has a premium account.
-	def userPremium(self):
-		return OrionUser.instance().subscriptionPackagePremium()
+	def userPremium(self, refresh = False):
+		return OrionUser.instance(refresh = refresh).subscriptionPackagePremium()
 
 	# Show a dialog with the user details.
 	def userDialog(self):
@@ -669,7 +704,7 @@ class Orion:
 			key = OrionNavigator.settingsAccountKey()
 		if key:
 			user = OrionUser.instance()
-			if not key == None: user.settingsKeySet(key)
+			if not key is None: user.settingsKeySet(key)
 			return OrionNavigator.settingsAccountRefresh(launch = False, loader = True, notification = True)
 		else:
 			return False
@@ -968,3 +1003,22 @@ class Orion:
 	@classmethod
 	def containerDownload(self, id, path = None):
 		return OrionContainer.download(id = id, path = path)
+
+	##############################################################################
+	# DEBRID
+	##############################################################################
+
+	def debridSupport(self,  idItem = None, idStream = None, link = None, type = None, status = None, globally = None, output = None, details = False, encoding = None):
+		result = OrionDebrid.support(idItem = idItem, idStream = idStream, link = link, type = type, status = status, globally = globally, output = output)
+		if not details and result and 'support' in result: result = result['support']
+		return self._encode(result, encoding = encoding)
+
+	def debridLookup(self, idItem = None, idStream = None, link = None, hash = None, item = None, type = None, refresh = None, details = False, encoding = None):
+		result = OrionDebrid.lookup(idItem = idItem, idStream = idStream, link = link, hash = hash, item = item, type = type, refresh = refresh)
+		if not details and result and 'lookup' in result: result = result['lookup']
+		return self._encode(result, encoding = encoding)
+
+	def debridResolve(self, idItem = None, idStream = None, link = None, type = None, file = None, output = None, ip = None, container = None, containerData = None, containerName = None, containerType = None, containerSize = None, details = False, encoding = None):
+		result = OrionDebrid.resolve(idItem = idItem, idStream = idStream, link = link, type = type, file = file, output = output, ip = ip, container = container, containerData = containerData, containerName = containerName, containerType = containerType, containerSize = containerSize)
+		if not details and result and 'files' in result: result = result['files']
+		return self._encode(result, encoding = encoding)

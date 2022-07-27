@@ -74,6 +74,9 @@ while not monitor.abortRequested():
 		OrionIntegration.check(silent = True)
 		if monitor.abortRequested(): break
 
+		OrionSettings.cleanTemporary()
+		if monitor.abortRequested(): break
+
 		OrionSettings.clean()
 		if monitor.abortRequested(): break
 

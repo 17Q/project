@@ -42,6 +42,7 @@ class OrionIntegration:
 	AddonMagicality = 'Magicality'
 	AddonTheOath = 'TheOath'
 	AddonApocalypse720 = 'Apocalypse 720'
+	AddonNoLivesMatter = 'No Lives Matter'
 	AddonYoda = 'Yoda'
 	AddonBodie = 'Bodie'
 	AddonNymeria = 'Nymeria'
@@ -51,6 +52,9 @@ class OrionIntegration:
 	AddonMercury = 'Mercury'
 	AddonDeceit = 'Deceit'
 	AddonFen = 'Fen'
+	AddonPov = 'POV'
+	AddonKingPin = 'KingPin'
+	AddonEzra = 'Ezra'
 	AddonGenesis = 'Genesis'
 	AddonExodus = 'Exodus'
 	AddonExodusRedux = 'Exodus Redux'
@@ -62,15 +66,19 @@ class OrionIntegration:
 	AddonAsguard = 'Asguard'
 	AddonAsgard = 'Asgard'
 	AddonTheCrew = 'The Crew'
+	AddonKodiVerse = 'KodiVerse'
 	AddonOpenScrapers = 'Open Scrapers'
 	AddonLambdaScrapers = 'Lambda Scrapers'
 	AddonFenomScrapers = 'Fenom Scrapers'
+	AddonKingPinScrapers = 'KingPin Scrapers'
+	AddonEzScrapers = 'Ez Scrapers'
 	AddonUniversalScrapers = 'Universal Scrapers'
 	AddonUniversalDebrid = 'Universal Debrid'
 	AddonNanScrapers = 'NaN Scrapers'
+	AddonEncrypticScrapers = 'Encryptic Scrapers'
 	AddonElementum = 'Elementum'
 	AddonQuasar = 'Quasar'
-	Addons = [AddonGaia, AddonSeren, AddonIncursion, AddonPlacenta, AddonCovenant, AddonMagicality, AddonTheOath, AddonApocalypse720, AddonYoda, AddonBodie, AddonNymeria, AddonVenom, AddonScrubs, AddonMedusa, AddonMercury, AddonDeceit, AddonFen, AddonGenesis, AddonExodus, AddonExodusRedux, AddonNeptuneRising, AddonDeathStreams, AddonBoomMovies, AddonContinuum, AddonMarauder, AddonAsguard, AddonAsgard, AddonTheCrew, AddonOpenScrapers, AddonLambdaScrapers, AddonFenomScrapers, AddonUniversalScrapers, AddonUniversalDebrid, AddonNanScrapers, AddonElementum, AddonQuasar]
+	Addons = [AddonGaia, AddonSeren, AddonIncursion, AddonPlacenta, AddonCovenant, AddonMagicality, AddonTheOath, AddonApocalypse720, AddonNoLivesMatter, AddonYoda, AddonBodie, AddonNymeria, AddonVenom, AddonScrubs, AddonMedusa, AddonMercury, AddonDeceit, AddonFen, AddonPov, AddonKingPin, AddonEzra, AddonGenesis, AddonExodus, AddonExodusRedux, AddonNeptuneRising, AddonDeathStreams, AddonBoomMovies, AddonContinuum, AddonMarauder, AddonAsguard, AddonAsgard, AddonTheCrew, AddonKodiVerse, AddonOpenScrapers, AddonLambdaScrapers, AddonFenomScrapers, AddonKingPinScrapers, AddonEzScrapers, AddonUniversalScrapers, AddonUniversalDebrid, AddonNanScrapers, AddonEncrypticScrapers, AddonElementum, AddonQuasar]
 
 	LanguageXml = 'xml'
 	LanguagePython = 'python'
@@ -174,10 +182,14 @@ class OrionIntegration:
 			elif addon == OrionIntegration.AddonMagicality: integration._magicalityInitialize()
 			elif addon == OrionIntegration.AddonTheOath: integration._theOathInitialize()
 			elif addon == OrionIntegration.AddonApocalypse720: integration._apocalypse720Initialize()
+			elif addon == OrionIntegration.AddonNoLivesMatter: integration._noLivesMatterInitialize()
 			elif addon == OrionIntegration.AddonYoda: integration._yodaInitialize()
 			elif addon == OrionIntegration.AddonBodie: integration._bodieInitialize()
 			elif addon == OrionIntegration.AddonNymeria: integration._nymeriaInitialize()
 			elif addon == OrionIntegration.AddonFen: integration._fenInitialize()
+			elif addon == OrionIntegration.AddonPov: integration._povInitialize()
+			elif addon == OrionIntegration.AddonKingPin: integration._kingPinInitialize()
+			elif addon == OrionIntegration.AddonEzra: integration._ezraInitialize()
 			elif addon == OrionIntegration.AddonVenom: integration._venomInitialize()
 			elif addon == OrionIntegration.AddonScrubs: integration._scrubsInitialize()
 			elif addon == OrionIntegration.AddonMedusa: integration._medusaInitialize()
@@ -194,12 +206,16 @@ class OrionIntegration:
 			elif addon == OrionIntegration.AddonAsguard: integration._asguardInitialize()
 			elif addon == OrionIntegration.AddonAsgard: integration._asgardInitialize()
 			elif addon == OrionIntegration.AddonTheCrew: integration._theCrewInitialize()
+			elif addon == OrionIntegration.AddonKodiVerse: integration._kodiVerseInitialize()
 			elif addon == OrionIntegration.AddonOpenScrapers: integration._openScrapersInitialize()
 			elif addon == OrionIntegration.AddonLambdaScrapers: integration._lambdaScrapersInitialize()
 			elif addon == OrionIntegration.AddonFenomScrapers: integration._fenomScrapersInitialize()
+			elif addon == OrionIntegration.AddonKingPinScrapers: integration._kingPinScrapersInitialize()
+			elif addon == OrionIntegration.AddonEzScrapers: integration._ezScrapersInitialize()
 			elif addon == OrionIntegration.AddonUniversalScrapers: integration._universalScrapersInitialize()
 			elif addon == OrionIntegration.AddonUniversalDebrid: integration._universalDebridInitialize()
 			elif addon == OrionIntegration.AddonNanScrapers: integration._nanScrapersInitialize()
+			elif addon == OrionIntegration.AddonEncrypticScrapers: integration._encrypticScrapersInitialize()
 			elif addon == OrionIntegration.AddonElementum: integration._elementumInitialize()
 			elif addon == OrionIntegration.AddonQuasar: integration._quasarInitialize()
 		except:
@@ -343,6 +359,7 @@ class OrionIntegration:
 		elif addon == OrionIntegration.AddonMagicality: result = self._magicalityIntegrate()
 		elif addon == OrionIntegration.AddonTheOath: result = True
 		elif addon == OrionIntegration.AddonApocalypse720: result = True
+		elif addon == OrionIntegration.AddonNoLivesMatter: result = True
 		elif addon == OrionIntegration.AddonYoda: result = self._yodaIntegrate()
 		elif addon == OrionIntegration.AddonDeathStreams: result = self._deathStreamsIntegrate()
 		elif addon == OrionIntegration.AddonBoomMovies: result = self._boomMoviesIntegrate()
@@ -351,15 +368,20 @@ class OrionIntegration:
 		elif addon == OrionIntegration.AddonAsguard: result = True
 		elif addon == OrionIntegration.AddonAsgard: result = self._asgardIntegrate()
 		elif addon == OrionIntegration.AddonTheCrew: result = True
+		elif addon == OrionIntegration.AddonKodiVerse: result = self._kodiVerseIntegrate()
 		elif addon == OrionIntegration.AddonScrubs: result = self._scrubsIntegrate()
+		elif addon == OrionIntegration.AddonPov: result = self._povIntegrate()
 		elif addon == OrionIntegration.AddonGenesis: result = self._genesisIntegrate()
 		elif addon == OrionIntegration.AddonExodus: result = self._exodusIntegrate()
 		elif addon == OrionIntegration.AddonOpenScrapers: result = self._openScrapersIntegrate()
 		elif addon == OrionIntegration.AddonLambdaScrapers: result = self._lambdaScrapersIntegrate()
 		elif addon == OrionIntegration.AddonFenomScrapers: result = self._fenomScrapersIntegrate()
+		elif addon == OrionIntegration.AddonKingPinScrapers: result = self._kingPinScrapersIntegrate()
+		elif addon == OrionIntegration.AddonEzScrapers: result = self._ezScrapersIntegrate()
 		elif addon == OrionIntegration.AddonUniversalScrapers: result = self._universalScrapersIntegrate()
 		elif addon == OrionIntegration.AddonUniversalDebrid: result = self._universalDebridIntegrate()
 		elif addon == OrionIntegration.AddonNanScrapers: result = self._nanScrapersIntegrate()
+		elif addon == OrionIntegration.AddonEncrypticScrapers: result = True
 		elif addon == OrionIntegration.AddonElementum: result = self._elementumIntegrate()
 		elif addon == OrionIntegration.AddonQuasar: result = self._quasarIntegrate()
 		return result
@@ -509,6 +531,10 @@ class OrionIntegration:
 		return self.execute(OrionIntegration.AddonApocalypse720)
 
 	@classmethod
+	def executeNoLivesMatter(self):
+		return self.execute(OrionIntegration.AddonNoLivesMatter)
+
+	@classmethod
 	def executeYoda(self):
 		return self.execute(OrionIntegration.AddonYoda)
 
@@ -543,6 +569,18 @@ class OrionIntegration:
 	@classmethod
 	def executeFen(self):
 		return self.execute(OrionIntegration.AddonFen)
+
+	@classmethod
+	def executePov(self):
+		return self.execute(OrionIntegration.AddonPov)
+
+	@classmethod
+	def executeKingPin(self):
+		return self.execute(OrionIntegration.AddonKingPin)
+
+	@classmethod
+	def executeEzra(self):
+		return self.execute(OrionIntegration.AddonEzra)
 
 	@classmethod
 	def executeGenesis(self):
@@ -589,6 +627,10 @@ class OrionIntegration:
 		return self.execute(OrionIntegration.AddonTheCrew)
 
 	@classmethod
+	def executeKodiVerse(self):
+		return self.execute(OrionIntegration.AddonKodiVerse)
+
+	@classmethod
 	def executeOpenScrapers(self):
 		return self.execute(OrionIntegration.AddonOpenScrapers)
 
@@ -601,6 +643,14 @@ class OrionIntegration:
 		return self.execute(OrionIntegration.AddonFenomScrapers)
 
 	@classmethod
+	def executeKingPinScrapers(self):
+		return self.execute(OrionIntegration.AddonKingPinScrapers)
+
+	@classmethod
+	def executeEzScrapers(self):
+		return self.execute(OrionIntegration.AddonEzScrapers)
+
+	@classmethod
 	def executeUniversalScrapers(self):
 		return self.execute(OrionIntegration.AddonUniversalScrapers)
 
@@ -611,6 +661,10 @@ class OrionIntegration:
 	@classmethod
 	def executeNanScrapers(self):
 		return self.execute(OrionIntegration.AddonNanScrapers)
+
+	@classmethod
+	def executeEncrypticScrapers(self):
+		return self.execute(OrionIntegration.AddonEncrypticScrapers)
 
 	@classmethod
 	def executeElementum(self):
@@ -936,6 +990,20 @@ class OrionIntegration:
 		self.deletes = []
 
 	##############################################################################
+	# NOLIVESMATTER
+	##############################################################################
+
+	def _noLivesMatterInitialize(self):
+		self.name = OrionIntegration.AddonNoLivesMatter
+		self.id = self.id(self.name)
+		self.idPlugin = 'plugin.video.nlm'
+		self.idSettings = self.idPlugin
+		self.version = self._version(self.idPlugin)
+		self.native = True
+		self.files = []
+		self.deletes = []
+
+	##############################################################################
 	# YODA
 	##############################################################################
 
@@ -1034,6 +1102,34 @@ class OrionIntegration:
 		self.deletes = []
 
 	##############################################################################
+	# KINGPIN
+	##############################################################################
+
+	def _kingPinInitialize(self):
+		self.name = OrionIntegration.AddonKingPin
+		self.id = self.id(self.name)
+		self.idPlugin = 'plugin.video.kingpin'
+		self.idSettings = self.idPlugin
+		self.version = self._version(self.idPlugin)
+		self.scrapers = OrionIntegration.AddonKingPinScrapers
+		self.files = []
+		self.deletes = []
+
+	##############################################################################
+	# EZRA
+	##############################################################################
+
+	def _ezraInitialize(self):
+		self.name = OrionIntegration.AddonEzra
+		self.id = self.id(self.name)
+		self.idPlugin = 'plugin.video.ezra'
+		self.idSettings = self.idPlugin
+		self.version = self._version(self.idPlugin)
+		self.scrapers = OrionIntegration.AddonEzScrapers
+		self.files = []
+		self.deletes = []
+
+	##############################################################################
 	# VENOM
 	##############################################################################
 
@@ -1046,6 +1142,67 @@ class OrionIntegration:
 		self.scrapers = OrionIntegration.AddonFenomScrapers
 		self.files = []
 		self.deletes = []
+
+	##############################################################################
+	# POV SCRAPERS
+	##############################################################################
+
+	def _povInitialize(self):
+		self.name = OrionIntegration.AddonPov
+		self.id = self.id(self.name)
+		self.idPlugin = 'plugin.video.pov'
+		self.idSettings = self.idPlugin
+		self.version = self._version(self.idPlugin)
+		self.versionNumber = int(re.sub('[^0-9]', '', self.version)) if self.version else None
+
+		self.pathPlugin = OrionTools.addonPath(self.idPlugin)
+
+		self.pathSettings = OrionTools.pathJoin(self.pathPlugin, 'resources', 'settings.xml')
+		self.pathAddon = OrionTools.pathJoin(self.pathPlugin, 'addon.xml')
+
+		self.pathScrapers = OrionTools.pathJoin(self.pathPlugin, 'resources', 'lib', 'fenom', 'sourcesdir')
+		self.pathOrionoid = OrionTools.pathJoin(self.pathScrapers, 'orionoid.py')
+		self.pathOrionHoster = OrionTools.pathJoin(self.pathScrapers, 'hosters', 'orionhoster.py')
+		self.pathOrionTorrent = OrionTools.pathJoin(self.pathScrapers, 'torrents', 'oriontorrent.py')
+
+		self.files = []
+		self.files.append(self.pathSettings)
+		self.files.append(self.pathAddon)
+
+		self.deletes = []
+		self.deletes.append(self.pathOrionoid)
+		self.deletes.append(self.pathOrionHoster)
+		self.deletes.append(self.pathOrionTorrent)
+
+	def _povIntegrate(self):
+		# settings.xml
+
+		# Currently it seems that hosters are not supported in POV.
+		# It does not use any resolver addon, and the hoster ssupport over debrid does not seem to work yet.
+		# The hoster settings (eg: pm.hoster.enabled) are all disabled and hidden.
+		# This can be reenabled in the future once POV hass proper hosster support.
+		#data = self._comment(self._content('settings1.xml'), OrionIntegration.LanguageXml, '\t\t')
+		#if not OrionTools.fileInsert(self.pathSettings, '<category\s*label\s*=\s*[\'"]Sources[\'"]>.*?\/>.*?\n(?=\s*<\/category>)', data, flags = re.S):
+		#	return self._integrateFailure('POV hoster settings integration failure', self.pathSettings)
+
+		data = self._comment(self._content('settings2.xml'), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathSettings, '<category\s*label\s*=\s*[\'"]Sources[\'"]>.*?<setting.*?\s*label\s*=\s*[\'"]Torrents[\'"].*?\/>', data, flags = re.S):
+			return self._integrateFailure('POV torrent settings integration failure', self.pathSettings)
+
+		# addon.xml
+		data = self._comment(self._content('addon.xml') % (OrionTools.addonId(), OrionTools.addonVersion()), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathAddon, '<requires.*?(\r?\n?)\s*<\/requires>', data, flags = OrionTools.RegexDotAll, group = 1):
+			return self._integrateFailure('POV addon metadata integration failure', self.pathAddon)
+
+		# orionoid.py
+		if not OrionTools.fileCopy(self._path('orionoid.py'), self.pathOrionoid, overwrite = True):
+			return self._integrateFailure('POV provider integration failure', self.pathOrionoid)
+		if not OrionTools.fileCopy(self._path('orionhoster.py'), self.pathOrionHoster, overwrite = True):
+			return self._integrateFailure('POV hoster provider integration failure', self.pathOrionHoster)
+		if not OrionTools.fileCopy(self._path('oriontorrent.py'), self.pathOrionTorrent, overwrite = True):
+			return self._integrateFailure('POV torrent provider integration failure', self.pathOrionTorrent)
+
+		return self._integrateSuccess()
 
 	##############################################################################
 	# SCRUBS
@@ -1516,7 +1673,7 @@ class OrionIntegration:
 		if not OrionTools.fileInsert(self.pathSettings, 'label\s*=\s*"32251".*?(?:movie\s*sources\s*\-\->|id\s*=\s*"fav_movie".*?\/>)', data, flags = re.S | re.I):
 			return self._integrateFailure('Asgard movie settings integration failure', self.pathSettings)
 		data = self._comment(self._content('settings3.xml'), OrionIntegration.LanguageXml, '\t\t')
-		if not OrionTools.fileInsert(self.pathSettings, 'label\s*=\s*"tv\s*sources".*?(?:tv\s*sources\-\->|id\s*=\s*"fav=tv".*?\/>)', data, flags = re.S | re.I):
+		if not OrionTools.fileInsert(self.pathSettings, 'label\s*=\s*".*?tv\s*sources.*?".*?(?:tv\s*sources\-\->|id\s*=\s*"fav=tv".*?\/>)', data, flags = re.S | re.I):
 			return self._integrateFailure('Asgard show settings integration failure', self.pathSettings)
 
 		# addon.xml
@@ -1543,6 +1700,50 @@ class OrionIntegration:
 		self.native = True
 		self.files = []
 		self.deletes = []
+
+	##############################################################################
+	# KODIVERSE
+	##############################################################################
+
+	def _kodiVerseInitialize(self):
+		self.name = OrionIntegration.AddonKodiVerse
+		self.id = self.id(self.name)
+		self.idPlugin = 'plugin.video.KodiVerse'
+		self.idSettings = self.idPlugin
+		self.version = self._version(self.idPlugin)
+
+		self.pathPlugin = OrionTools.addonPath(self.idPlugin)
+
+		self.pathAddon = OrionTools.pathJoin(self.pathPlugin, 'addon.xml')
+		self.pathSettings = OrionTools.pathJoin(self.pathPlugin, 'resources', 'settings.xml')
+		self.pathOrionoid = OrionTools.pathJoin(self.pathPlugin, 'resources', 'sources', 'orionoid.py')
+
+		self.files = []
+		self.files.append(self.pathAddon)
+		self.files.append(self.pathSettings)
+
+		self.deletes = []
+		self.deletes.append(self.pathOrionoid)
+
+	def _kodiVerseIntegrate(self):
+		# settings.xml
+		data = self._comment(self._content('settings1.xml'), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathSettings, '<!--\s*movie\s*sources\s*-->', data, flags = re.S | re.I):
+			return self._integrateFailure('KodiVerse movie provider settings integration failure', self.pathSettings)
+		data = self._comment(self._content('settings2.xml'), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathSettings, '<!--\s*tv\s*sources\s*-->', data, flags = re.S | re.I):
+			return self._integrateFailure('KodiVerse show provider settings integration failure', self.pathSettings)
+
+		# addon.xml
+		data = self._comment(self._content('addon.xml') % (OrionTools.addonId(), OrionTools.addonVersion()), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathAddon, '<requires.*?(\r?\n?)\s*<\/requires>', data, flags = OrionTools.RegexDotAll, group = 1):
+			return self._integrateFailure('KodiVerse addon metadata integration failure', self.pathAddon)
+
+		# Orion.py
+		if not OrionTools.fileCopy(self._path('orionoid.py'), self.pathOrionoid, overwrite = True):
+			return self._integrateFailure('KodiVerse provider integration failure', self.pathOrionoid)
+
+		return self._integrateSuccess()
 
 	##############################################################################
 	# OPEN SCRAPERS
@@ -1755,6 +1956,116 @@ class OrionIntegration:
 		return self._integrateSuccess()
 
 	##############################################################################
+	# KINGPIN SCRAPERS
+	##############################################################################
+
+	def _kingPinScrapersInitialize(self):
+		self.name = OrionIntegration.AddonKingPinScrapers
+		self.id = self.id(self.name)
+		self.idPlugin = 'script.module.kingpinscrapers'
+		self.idSettings = self.idPlugin
+		self.version = self._version(self.idPlugin)
+		self.versionNumber = int(re.sub('[^0-9]', '', self.version)) if self.version else None
+
+		self.pathPlugin = OrionTools.addonPath(self.idPlugin)
+
+		self.pathSettings = OrionTools.pathJoin(self.pathPlugin, 'resources', 'settings.xml')
+		self.pathAddon = OrionTools.pathJoin(self.pathPlugin, 'addon.xml')
+
+		self.pathScrapers = OrionTools.pathJoin(self.pathPlugin, 'lib', 'kingpinscrapers', 'sources_kingpinscrapers')
+		self.pathOrionoid = OrionTools.pathJoin(self.pathScrapers, 'orionoid.py')
+		self.pathOrionHoster = OrionTools.pathJoin(self.pathScrapers, 'hosters', 'orionhoster.py')
+		self.pathOrionTorrent = OrionTools.pathJoin(self.pathScrapers, 'torrents', 'oriontorrent.py')
+
+		self.files = []
+		self.files.append(self.pathSettings)
+		self.files.append(self.pathAddon)
+
+		self.deletes = []
+		self.deletes.append(self.pathOrionoid)
+		self.deletes.append(self.pathOrionHoster)
+		self.deletes.append(self.pathOrionTorrent)
+
+	def _kingPinScrapersIntegrate(self):
+		# settings.xml
+		data = self._comment(self._content('settings1.xml'), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathSettings, '"32051".*?<setting\s*type\s*=\s*[\'"]sep[\'"]\s*\/>', data, flags = re.S):
+			return self._integrateFailure('KingPin Scrapers hoster settings integration failure', self.pathSettings)
+		data = self._comment(self._content('settings2.xml'), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathSettings, '"32052".*?<setting\s*type\s*=\s*[\'"]sep[\'"]\s*\/>.*?<setting\s*type\s*=\s*[\'"]sep[\'"]\s*\/>', data, flags = re.S):
+			return self._integrateFailure('KingPin Scrapers torrent settings integration failure', self.pathSettings)
+
+		# addon.xml
+		data = self._comment(self._content('addon.xml') % (OrionTools.addonId(), OrionTools.addonVersion()), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathAddon, '<requires.*?(\r?\n?)\s*<\/requires>', data, flags = OrionTools.RegexDotAll, group = 1):
+			return self._integrateFailure('KingPin Scrapers addon metadata integration failure', self.pathAddon)
+
+		# orionoid.py
+		if not OrionTools.fileCopy(self._path('orionoid.py'), self.pathOrionoid, overwrite = True):
+			return self._integrateFailure('KingPin Scrapers provider integration failure', self.pathOrionoid)
+		if not OrionTools.fileCopy(self._path('orionhoster.py'), self.pathOrionHoster, overwrite = True):
+			return self._integrateFailure('KingPin Scrapers hoster provider integration failure', self.pathOrionHoster)
+		if not OrionTools.fileCopy(self._path('oriontorrent.py'), self.pathOrionTorrent, overwrite = True):
+			return self._integrateFailure('KingPin Scrapers torrent provider integration failure', self.pathOrionTorrent)
+
+		return self._integrateSuccess()
+
+	##############################################################################
+	# EZ SCRAPERS
+	##############################################################################
+
+	def _ezScrapersInitialize(self):
+		self.name = OrionIntegration.AddonEzScrapers
+		self.id = self.id(self.name)
+		self.idPlugin = 'script.module.ezscrapers'
+		self.idSettings = self.idPlugin
+		self.version = self._version(self.idPlugin)
+		self.versionNumber = int(re.sub('[^0-9]', '', self.version)) if self.version else None
+
+		self.pathPlugin = OrionTools.addonPath(self.idPlugin)
+
+		self.pathSettings = OrionTools.pathJoin(self.pathPlugin, 'resources', 'settings.xml')
+		self.pathAddon = OrionTools.pathJoin(self.pathPlugin, 'addon.xml')
+
+		self.pathScrapers = OrionTools.pathJoin(self.pathPlugin, 'lib', 'ezscrapers', 'sources_ezscrapers')
+		self.pathOrionoid = OrionTools.pathJoin(self.pathScrapers, 'orionoid.py')
+		self.pathOrionHoster = OrionTools.pathJoin(self.pathScrapers, 'hosters', 'orionhoster.py')
+		self.pathOrionTorrent = OrionTools.pathJoin(self.pathScrapers, 'torrents', 'oriontorrent.py')
+
+		self.files = []
+		self.files.append(self.pathSettings)
+		self.files.append(self.pathAddon)
+
+		self.deletes = []
+		self.deletes.append(self.pathOrionoid)
+		self.deletes.append(self.pathOrionHoster)
+		self.deletes.append(self.pathOrionTorrent)
+
+	def _ezScrapersIntegrate(self):
+		# settings.xml
+		data = self._comment(self._content('settings1.xml'), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathSettings, '"32051".*?<setting\s*type\s*=\s*[\'"]sep[\'"]\s*\/>', data, flags = re.S):
+			return self._integrateFailure('Ez Scrapers hoster settings integration failure', self.pathSettings)
+		data = self._comment(self._content('settings2.xml'), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathSettings, '"32052".*?<setting\s*type\s*=\s*[\'"]sep[\'"]\s*\/>.*?<setting\s*type\s*=\s*[\'"]sep[\'"]\s*\/>', data, flags = re.S):
+			return self._integrateFailure('Ez Scrapers torrent settings integration failure', self.pathSettings)
+
+		# addon.xml
+		data = self._comment(self._content('addon.xml') % (OrionTools.addonId(), OrionTools.addonVersion()), OrionIntegration.LanguageXml, '\t\t')
+		if not OrionTools.fileInsert(self.pathAddon, '<requires.*?(\r?\n?)\s*<\/requires>', data, flags = OrionTools.RegexDotAll, group = 1):
+			return self._integrateFailure('Ez Scrapers addon metadata integration failure', self.pathAddon)
+
+		# orionoid.py
+		if not OrionTools.fileCopy(self._path('orionoid.py'), self.pathOrionoid, overwrite = True):
+			return self._integrateFailure('Ez Scrapers provider integration failure', self.pathOrionoid)
+		if not OrionTools.fileCopy(self._path('orionhoster.py'), self.pathOrionHoster, overwrite = True):
+			return self._integrateFailure('Ez Scrapers hoster provider integration failure', self.pathOrionHoster)
+		if not OrionTools.fileCopy(self._path('oriontorrent.py'), self.pathOrionTorrent, overwrite = True):
+			return self._integrateFailure('Ez Scrapers torrent provider integration failure', self.pathOrionTorrent)
+
+		return self._integrateSuccess()
+
+	##############################################################################
 	# UNIVERSAL SCRAPERS
 	##############################################################################
 
@@ -1897,6 +2208,20 @@ class OrionIntegration:
 			return self._integrateFailure('NaN Scrapers provider integration failure', self.pathOrionoid)
 
 		return self._integrateSuccess()
+
+	##############################################################################
+	# ENCRYPTICSCRAPERS
+	##############################################################################
+
+	def _encrypticScrapersInitialize(self):
+		self.name = OrionIntegration.AddonEncrypticScrapers
+		self.id = self.id(self.name)
+		self.idPlugin = 'script.module.encrypticscrapers'
+		self.idSettings = self.idPlugin
+		self.version = self._version(self.idPlugin)
+		self.native = True
+		self.files = []
+		self.deletes = []
 
 	##############################################################################
 	# ELEMENTUM

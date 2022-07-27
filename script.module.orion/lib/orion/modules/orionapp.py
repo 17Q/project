@@ -56,7 +56,7 @@ class OrionApp:
 		global OrionAppInstance
 		global OrionAppInstances
 
-		if key == None:
+		if key is None:
 			return OrionAppInstance
 
 		for app in OrionAppInstances:
@@ -66,7 +66,7 @@ class OrionApp:
 
 		# This can cause a recursive call: OrionApp.instance() -> OrionApp.update() -> OrionApi->retrieve() -> OrionApp.instance()
 		# Do not update if the instance is still None. Not neccessary, because the API only needs the key and not the other details.
-		app = OrionApp(key = key, update = not OrionAppInstance == None)
+		app = OrionApp(key = key, update = not OrionAppInstance is None)
 		OrionAppInstance = app
 		OrionAppInstances.append(app)
 		return OrionAppInstance
@@ -80,7 +80,7 @@ class OrionApp:
 				thread.start()
 				if wait: thread.join()
 			current = self._settingsGet()
-			if not current == None and len(current) > 0:
+			if not current is None and len(current) > 0:
 				for data in current:
 					apps.append(OrionApp(data = data))
 			if not orion: apps = [app for app in apps if not app.name() == OrionTools.addonName()]
@@ -101,7 +101,7 @@ class OrionApp:
 	##############################################################################
 
 	def valid(self, default = None):
-		return not self.status() == None
+		return not self.status() is None
 
 	def id(self, default = None):
 		try: return self.mData['id']
@@ -189,12 +189,12 @@ class OrionApp:
 			apps = self._settingsGet()
 			id = self.id()
 			key = self.key()
-			if not id == None:
+			if not id is None:
 				for app in apps:
 					if app['id'] == id:
 						self.mData.update(app)
 						return True
-			elif not key == None:
+			elif not key is None:
 				for app in apps:
 					if app['key'] == key:
 						self.mData.update(app)
@@ -209,17 +209,17 @@ class OrionApp:
 			index = None
 			id = self.id()
 			key = self.key()
-			if not id == None:
+			if not id is None:
 				for i in range(len(apps)):
 					if apps[i]['id'] == id:
 						index = i
 						break
-			elif not key == None:
+			elif not key is None:
 				for i in range(len(apps)):
 					if apps[i]['key'] == key:
 						index = i
 						break
-			if index == None: apps.append(self.mData)
+			if index is None: apps.append(self.mData)
 			else: apps[index].update(self.mData)
 			self._settingsSet(apps)
 			return True
@@ -259,14 +259,14 @@ class OrionApp:
 		apps = []
 		try:
 			appsOld = self._settingsGet()
-			if not appsOld == None and len(appsOld) > 0:
+			if not appsOld is None and len(appsOld) > 0:
 				id = [app['id'] for app in appsOld]
 				api = OrionApi()
 				if api.appRetrieve(id = id):
 					appsApi = api.data()
 					for data in appsApi:
 						app = OrionApp(data = data)
-						if app.key() == None:
+						if app.key() is None:
 							for appOld in appsOld:
 								if app.id() == appOld['id']:
 									app.keySet(appOld['key'])

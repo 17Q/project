@@ -59,6 +59,7 @@ class OrionApi:
 	ParameterPassword = 'password'
 	ParameterLink = 'link'
 	ParameterLinks = 'links'
+	ParameterHash = 'hash'
 	ParameterResult = 'result'
 	ParameterQuery = 'query'
 	ParameterStatus = 'status'
@@ -77,13 +78,20 @@ class OrionApi:
 	ParameterVersion = 'version'
 	ParameterCategory = 'category'
 	ParameterSubject = 'subject'
+	ParameterFile = 'file'
 	ParameterFiles = 'files'
 	ParameterAll = 'all'
-
-	StatusUnknown = 'unknown'
-	StatusBusy = 'busy'
-	StatusSuccess = 'success'
-	StatusError = 'error'
+	ParameterIdItem = 'iditem'
+	ParameterIdStream = 'idstream'
+	ParameterRefresh = 'refresh'
+	ParameterOutput = 'output'
+	ParameterIp = 'ip'
+	ParameterGlobal = 'global'
+	ParameterContainer = 'container'
+	ParameterContainerData = 'containerdata'
+	ParameterContainerName = 'containername'
+	ParameterContainerType = 'containertype'
+	ParameterContainerSize = 'containersize'
 
 	ModeStream = 'stream'
 	ModeContainer = 'container'
@@ -94,6 +102,7 @@ class OrionApi:
 	ModePromotion = 'promotion'
 	ModeServer = 'server'
 	ModeAddon = 'addon'
+	ModeDebrid = 'debrid'
 	ModeCoupon = 'coupon'
 	ModeFlare = 'flare'
 
@@ -113,11 +122,18 @@ class OrionApi:
 	ActionRedeem = 'redeem'
 	ActionVersion = 'version'
 	ActionStatus = 'status'
+	ActionSupport = 'support'
+	ActionLookup = 'lookup'
+	ActionResolve = 'resolve'
+
+	StatusUnknown = 'unknown'
+	StatusBusy = 'busy'
+	StatusSuccess = 'success'
+	StatusError = 'error'
+	StatusConnection = 'connection'
 
 	TypeMovie = 'movie'
 	TypeShow = 'show'
-
-	AddonKodi = 'kodi'
 
 	StreamTorrent = 'torrent'
 	StreamUsenet = 'usenet'
@@ -132,11 +148,29 @@ class OrionApi:
 	VoteUp = 'up'
 	VoteDown = 'down'
 
+	DebridPremiumize = 'premiumize'
+	DebridOffcloud = 'offcloud'
+	DebridRealdebrid = 'realdebrid'
+	DebridDebridlink = 'debridlink'
+	DebridAlldebrid = 'alldebrid'
+
+	FileOriginal = 'original'
+	FileStream = 'stream'
+	FileSequential = 'sequential'
+
+	OutputList = 'list'
+	OutputChoice = 'choice'
+	OutputExpression = 'expression'
+	OutputDomain = 'domain'
+
 	DataJson = 'json'
 	DataRaw = 'raw'
 	DataBoth = 'both'
 
+	AddonKodi = 'kodi'
+
 	Last = None
+	Error = {}
 
 	##############################################################################
 	# CONSTRUCTOR
@@ -161,15 +195,25 @@ class OrionApi:
 	##############################################################################
 
 	@classmethod
-	def _keyInternal(self):
-		key = OrionSettings.getString('internal.api.orion', raw = True, obfuscate = True)
-		if not key:
+	def _keyInternal(self, key = None):
+		value = OrionSettings.getString('internal.api.orion', raw = True, obfuscate = True)
+		if not value:
 			if OrionSettings.adapt():
-				key = OrionSettings.getString('internal.api.orion', raw = True, obfuscate = True)
-			if not key:
+				value = OrionSettings.getString('internal.api.orion', raw = True, obfuscate = True)
+			if not value:
 				OrionInterface.dialogConfirm(message = 33038)
 				OrionTools.quit()
-		return key
+		if key: return key == value
+		else: return value
+
+	@classmethod
+	def _keyWeb(self, key):
+		value = '0' * 8
+		return key and key.startswith(value) and key.endswith(value)
+
+	@classmethod
+	def _keyHidden(self, key):
+		return self._keyInternal(key = key) or self._keyWeb(key = key)
 
 	def _logMessage(self):
 		result = []
@@ -197,6 +241,9 @@ class OrionApi:
 		identifier = ''
 
 		try:
+			app = [OrionTools.addonId(id = False), OrionTools.addonVersion(id = False), OrionTools.addonName(id = False)]
+			app = ' | '.join([i if i else '' for i in app])
+
 			if not mode is None: parameters[OrionApi.ParameterMode] = mode
 			if not action is None: parameters[OrionApi.ParameterAction] = action
 
@@ -219,7 +266,7 @@ class OrionApi:
 			if debug:
 				query = copy.deepcopy(parameters)
 				if query:
-					truncate = [OrionApi.ParameterId, OrionApi.ParameterPassword, OrionApi.ParameterKey, OrionApi.ParameterKeyApp, OrionApi.ParameterKeyUser, OrionApi.ParameterToken, OrionApi.ParameterData, OrionApi.ParameterLink, OrionApi.ParameterLinks, OrionApi.ParameterFiles]
+					truncate = [OrionApi.ParameterId, OrionApi.ParameterPassword, OrionApi.ParameterKey, OrionApi.ParameterKeyApp, OrionApi.ParameterKeyUser, OrionApi.ParameterToken, OrionApi.ParameterData, OrionApi.ParameterLink, OrionApi.ParameterLinks, OrionApi.ParameterFiles, OrionApi.ParameterItem, OrionApi.ParameterHash, OrionApi.ParameterContainer, OrionApi.ParameterContainerData]
 					for key, value in OrionTools.iterator(query):
 						if key in truncate: query[key] = '-- truncated --'
 				queryString = OrionTools.jsonTo(query)
@@ -229,7 +276,7 @@ class OrionApi:
 			networker = OrionNetworker(
 				link = OrionTools.linkApi(),
 				parameters = parameters,
-				headers = {'Premium' : 1 if user.subscriptionPackagePremium() else 0},
+				headers = {'Premium' : 1 if user.subscriptionPackagePremium() else 0, 'App' : app},
 				timeout = max(30, OrionSettings.getInteger('general.scraping.timeout')),
 				agent = OrionNetworker.AgentOrion,
 				debug = debug
@@ -245,6 +292,7 @@ class OrionApi:
 					else: message = 33073
 					OrionInterface.dialogNotification(title = 32320, message = message, icon = OrionInterface.IconError)
 				self.mStatus = OrionApi.StatusError
+				OrionApi.Last = {'status' : self.mStatus, 'type' : OrionApi.StatusConnection, 'description' : None, 'message' : None}
 				return self.statusSuccess()
 
 			if data == self.DataBoth:
@@ -262,13 +310,25 @@ class OrionApi:
 
 			if OrionApi.ParameterData in json: self.mData = json[OrionApi.ParameterData]
 
+			time = OrionTools.timestamp()
+			notify = not silent and OrionSettings.silentAllow(self.mStatus)
 			if self.mStatus == OrionApi.StatusError:
 				if debug:
 					OrionTools.log('Orion API Error' + identifier + ': ' + self._logMessage())
 				if not silent and OrionSettings.silentAllow(self.mType):
-					OrionInterface.dialogNotification(title = 32048, message = self.mDescription, icon = OrionInterface.IconError)
+					allow = True
+
+					# Do not show multiple notifications if multiple debrid lookups or resolves are done within 60 seconds.
+					# Multiple debrid lookups: multiple threads with chunks of hashes.
+					# Multiple debrid resolves: sequential playback.
+					if mode == OrionApi.ModeDebrid and (action == OrionApi.ActionLookup or action == OrionApi.ActionResolve):
+						if mode in OrionApi.Error and action in OrionApi.Error[mode]:
+							if time - OrionApi.Error[mode][action]['time'] < (60 if action == OrionApi.ActionLookup else 15): allow = False
+
+					if allow: OrionInterface.dialogNotification(title = 32048, message = self.mDescription, icon = OrionInterface.IconError)
+				if not mode in OrionApi.Error: OrionApi.Error[mode] = {}
+				OrionApi.Error[mode][action] = {'status' : self.mStatus, 'type' : self.mType, 'description' : self.mDescription, 'message' : self.mMessage, 'time' : time}
 			elif self.mStatus == OrionApi.StatusSuccess:
-				notify = not silent and OrionSettings.silentAllow(self.mStatus)
 				if debug:
 					OrionTools.log('Orion API Success' + identifier + ': ' + self._logMessage())
 				if mode == OrionApi.ModeStream:
@@ -309,6 +369,7 @@ class OrionApi:
 						OrionTools.log('Orion API Data' + identifier + ': ' + str(result))
 					if not silent and OrionSettings.silentAllow('exception'):
 						OrionInterface.dialogNotification(title = 32061, message = 33006, icon = OrionInterface.IconError)
+				OrionApi.Last = {'status' : self.mStatus, 'type' : OrionApi.StatusConnection, 'description' : None, 'message' : None}
 			except:
 				OrionTools.error('Orion Unknown API Exception' + identifier)
 
@@ -356,6 +417,16 @@ class OrionApi:
 		except: return None
 
 	@classmethod
+	def lastTypeConnection(self):
+		try: return OrionApi.Last['type'] == OrionApi.StatusConnection
+		except: return None
+
+	@classmethod
+	def lastTypeAuthentication(self):
+		try: return OrionApi.Last['type'] in OrionApi.TypesAuthentication
+		except: return None
+
+	@classmethod
 	def lastTypeSubscription(self):
 		try: return OrionApi.Last['type'] in OrionApi.TypesSubscription
 		except: return None
@@ -385,6 +456,13 @@ class OrionApi:
 
 	def statusError(self):
 		return self.mStatus == OrionApi.StatusError
+
+	##############################################################################
+	# ERROR
+	##############################################################################
+
+	def errorUserKey(self):
+		return self.statusError() and self.type() == OrionApi.ErrorUserKey
 
 	##############################################################################
 	# TYPE
@@ -563,6 +641,49 @@ class OrionApi:
 	def containerDownload(self, id):
 		data = self._request(mode = OrionApi.ModeContainer, action = OrionApi.ActionDownload, parameters = {OrionApi.ParameterId : id}, data = self.DataBoth)
 		return None if OrionTools.isBoolean(data) else data
+
+	##############################################################################
+	# DEBRID
+	##############################################################################
+
+	def debridSupport(self, idItem = None, idStream = None, link = None, type = None, status = None, globally = None, output = None):
+		parameters = {}
+		if idItem: parameters[OrionApi.ParameterIdItem] = idItem
+		if idStream: parameters[OrionApi.ParameterIdStream] = idStream
+		if link: parameters[OrionApi.ParameterLink] = link
+		if type: parameters[OrionApi.ParameterType] = type
+		if status: parameters[OrionApi.ParameterStatus] = status
+		if globally: parameters[OrionApi.ParameterGlobal] = globally
+		if output: parameters[OrionApi.ParameterOutput] = output
+		return self._request(mode = OrionApi.ModeDebrid, action = OrionApi.ActionSupport, parameters = parameters)
+
+	def debridLookup(self, idItem = None, idStream = None, link = None, hash = None, item = None, type = None, refresh = False):
+		parameters = {OrionApi.ParameterRefresh : refresh}
+		if idItem: parameters[OrionApi.ParameterIdItem] = idItem
+		if idStream: parameters[OrionApi.ParameterIdStream] = idStream
+		if link: parameters[OrionApi.ParameterLink] = link
+		if hash: parameters[OrionApi.ParameterHash] = hash
+		if item: parameters[OrionApi.ParameterItem] = item
+		if type: parameters[OrionApi.ParameterType] = type
+		return self._request(mode = OrionApi.ModeDebrid, action = OrionApi.ActionLookup, parameters = parameters)
+
+	def debridResolve(self, idItem = None, idStream = None, link = None, type = None, file = None, output = None, ip = None, container = None, containerData = None, containerName = None, containerType = None, containerSize = None):
+		parameters = {}
+		if idItem: parameters[OrionApi.ParameterIdItem] = idItem
+		if idStream: parameters[OrionApi.ParameterIdStream] = idStream
+		if link: parameters[OrionApi.ParameterLink] = link
+		if type: parameters[OrionApi.ParameterType] = type
+		if file: parameters[OrionApi.ParameterFile] = file
+		if output: parameters[OrionApi.ParameterOutput] = output
+		if ip: parameters[OrionApi.ParameterIp] = ip
+
+		if containerData: parameters[OrionApi.ParameterContainerData] = OrionTools.base64To(containerData)
+		elif container: parameters[OrionApi.ParameterContainer] = OrionTools.base64To(container)
+		if containerName: parameters[OrionApi.ParameterContainerName] = containerName
+		if containerType: parameters[OrionApi.ParameterContainerType] = containerType
+		if containerSize: parameters[OrionApi.ParameterContainerSize] = containerSize
+
+		return self._request(mode = OrionApi.ModeDebrid, action = OrionApi.ActionResolve, parameters = parameters)
 
 	##############################################################################
 	# NOTIFICATION

@@ -69,9 +69,10 @@ class OrionUser:
 	##############################################################################
 
 	@classmethod
-	def instance(self):
+	def instance(self, refresh = False):
 		global OrionUserInstance
-		if OrionUserInstance == None: OrionUserInstance = OrionUser()
+		if OrionUserInstance is None: OrionUserInstance = OrionUser()
+		if refresh: OrionUserInstance.update(wait = True)
 		return OrionUserInstance
 
 	##############################################################################
@@ -509,6 +510,7 @@ class OrionUser:
 				api = OrionApi()
 				result = api.userRetrieve()
 				if not result:
+					if api.lastTypeAuthentication(): self.mData = None
 					self._settingsUpdate(valid = False)
 					return False
 				premium = self.subscriptionPackagePremium()

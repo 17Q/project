@@ -276,13 +276,13 @@ class OrionInterface:
 		return xbmcgui.Dialog().yesno(self._dialogTitle(title), OrionTools.translate(message), yeslabel = labelConfirm, nolabel = labelDeny)
 
 	@classmethod
-	def dialogOptions(self, items, multiple = False, preselect = [], title = None):
+	def dialogOptions(self, items, multiple = False, select = None, title = None):
 		items = [OrionTools.translate(item) for item in items]
 		if multiple:
-			try: return xbmcgui.Dialog().multiselect(self._dialogTitle(title), items, preselect = preselect)
+			try: return xbmcgui.Dialog().multiselect(self._dialogTitle(title), items, preselect = [] if select is None else select)
 			except: return xbmcgui.Dialog().multiselect(self._dialogTitle(title), items)
 		else:
-			return xbmcgui.Dialog().select(self._dialogTitle(title), items)
+			return xbmcgui.Dialog().select(self._dialogTitle(title), items, preselect = -1 if select is None else select)
 
 	@classmethod
 	def dialogNotification(self, message, icon = None, time = 5000, sound = False, title = None, titleless = False):
