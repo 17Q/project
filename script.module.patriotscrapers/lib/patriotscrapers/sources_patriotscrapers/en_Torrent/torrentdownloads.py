@@ -1,9 +1,19 @@
 # -*- coding: utf-8 -*-
 
 '''
-    PatriotScrapers module
-'''
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+'''
 
 import re
 
@@ -81,92 +91,39 @@ class source:
                 url = urljoin(self.base_link, self.search_link.format('4', quote(query)))
             # log_utils.log('tdls url: ' + url)
 
+            self.hostDict = hostDict + hostprDict
             headers = {'User-Agent': client.agent()}
             _html = client.request(url, headers=headers)
-            items = re.findall(r'<item>(.+?)</item>', _html, re.DOTALL)
+            for r in re.findall(r'<item>(.+?)</item>', _html, re.DOTALL):
+                try:
+                    size = re.search(r'<size>([\d]+)</size>', r).groups()[0]
+                    _hash = re.search(r'<info_hash>([a-zA-Z0-9]+)</info_hash>', r).groups()[0]
+                    name = re.search(r'<title>(.+?)</title>', r).groups()[0]
+                    url = 'magnet:?xt=urn:btih:%s' % _hash.upper()
 
-            if items:
-                for r in items:
+                    if not source_utils.is_match(name, title, hdlr, self.aliases):
+                        continue
+
+                    quality, info = source_utils.get_release_quality(name)
+
                     try:
-                        size = re.search(r'<size>([\d]+)</size>', r).groups()[0]
-                        _hash = re.search(r'<info_hash>([a-zA-Z0-9]+)</info_hash>', r).groups()[0]
-                        name = re.search(r'<title>(.+?)</title>', r).groups()[0]
-                        name = cleantitle.get_title(name)
-                        url = 'magnet:?xt=urn:btih:%s' % _hash.upper()
-
-                        if not source_utils.is_match(name, title, hdlr, self.aliases):
-                            continue
-
-                        quality, info = source_utils.get_release_quality(name)
-
-                        try:
-                            dsize = float(size) / 1073741824
-                            isize = '%.2f GB' % round(dsize, 2)
-                        except:
-                            dsize, isize = 0.0, ''
-                        info.insert(0, isize)
-
-                        info = ' | '.join(info)
-
-                        sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info,
-                                        'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
+                        dsize = float(size) / 1073741824
+                        isize = '%.2f GB' % dsize
                     except:
-                        log_utils.log('tdls0 - Exception', 1)
-                        pass
+                        dsize, isize = 0.0, ''
+                    info.insert(0, isize)
 
-            if 'tvshowtitle' in data:
-                for source in self.pack_sources(title, data['season'], data['episode']):
-                    sources.append(source)
+                    info = ' | '.join(info)
 
+                    sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
+
+                except:
+                    log_utils.log('tdls0 - Exception', 1)
+                    pass
             return sources
         except:
             log_utils.log('tdls - Exception', 1)
             return sources
-
-    def pack_sources(self, title, season, episode):
-        _sources = []
-        try:
-            query = '%s season %s' % (title, season)
-            url = urljoin(self.base_link, self.search_link.format('8', quote(query)))
-            headers = {'User-Agent': client.agent()}
-            _html = client.request(url, headers=headers)
-            items = re.findall(r'<item>(.+?)</item>', _html, re.DOTALL)
-
-            if items:
-                for r in items:
-                    try:
-                        size = re.search(r'<size>([\d]+)</size>', r).groups()[0]
-                        _hash = re.search(r'<info_hash>([a-zA-Z0-9]+)</info_hash>', r).groups()[0]
-                        name = re.search(r'<title>(.+?)</title>', r).groups()[0]
-                        name = cleantitle.get_title(name)
-                        url = 'magnet:?xt=urn:btih:%s' % _hash.upper()
-
-                        if not source_utils.is_season_match(name, title, season, self.aliases):
-                            continue
-
-                        pack = '%s_%s' % (season, episode)
-
-                        quality, info = source_utils.get_release_quality(name)
-
-                        try:
-                            dsize = float(size) / 1073741824
-                            isize = '%.2f GB' % round(dsize, 2)
-                        except:
-                            dsize, isize = 0.0, ''
-                        info.insert(0, isize)
-
-                        info = ' | '.join(info)
-
-                        _sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info,
-                                         'direct': False, 'debridonly': True, 'size': dsize, 'name': name, 'pack': pack})
-                    except:
-                        log_utils.log('tdls pack - Exception', 1)
-                        pass
-            return _sources
-
-        except:
-            log_utils.log('tdls pack_exc', 1)
-            return _sources
 
     def resolve(self, url):
         return url

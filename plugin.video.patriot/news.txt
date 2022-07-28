@@ -1,5 +1,10 @@
 [B]Updates[/B]
 
+[B]July 28, 2022[/B]
+[B]Version 1.0.8[/B]
+- Update code
+- Orion support
+
 [B]July 26, 2022[/B]
 [B]Version 1.0.7[/B]
 - Setting, Language edits
@@ -88,3 +93,15 @@
 - Sign up at https://furk.net
 - Free Trials are also available
 - From Main Menu - Tools/Settings/Premium Accounts - Enter your Furk Username, Password and API Key
+
+[B]How to Install Orion Add-on[/B]
+- From Patriot, Select Tools
+- Select Orion: Install
+- Go back to Patriot main menu
+- Select Tools again
+- Select Orion: Settings
+- Select Account
+- Select Authentication
+
+
+

@@ -6,10 +6,7 @@ import os
 try:
     from .modules import cfscrape
     cfScraper = cfscrape.create_scraper()
-except ImportError:
-    from .modules import log_utils
-    log_utils.log('cfscrape import exc', 1)
-    pass
+except: pass
 
 from six.moves.urllib_parse import parse_qs, urljoin, urlparse, urlencode, quote, unquote, quote_plus, unquote_plus
 

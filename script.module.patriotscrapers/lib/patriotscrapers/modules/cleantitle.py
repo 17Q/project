@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-"""
-    Exodus Add-on
-    ///Updated for Patriot///
+'''
+    Patriot Add-on
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,10 +15,12 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
+'''
+
 
 import re
 import unicodedata
+from string import printable
 from six import ensure_str, ensure_text, PY2
 from six.moves.urllib_parse import unquote
 from patriotscrapers.modules import client
@@ -29,22 +30,22 @@ def get(title):
     if not title: return
     title = unquote(title)
     title = client.replaceHTMLCodes(title)
-    title = title.replace('&', 'and').replace('_', '')
+    title = title.replace('&', 'and')
     title = normalize(title)
     title = re.sub(r'<.*?>', '', title).lower()
     title = re.sub(r'\[.*?\]', '', title)
     # title = re.sub(r'\n|([[].+?[]])|([(].+?[)])|\s(vs[.]|v[.])\s|(:|;|-|–|"|,|\'|\_|\.|\+|\?)|\s', '', title) # fuck it
-    title = re.sub(r'[^\w]+', '', title)
+    title = re.sub(r'[^a-z0-9]+', '', title)
     return title
 
 
-def get_title(title, sep='.'):
+def get_title(title, sep=' '):
     if not title: return
     title = unquote(title)
     title = client.replaceHTMLCodes(title)
-    title = title.replace('&', 'and').replace('.html', '').replace('_', sep)
+    title = title.replace('&', 'and').replace('.html', '')
     title = normalize(title)
-    title = re.sub('[^\w\%s]+' % sep, sep, title)
+    title = re.sub('[^A-Za-z0-9\%s]+' % sep, sep, title)
     title = re.sub('\%s{2,}' % sep, sep, title)
     title = title.strip(sep)
     return title
@@ -130,8 +131,8 @@ def normalize(title):
         if PY2:
             try: return title.decode('ascii').encode("utf-8")
             except: pass
-            return str(''.join(c for c in unicodedata.normalize('NFKD', title.decode('utf-8')) if not unicodedata.combining(c)))
-        return u''.join(c for c in unicodedata.normalize('NFKD', ensure_text(title)) if not unicodedata.combining(c))
+            return str(''.join(c for c in unicodedata.normalize('NFKD', title.decode('utf-8')) if c in printable))
+        return u''.join(c for c in unicodedata.normalize('NFKD', ensure_text(title)) if c in printable)
     except:
         return title
 
@@ -144,8 +145,8 @@ def clean_search_query(url):
 def scene_title(title, year):
     title = normalize(title)
     title = ensure_str(title, errors='ignore')
-    title = title.replace('&', 'and').replace('-', ' ').replace('–', ' ').replace('_', ' ').replace('/', ' ').replace('*', ' ').replace('.', ' ')
-    title = re.sub('[^\w\s]+', '', title)
+    title = title.replace('&', 'and').replace('-', ' ').replace('–', ' ').replace('/', ' ').replace('*', ' ').replace('.', ' ')
+    title = re.sub('[^A-Za-z0-9 ]+', '', title)
     title = re.sub(' {2,}', ' ', title).strip()
     if title.startswith('Birdman or') and year == '2014': title = 'Birdman'
     if title == 'Birds of Prey and the Fantabulous Emancipation of One Harley Quinn' and year == '2020': title = 'Birds of Prey'
@@ -156,8 +157,8 @@ def scene_title(title, year):
 def scene_tvtitle(title, year, season, episode):
     title = normalize(title)
     title = ensure_str(title, errors='ignore')
-    title = title.replace('&', 'and').replace('-', ' ').replace('–', ' ').replace('_', ' ').replace('/', ' ').replace('*', ' ').replace('.', ' ')
-    title = re.sub('[^\w\s]+', '', title)
+    title = title.replace('&', 'and').replace('-', ' ').replace('–', ' ').replace('/', ' ').replace('*', ' ').replace('.', ' ')
+    title = re.sub('[^A-Za-z0-9 ]+', '', title)
     title = re.sub(' {2,}', ' ', title).strip()
     if title in ['The Haunting', 'The Haunting of Bly Manor', 'The Haunting of Hill House'] and year == '2018':
         if season == '1': title = 'The Haunting of Hill House'

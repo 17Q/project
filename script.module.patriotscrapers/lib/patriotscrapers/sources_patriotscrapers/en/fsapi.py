@@ -90,14 +90,6 @@ class source:
             for url in urls:
 
                 try:
-                    url = url.replace('vidcloud.icu', 'vidembed.io').replace(
-                                      'vidcloud9.com', 'vidembed.io').replace(
-                                      'vidembed.cc', 'vidembed.io').replace(
-                                      'vidnext.net', 'vidembed.me')
-                    if 'vidembed' in url:
-                        for source in self.get_vidembed(url, hostDict):
-                            sources.append(source)
-
                     valid, host = source_utils.is_host_valid(url, hostDict)
                     if valid:
                         sources.append({'source': host, 'quality': '720p', 'language': 'en', 'url': url, 'direct': False, 'debridonly': False})
@@ -107,13 +99,11 @@ class source:
 
                     # elif 'vidsrc' in url: # vidsrc turned on a scraper of its own
                         # try:
-                            # r = client.request(url, headers={'User-Agent': client.agent(), 'Referer': 'https://v2.vidsrc.me'})
+                            # r = cfScraper.get(url, headers={'User-Agent': client.agent(), 'Referer': 'https://v2.vidsrc.me'}).text
                             # r = re.findall('data-hash="(.+?)"', r)[0]
-                            # log_utils.log('fsapi_vidsrc_r: ' + repr(r))
                             # r = 'https://v2.vidsrc.me/src/%s' % r
-                            # r2 = client.request(r, headers={'User-Agent': client.agent(), 'Referer': 'https://v2.vidsrc.me'})
-                            # links = re.findall("'player' src='(.+?)'", r2) + re.findall('"file": "(.+?)"', r2)
-                            # log_utils.log('fsapi_vidsrc_links: ' + repr(links))
+                            # r2 = cfScraper.get(r, headers={'User-Agent': client.agent(), 'Referer': 'https://v2.vidsrc.me'}).text
+                            # links = re.findall("'player' src='(.+?)'", r2)
                             # links = [link + '|Referer=https://vidsrc.me' for link in links]
                             # for url in links:
                                 # url = url if url.startswith('http') else 'https:{0}'.format(url)
@@ -132,23 +122,3 @@ class source:
     def resolve(self, url):
         #log_utils.log('FSAPI url: ' + repr(url))
         return url
-
-    def get_vidembed(self, link, hostDict):
-        sources = []
-        try:
-            html = client.request(link)
-            urls = client.parseDOM(html, 'li', ret='data-video')
-            if urls:
-                for url in urls:
-                    url = url.replace('vidcloud.icu', 'vidembed.io').replace(
-                                      'vidcloud9.com', 'vidembed.io').replace(
-                                      'vidembed.cc', 'vidembed.io').replace(
-                                      'vidnext.net', 'vidembed.me')
-                    valid, host = source_utils.is_host_valid(url, hostDict)
-                    if valid:
-                        url = url.split('&title=')[0]
-                        sources.append({'source': host, 'quality': '720p', 'language': 'en', 'url': url, 'direct': False, 'debridonly': False})
-            return sources
-        except Exception:
-            #log_utils.log('vidembed', 1)
-            return sources

@@ -17,6 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+
 from patriotscrapers.modules import log_utils
 
 try:

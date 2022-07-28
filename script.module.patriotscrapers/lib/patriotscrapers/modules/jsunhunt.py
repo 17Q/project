@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """
     Javascript (h,u,n,t,e,r) Deobfuscator
     Copyright (C) 2019 jairoxyz, gujal
@@ -23,6 +24,7 @@
         unhunted = unhunt(some_string)
 
 """
+
 
 from functools import reduce
 import re

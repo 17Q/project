@@ -1,4 +1,8 @@
 
+[B]Version 1.0.8[/B]
+- Update code
+- Orion support
+
 [B]Version 1.0.7[/B]
 - Setting, Language edits
 

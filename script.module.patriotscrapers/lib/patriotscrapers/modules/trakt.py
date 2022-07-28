@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-"""
-    Exodus Add-on
-    ///Updated for Patriot///
+'''
+    Patriot Add-on
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
+'''
 
 
 import re
@@ -46,8 +45,8 @@ CLIENT_SECRET = control.addon('plugin.video.patriot').getSetting('trakt.client_s
 REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
 
 if V2_API_KEY == "" or CLIENT_SECRET == "":
-    V2_API_KEY = base64.b64decode("OGQ5Njg1M2Y0MGQ1MWJkMDY2MWI2Mzc4ZjUzYzM0ZTM2YzVjZTQzZjM0MmI0YTg0NWI3Nzk4N2Q0NjZjMjY0ZQ==")
-    CLIENT_SECRET = base64.b64decode("NTg2ZDAzNGJhNzM3OGU2ZDY4Y2NjODE5ZWE4M2M5ZmU5N2I5ODg1Yjk2YTQ1ZGQ2OTQ1OWI3OWNkZGU0MmU4OQ==")
+    V2_API_KEY = base64.b64decode("ZjFiYmNkNDM0MTJhOGU0NzlhNGYwMDA2MWMyODVjYjY4Yjg3OWY0ZDEwODQ3NGU3ZTViNzBmMTY1YTM0MTg5YQ==")
+    CLIENT_SECRET = base64.b64decode("ZTNhNTZiMjMxOTI4YmU3NjYyYTJkN2UxNjVlMGFjNGQ5M2YyY2E0MjNjNjM3ZTc1YWFhYWE1NTg5YzAwMDc5NQ==")
 
 def __getTrakt(url, post=None):
     try:
@@ -57,13 +56,6 @@ def __getTrakt(url, post=None):
 
         if getTraktCredentialsInfo():
             headers.update({'Authorization': 'Bearer %s' % control.addon('plugin.video.patriot').getSetting('trakt.token')})
-
-        # need to fix client.request post
-        # result = client.request(url, post=post, headers=headers, output='extended', error=True)
-        # result = utils.byteify(result)
-        # resp_code = result[1]
-        # resp_header = result[2]
-        # result = result[0]
 
         if not post:
             r = requests.get(url, headers=headers, timeout=30)
@@ -93,9 +85,6 @@ def __getTrakt(url, post=None):
         oauth = urllib_parse.urljoin(BASE_URL, '/oauth/token')
         opost = {'client_id': V2_API_KEY, 'client_secret': CLIENT_SECRET, 'redirect_uri': REDIRECT_URI, 'grant_type': 'refresh_token', 'refresh_token': control.addon('plugin.video.patriot').getSetting('trakt.refresh')}
 
-        # result = client.request(oauth, post=json.dumps(opost), headers=headers)
-        # result = utils.json_loads_as_str(result)
-
         result = requests.post(oauth, data=json.dumps(opost), headers=headers, timeout=30).json()
         log_utils.log('Trakt token refresh: ' + repr(result))
 
@@ -104,10 +93,6 @@ def __getTrakt(url, post=None):
         control.setSetting(id='trakt.refresh', value=refresh)
 
         headers['Authorization'] = 'Bearer %s' % token
-
-        # result = client.request(url, post=post, headers=headers, output='extended', error=True)
-        # result = utils.byteify(result)
-        # return result[0], result[2]
 
         if not post:
             r = requests.get(url, headers=headers, timeout=30)

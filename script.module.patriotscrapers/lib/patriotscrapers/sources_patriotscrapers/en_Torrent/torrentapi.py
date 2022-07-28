@@ -70,14 +70,14 @@ class source:
                     if not file['episode_info']['imdb'] == imdb:
                         continue
 
-                    name = cleantitle.get_title(file['title'])
+                    name = file['title']
 
                     url = file['download']
                     url = url.split('&tr')[0]
                     quality, info = source_utils.get_release_quality(name, url)
                     try:
                         dsize = float(file['size']) / 1073741824
-                        isize = '%.2f GB' % round(dsize, 2)
+                        isize = '%.2f GB' % dsize
                     except:
                         dsize, isize = 0.0, ''
                     info.insert(0, isize)

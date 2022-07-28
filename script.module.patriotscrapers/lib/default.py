@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys, base64
+import sys
 import six
 from six.moves import urllib_parse
 from patriotscrapers import sources_patriotscrapers
@@ -12,6 +12,7 @@ params = dict(urllib_parse.parse_qsl(sys.argv[2].replace('?', '')))
 action = params.get('action')
 mode = params.get('mode')
 query = params.get('query')
+
 
 def ScraperChoice():
     from patriotscrapers import providerSources
@@ -37,7 +38,6 @@ def ToggleProviderAll(enable):
 
 if action == "patriotscrapersettings":
     control.openSettings('0.0', 'script.module.patriotscrapers')
-
 
 elif mode == "patriotscrapersettings":
     control.openSettings('0.0', 'script.module.patriotscrapers')
@@ -108,17 +108,3 @@ elif action == "toggleAllTorrent":
 #    xbmc.log('All Torrent providers = %s' % sourceList,2)
     control.sleep(200)
     control.openSettings(query, "script.module.patriotscrapers")
-
-
-# elif action == "Defaults":
-    # sourceList = ['123fox','123hbo','123movieshubz','animetoon','azmovies','bnwmovies','cartoonhd',
-    # 'extramovies','fmovies','freefmovies','freeputlockers','gostream','Hdmto','hdpopcorns',
-    # 'kattv','l23movies','iwaatch','openloadmovie','primewire','putlocker','reddit','rlsbb','scenerls',
-    # 'seehd','series9','seriesfree','seriesonline','solarmoviez','tvbox','vidics','watchseries',
-    # 'xwatchseries','vdonip','downflix','ymovies','ddlspot','filmxy','kickass2','sezonlukdizi']
-    # for i in sourceList:
-        # source_setting = 'provider.' + i
-        # control.setSetting(source_setting, params['setting'])
-    # control.sleep(200)
-    # control.openSettings(query, "script.module.patriotscrapers")
-
