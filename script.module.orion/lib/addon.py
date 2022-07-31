@@ -239,6 +239,9 @@ elif action == 'integrationFen':
 elif action == 'integrationPov':
 	OrionIntegration.executePov()
 
+elif action == 'integrationUmbrella':
+	OrionIntegration.executeUmbrella()
+
 elif action == 'integrationKingpin':
 	OrionIntegration.executeKingPin()
 
@@ -284,6 +287,9 @@ elif action == 'integrationContinuum':
 elif action == 'integrationMarauder':
 	OrionIntegration.executeMarauder()
 
+elif action == 'integrationPatriot':
+	OrionIntegration.executePatriot()
+
 elif action == 'integrationAsguard':
 	OrionIntegration.executeAsguard()
 
@@ -304,6 +310,12 @@ elif action == 'integrationLambdaScrapers':
 
 elif action == 'integrationFenomScrapers':
 	OrionIntegration.executeFenomScrapers()
+
+elif action == 'integrationCocoScrapers':
+	OrionIntegration.executeCocoScrapers()
+
+elif action == 'integrationUmbrellaScrapers':
+	OrionIntegration.executeUmbrellaScrapers()
 
 elif action == 'integrationKingpinScrapers':
 	OrionIntegration.executeKingPinScrapers()

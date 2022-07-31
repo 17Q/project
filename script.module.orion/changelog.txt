@@ -1,4 +1,11 @@
 
+[B]4.9.5 (2022.07.31)[/B]
+- Added Patriot integration.
+- Added CocoScrapers integration.
+- Added Umbrella integration.
+- Added UmbrellaScrapers integration.
+- Updated Fen integration.
+
 [B]4.9.4 (2022.07.23)[/B]
 - Fixed initialization.
 

@@ -98,6 +98,7 @@
 		<setting id="integration.deceit" type="text" default="" visible="false" />
 		<setting id="integration.fen" type="text" default="" visible="false" />
 		<setting id="integration.pov" type="text" default="" visible="false" />
+		<setting id="integration.umbrella" type="text" default="" visible="false" />
 		<setting id="integration.genesis" type="text" default="" visible="false" />
 		<setting id="integration.exodus" type="text" default="" visible="false" />
 		<setting id="integration.exodusredux" type="text" default="" visible="false" />
@@ -106,6 +107,7 @@
 		<setting id="integration.boommovies" type="text" default="" visible="false" />
 		<setting id="integration.continuum" type="text" default="" visible="false" />
 		<setting id="integration.marauder" type="text" default="" visible="false" />
+		<setting id="integration.patriot" type="text" default="" visible="false" />
 		<setting id="integration.asguard" type="text" default="" visible="false" />
 		<setting id="integration.asgard" type="text" default="" visible="false" />
 		<setting id="integration.thecrew" type="text" default="" visible="false" />
@@ -113,6 +115,8 @@
 		<setting id="integration.openscrapers" type="text" default="" visible="false" />
 		<setting id="integration.lambdascrapers" type="text" default="" visible="false" />
 		<setting id="integration.fenomscrapers" type="text" default="" visible="false" />
+		<setting id="integration.cocoscrapers" type="text" default="" visible="false" />
+		<setting id="integration.umbrellascrapers" type="text" default="" visible="false" />
 		<setting id="integration.universalscrapers" type="text" default="" visible="false" />
 		<setting id="integration.universaldebrid" type="text" default="" visible="false" />
 		<setting id="integration.nanscrapers" type="text" default="" visible="false" />

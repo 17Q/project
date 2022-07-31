@@ -376,7 +376,7 @@
 	</extension>
 </addon>
 
-<addon id="script.module.orion" version="4.9.4b" name="Orion" provider-name="Orion">
+<addon id="script.module.orion" version="4.9.5" name="Orion" provider-name="Orion">
 	<requires>
 		<import addon="xbmc.addon" version="17.0.000" />
 		<import addon="repository.orion" version="1.0.0" optional="true" />
