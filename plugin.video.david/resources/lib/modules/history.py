@@ -1,100 +1,77 @@
 # -*- coding: utf-8 -*-
-import xbmcaddon
 from datetime import timedelta
-from modules import david_cache
-# from modules.utils import logger
+from caches.main_cache import main_cache
+from modules import kodi_utils
+# logger = kodi_utils.logger
 
-__addon__ = xbmcaddon.Addon(id='plugin.video.david')
-_cache = david_cache.DavidCache()
+json, ls, icon = kodi_utils.json, kodi_utils.local_string, kodi_utils.get_icon('search')
+insert_string_4, insert_string_5 = '%s %s %s %s', '%s %s %s %s %s'
+david_str, delete_str, search_str, hist_str, vid_str, mov_str, key_str = ls(32036), ls(32785), ls(32450), ls(32486), ls(32491), ls(32028), ls(32092)
+tv_str, furk_str, easy_str, peop_str, imdb_str, tmdb_str, coll_str = ls(32029), ls(32069), ls(32070), ls(32507), ls(32064), ls(32068), ls(32499)
+clear_history_list = [(insert_string_4 % (delete_str, mov_str, search_str, hist_str), 'movie_queries'),
+					(insert_string_4 % (delete_str, tv_str, search_str, hist_str), 'tvshow_queries'), 
+					(insert_string_4 % (delete_str, peop_str, search_str, hist_str), 'people_queries'),
+					(insert_string_5 % (delete_str, imdb_str, key_str, mov_str, hist_str), 'imdb_keyword_movie_queries'),
+					(insert_string_5 % (delete_str, imdb_str, key_str, tv_str, hist_str), 'imdb_keyword_tvshow_queries'),
+					(insert_string_5 % (delete_str, furk_str, vid_str, search_str, hist_str), 'furk_video_queries'), 
+					(insert_string_4 % (delete_str, easy_str, search_str, hist_str), 'easynews_video_queries'), 
+					(insert_string_5 % (delete_str, tmdb_str, coll_str, search_str, hist_str), 'tmdb_collections_queries')]
+
+def get_search_term(params):
+	kodi_utils.close_all_dialog()
+	media_type = params.get('media_type', '')
+	search_type = params.get('search_type', 'media_title')
+	if search_type == 'media_title':
+		mode, action, string = ('build_movie_list', 'tmdb_movies_search', 'movie_queries') if media_type == 'movie' else ('build_tvshow_list', 'tmdb_tv_search', 'tvshow_queries')
+		url_params = {'mode': mode, 'action': action}
+	elif search_type == 'people': string = 'people_queries'
+	elif search_type == 'imdb_keyword':
+		url_params, string = {'mode': 'imdb_build_keyword_results', 'media_type': media_type}, 'imdb_keyword_%s_queries' % media_type
+	elif search_type == 'furk_direct':
+		url_params, string = {'mode': 'furk.search_furk', 'media_type': media_type}, 'furk_video_queries'
+	elif search_type == 'easynews_video':
+		url_params, string = {'mode': 'easynews.search_easynews'}, 'easynews_video_queries'
+	elif search_type == 'tmdb_collections':
+		url_params, string = {'mode': 'build_movie_list', 'action': 'tmdb_movies_search_collections'}, 'tmdb_collections_queries'
+	query = params.get('query', None) or kodi_utils.dialog.input(david_str)
+	if not query: return
+	query = kodi_utils.unquote(query)
+	add_to_search_history(query, string)
+	if search_type == 'people':
+		from indexers.people import person_search
+		return person_search(query)
+	url_params['query'] = query
+	action = 'ActivateWindow(Videos,%s,return)' if kodi_utils.external_browse() else 'Container.Update(%s)'
+	return kodi_utils.execute_builtin(action % kodi_utils.build_url(url_params))
 
 def add_to_search_history(search_name, search_list):
-    try:
-        result = []
-        cache = _cache.get(search_list)
-        if cache: result = cache
-        if search_name in result: result.remove(search_name)
-        result.insert(0, search_name)
-        result = result[:10]
-        _cache.set(search_list, result, expiration=timedelta(days=365))
-    except: return
+	try:
+		result = []
+		cache = main_cache.get(search_list)
+		if cache: result = cache
+		if search_name in result: result.remove(search_name)
+		result.insert(0, search_name)
+		result = result[:50]
+		main_cache.set(search_list, result, expiration=timedelta(days=365))
+	except: return
 
-def remove_from_history():
-    import xbmc
-    import sys
-    try: from urlparse import parse_qsl
-    except ImportError: from urllib.parse import parse_qsl
-    from modules.nav_utils import notification
-    params = dict(parse_qsl(sys.argv[2].replace('?','')))
-    try:
-        result = _cache.get(params['setting_id'])
-        result.remove(params.get('name'))
-        _cache.set(params['setting_id'], result, expiration=timedelta(days=365))
-        notification('[B]%s[/B] Removed from History' % params.get('name').upper(), 3500)
-        xbmc.executebuiltin('Container.Refresh')
-    except: return
+def remove_from_search_history(params):
+	try:
+		result = main_cache.get(params['setting_id'])
+		result.remove(params.get('query'))
+		main_cache.set(params['setting_id'], result, expiration=timedelta(days=365))
+		kodi_utils.notification(32576, 2500)
+		kodi_utils.container_refresh()
+	except: return
 
 def clear_search_history():
-    import xbmcgui
-    from modules.nav_utils import notification
-    dialog = xbmcgui.Dialog()
-    choice_list = [('Delete Movie Search History', 'movie_queries', 'Movie'),
-                   ('Delete TV Show Search History', 'tvshow_queries', 'TV Show'), 
-                   ('Delete People Search History', 'people_queries', 'People'),
-                   ('Delete Furk Video Search History', 'furk_video_queries', 'Furk Video'), 
-                   ('Delete Furk Audio Search History', 'furk_audio_queries', 'Furk Audio'), 
-                   ('Delete Easynews Video Search History', 'easynews_video_queries', 'Easynews Video')]
-    try:
-        selection = dialog.select('Choose Search History to Delete', [i[0] for i in choice_list])
-        if selection < 0: return
-        setting = choice_list[selection][1]
-        _cache.set(setting, '', expiration=timedelta(days=365))
-        notification("%s Search History Removed" % choice_list[selection][2], 3500)
-    except: return
+	try:
+		list_items = [{'line1': item[0], 'icon': icon} for item in clear_history_list]
+		kwargs = {'items': json.dumps(list_items), 'heading': david_str, 'enumerate': 'false', 'multi_choice': 'false', 'multi_line': 'false'}
+		setting = kodi_utils.select_dialog([item[1] for item in clear_history_list], **kwargs)
+		if setting == None: return
+		main_cache.set(setting, '', expiration=timedelta(days=365))
+		kodi_utils.notification(32576, 2500)
+	except: return
 
-def search_history():
-    import xbmc, xbmcgui, xbmcplugin
-    import sys, os
-    try: from urlparse import parse_qsl
-    except ImportError: from urllib.parse import parse_qsl
-    try: from urllib import unquote
-    except ImportError: from urllib.parse import unquote
-    from modules.nav_utils import build_url, setView
-    from modules.settings import get_theme
-    try:
-        params = dict(parse_qsl(sys.argv[2].replace('?','')))
-        (search_setting, display_title) = ('movie_queries', 'MOVIE') if params['action'] == 'movie' \
-                                     else ('tvshow_queries', 'TVSHOW') if params['action'] == 'tvshow' \
-                                     else ('people_queries', 'PEOPLE') if params['action'] == 'people' \
-                                     else ('furk_video_queries', 'FURK VIDEO') if params['action'] == 'furk_video' \
-                                     else ('furk_audio_queries', 'FURK AUDIO') if params['action'] == 'furk_audio' \
-                                     else ('easynews_video_queries', 'EASYNEWS VIDEO') if params['action'] == 'easynews_video' \
-                                     else ''
-        history = _cache.get(search_setting)
-        if not history: return
-    except: return
-    icon = os.path.join(get_theme(), 'search.png')
-    fanart = os.path.join(xbmc.translatePath(__addon__.getAddonInfo('path')), 'fanart.jpg')
-    for h in history:
-        try:
-            cm = []
-            name = unquote(h)
-            url_params = {'mode': 'build_movie_list', 'action': 'tmdb_movies_search', 'query': name} if params['action'] == 'movie' \
-                    else {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_search', 'query': name} if params['action'] == 'tvshow' \
-                    else {'mode': 'people_search.search', 'actor_name': name} if params['action'] == 'people' \
-                    else {'mode': 'furk.search_furk', 'db_type': 'video', 'query': name} if params['action'] == 'furk_video' \
-                    else {'mode': 'furk.search_furk', 'db_type': 'audio', 'music': True, 'query': name} if params['action'] == 'furk_audio' \
-                    else {'mode': 'easynews.search_easynews', 'query': name} if params['action'] == 'easynews_video' \
-                    else ''
-            display = '[B]%s SEARCH : [/B]' % display_title + name 
-            url = build_url(url_params)
-            cm.append(("[B]Remove from history[/B]",'XBMC.RunPlugin(%s?mode=%s&setting_id=%s&name=%s)' \
-                % (sys.argv[0], 'remove_from_history', search_setting, name)))
-            listitem = xbmcgui.ListItem(display)
-            listitem.setArt({'icon': icon, 'poster': icon, 'thumb': icon, 'fanart': fanart, 'banner': icon})
-            listitem.addContextMenuItems(cm)
-            xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, listitem, isFolder=True)
-        except: pass
-    xbmcplugin.setContent(int(sys.argv[1]), 'addons')
-    xbmcplugin.endOfDirectory(int(sys.argv[1]))
-    setView('view.main')
-    
+	

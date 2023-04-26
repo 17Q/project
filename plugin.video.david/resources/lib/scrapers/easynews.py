@@ -1,80 +1,54 @@
-import xbmcaddon, xbmcgui
-import re
-import json
-from apis.easynews_api import EasyNewsAPI
-from modules.utils import get_release_quality, get_file_info, clean_file_name, normalize
-from scrapers import build_internal_scrapers_label, label_settings
-from modules import settings
-# from modules.utils import logger
+# -*- coding: utf-8 -*-
+import sys
+from apis.easynews_api import import_easynews
+from modules import source_utils
+from modules.utils import clean_file_name, normalize
+from modules.settings import filter_by_name, easynews_language_filter
+# from modules.kodi_utils import logger
 
-__addon_id__ = 'plugin.video.david'
-__addon__ = xbmcaddon.Addon(id=__addon_id__)
-window = xbmcgui.Window(10000)
-EasyNews = EasyNewsAPI()
+EasyNews = import_easynews()
+internal_results, check_title, get_aliases_titles, extras = source_utils.internal_results, source_utils.check_title, source_utils.get_aliases_titles, source_utils.EXTRAS
+get_file_info, release_info_format = source_utils.get_file_info, source_utils.release_info_format
 
-class EasyNewsSource:
-    def __init__(self):
-        self.scrape_provider = 'easynews'
-        self.sources = []
-        self.max_results = int(__addon__.getSetting('easynews_limit'))
-        self.max_gb = __addon__.getSetting('easynews_maxgb')
-        self.max_bytes = int(self.max_gb) * 1024 * 1024 * 1024
+class source:
+	def __init__(self):
+		self.scrape_provider = 'easynews'
+		self.sources = []
 
-    def results(self, info):
-        try:
-            self.info = info
-            search_name = self._search_name()
-            files = EasyNews.search(search_name)
-            files = files[0:self.max_results]
-            self.label_settings = label_settings(self.info['scraper_settings'], self.scrape_provider)
-            for item in files:
-                try:
-                    if self.max_bytes:
-                        match = re.search('([\d.]+)\s+(.*)', item['size'])
-                        if match:
-                            size_bytes = self.to_bytes(*match.groups())
-                            if size_bytes > self.max_bytes:
-                                continue
-                    file_name = normalize(item['name'])
-                    file_dl = item['url_dl']
-                    size = float(int(item['rawSize']))/1073741824
-                    details = get_file_info(file_name)
-                    video_quality = get_release_quality(file_name, file_dl)
-                    label, multiline_label = build_internal_scrapers_label(self.label_settings, file_name, details, size, video_quality)
-                    self.sources.append({'name': file_name,
-                                    'label': label,
-                                    'multiline_label': multiline_label,
-                                    'quality': video_quality,
-                                    'size': size,
-                                    'url_dl': file_dl,
-                                    'id': file_dl,
-                                    'local': False,
-                                    'direct': True,
-                                    'source': self.scrape_provider,
-                                    'scrape_provider': self.scrape_provider})
-                except: pass
-            window.setProperty('easynews_source_results', json.dumps(self.sources))
-        except Exception as e:
-            from modules.utils import logger
-            logger('DAVID easynews scraper Exception', e)
-        return self.sources
+	def results(self, info):
+		try:
+			filter_lang, lang_filters = easynews_language_filter()
+			filter_title = filter_by_name('easynews')
+			self.media_type, title, self.year, self.season, self.episode = info.get('media_type'), info.get('title'), int(info.get('year')), info.get('season'), info.get('episode')
+			self.search_title = clean_file_name(title).replace('&', 'and')
+			files = EasyNews.search(self._search_name(), info.get('expiry_times')[0])
+			if not files: return internal_results(self.scrape_provider, self.sources)
+			self.aliases = get_aliases_titles(info.get('aliases', []))
+			def _process():
+				for item in files:
+					try:
+						if item.get('short_vid', False): continue
+						file_name = normalize(item['name'])
+						if any(x in file_name.lower() for x in extras): continue
+						if filter_title and not check_title(title, file_name, self.aliases, self.year, self.season, self.episode): continue
+						if filter_lang and not any(i in lang_filters for i in item['language']) : continue
+						display_name = clean_file_name(file_name).replace('html', ' ').replace('+', ' ').replace('-', ' ')
+						url_dl, size = item['url_dl'], round(float(int(item['rawSize']))/1073741824, 2)
+						video_quality, details = get_file_info(name_info=release_info_format(file_name))
+						source_item = {'name': file_name, 'display_name': display_name, 'quality': video_quality, 'size': size, 'size_label': '%.2f GB' % size,
+									'extraInfo': details, 'url_dl': url_dl, 'id': url_dl, 'local': False, 'direct': True, 'source': self.scrape_provider,
+									'scrape_provider': self.scrape_provider}
+						yield source_item
+					except Exception as e:
+						from modules.kodi_utils import logger
+						logger('DAVID easynews scraper yield source error', str(e))
+			self.sources = list(_process())
+		except Exception as e:
+			from modules.kodi_utils import logger
+			logger('DAVID easynews scraper Exception', str(e))
+		internal_results(self.scrape_provider, self.sources)
+		return self.sources
 
-    def _search_name(self):
-        search_title = clean_file_name(self.info.get("title"))
-        db_type = self.info.get("db_type")
-        year = self.info.get("year")
-        years = '%s,%s,%s' % (str(int(year - 1)), year, str(int(year + 1)))
-        season = self.info.get("season")
-        episode = self.info.get("episode")
-        if db_type == 'movie': search_name = '"%s" %s' % (search_title, years)
-        else: search_name = '%s S%02dE%02d' % (search_title,  int(season), int(episode))
-        return search_name
-
-    def to_bytes(self, num, unit):
-        unit = unit.upper()
-        if unit.endswith('B'): unit = unit[:-1]
-        units = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z']
-        try: mult = pow(1024, units.index(unit))
-        except: mult = sys.maxint
-        return int(float(num) * mult)
-
+	def _search_name(self):
+		if self.media_type == 'movie': return '%s %d' % (self.search_title, self.year)
+		else: return '%s S%02dE%02d' % (self.search_title,  self.season, self.episode)

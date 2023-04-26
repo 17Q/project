@@ -1,251 +1,177 @@
-import xbmc, xbmcgui, xbmcvfs
-import os
+# -*- coding: utf-8 -*-
 import time
-import datetime
-import sqlite3 as database
+from caches.debrid_cache import debrid_cache
 from apis.real_debrid_api import RealDebridAPI
 from apis.premiumize_api import PremiumizeAPI
 from apis.alldebrid_api import AllDebridAPI
-from modules.utils import chunks
-from threading import Thread
-# from modules.utils import logger
+from modules import kodi_utils
+from modules.utils import make_thread_list
+from modules.settings import display_sleep_time, enabled_debrids_check
+# logger = kodi_utils.logger
 
-progressDialog = xbmcgui.DialogProgress()
-
-rd_api = RealDebridAPI()
-pm_api = PremiumizeAPI()
-ad_api = AllDebridAPI()
+sleep, show_busy_dialog, hide_busy_dialog, notification = kodi_utils.sleep, kodi_utils.show_busy_dialog, kodi_utils.hide_busy_dialog, kodi_utils.notification
+confirm_progress_media, monitor, Thread, get_setting, ls = kodi_utils.confirm_progress_media, kodi_utils.monitor, kodi_utils.Thread, kodi_utils.get_setting, kodi_utils.local_string
+rd_api, pm_api, ad_api = RealDebridAPI(), PremiumizeAPI(), AllDebridAPI()
+plswait_str, checking_debrid_str, remaining_debrid_str = ls(32577), ls(32578), ls(32579)
+debrid_list = [('Real-Debrid', 'rd', rd_api), ('Premiumize.me', 'pm', pm_api), ('AllDebrid', 'ad', ad_api)]
+line = '%s[CR]%s[CR]%s'
+timeout = 20.0
 
 def debrid_enabled():
-    debrid_enabled = []
-    if rd_api.rd_enabled(): debrid_enabled.append('Real-Debrid')
-    if pm_api.pm_enabled(): debrid_enabled.append('Premiumize.me')
-    if ad_api.ad_enabled(): debrid_enabled.append('AllDebrid')
-    return debrid_enabled
+	return [i[0] for i in debrid_list if enabled_debrids_check(i[1])]
+
+def debrid_type_enabled(debrid_type, enabled_debrids):
+	return [i[0] for i in debrid_list if i[0] in enabled_debrids and get_setting('%s.%s.enabled' % (i[1], debrid_type)) == 'true']
 
 def debrid_valid_hosts(enabled_debrids):
-    def _get_hosts(function):
-        debrid_hosts.append(function.get_hosts())
-    functions = []
-    debrid_hosts = []
-    threads = []
-    for i in enabled_debrids:
-        if i == 'Real-Debrid': functions.append(rd_api)
-        elif i == 'Premiumize.me': functions.append(pm_api)
-        else: functions.append(ad_api) # AllDebrid
-    for i in functions: threads.append(Thread(target=_get_hosts, args=(i,)))
-    [i.start() for i in threads]
-    [i.join() for i in threads]
-    return debrid_hosts
+	def _get_hosts(function):
+		debrid_hosts_append(function.get_hosts())
+	debrid_hosts = []
+	debrid_hosts_append = debrid_hosts.append
+	if enabled_debrids:
+		threads = list(make_thread_list(_get_hosts, [i[2] for i in debrid_list if i[0] in enabled_debrids]))
+		[i.join() for i in threads]
+	return debrid_hosts
 
+def manual_add_magnet_to_cloud(params):
+	show_busy_dialog()
+	function = [i[2] for i in debrid_list if i[0] == params['provider']][0]
+	result = function.create_transfer(params['magnet_url'])
+	function.clear_cache()
+	hide_busy_dialog()
+	if result == 'failed': notification(32490)
+	else: notification(32576)
 
 class DebridCheck:
-    def __init__(self):
-        self.db_cache = DebridCache()
-        self.db_cache.check_database()
-        self.cached_hashes = []
-        self.main_threads = []
-        self.rd_cached_hashes = []
-        self.rd_hashes_unchecked = []
-        self.rd_query_threads = []
-        self.rd_process_results = []
-        self.pm_cached_hashes = []
-        self.pm_hashes_unchecked = []
-        self.pm_process_results = []
-        self.ad_cached_hashes = []
-        self.ad_hashes_unchecked = []
-        self.ad_query_threads = []
-        self.ad_process_results = []
-        self.starting_debrids = []
-        self.starting_debrids_display = []
+	def run(self, hash_list, background, debrid_enabled, meta, progress_dialog):
+		self.hash_list = hash_list
+		self.debrid_enabled = debrid_enabled
+		self.meta = meta
+		self.progress_dialog = progress_dialog
+		self.sleep_time = display_sleep_time()
+		self.cached_hashes, self.main_threads = [], []
+		self.ad_cached_hashes, self.pm_cached_hashes, self.rd_cached_hashes = [], [], []
+		self.processing_hashes = False
+		self._query_local_cache()
+		main_threads_append = self.main_threads.append
+		debrid_runners = {'Real-Debrid': self.RD_check, 'Premiumize.me': self.PM_check, 'AllDebrid': self.AD_check}
+		for item in debrid_enabled: main_threads_append(Thread(target=debrid_runners[item], name=item))
+		if self.main_threads:
+			[i.start() for i in self.main_threads]
+			if background: [i.join() for i in self.main_threads]
+			else:
+				self.monitor_processing()
+				if self.processing_hashes: self.debrid_check_dialog()
+		self._kill_progress_dialog()
+		return {'rd_cached_hashes': self.rd_cached_hashes, 'pm_cached_hashes': self.pm_cached_hashes, 'ad_cached_hashes': self.ad_cached_hashes}
 
-    def run(self, hash_list, background, debrid_enabled):
-        xbmc.sleep(100)
-        self.hash_list = hash_list
-        self._query_local_cache(self.hash_list)
-        if 'AllDebrid' in debrid_enabled:
-            self.ad_cached_hashes = [str(i[0]) for i in self.cached_hashes if str(i[1]) == 'ad' and str(i[2]) == 'True']
-            self.ad_hashes_unchecked = [i for i in self.hash_list if not any([h for h in self.cached_hashes if str(h[0]) == i and str(h[1]) =='ad'])]
-            if self.ad_hashes_unchecked: self.starting_debrids.append(('AllDebrid', self.AD_cache_checker))
-        if 'Premiumize.me' in debrid_enabled:
-            self.pm_cached_hashes = [str(i[0]) for i in self.cached_hashes if str(i[1]) == 'pm' and str(i[2]) == 'True']
-            self.pm_hashes_unchecked = [i for i in self.hash_list if not any([h for h in self.cached_hashes if str(h[0]) == i and str(h[1]) =='pm'])]
-            if self.pm_hashes_unchecked: self.starting_debrids.append(('Premiumize.me', self.PM_cache_checker))
-        if 'Real-Debrid' in debrid_enabled:
-            self.rd_cached_hashes = [str(i[0]) for i in self.cached_hashes if str(i[1]) == 'rd' and str(i[2]) == 'True']
-            self.rd_hashes_unchecked = [i for i in self.hash_list if not any([h for h in self.cached_hashes if str(h[0]) == i and str(h[1]) =='rd'])]
-            if self.rd_hashes_unchecked: self.starting_debrids.append(('Real-Debrid', self.RD_cache_checker))
-        if self.starting_debrids:
-            for i in range(len(self.starting_debrids)):
-                self.main_threads.append(Thread(target=self.starting_debrids[i][1]))
-                self.starting_debrids_display.append((self.main_threads[i].getName(), self.starting_debrids[i][0]))
-            [i.start() for i in self.main_threads]
-            if background: [i.join() for i in self.main_threads]
-            else: self.debrid_check_dialog()
-        xbmc.sleep(100)
-        return self.rd_cached_hashes, self.pm_cached_hashes, self.ad_cached_hashes
+	def cached_check(self, debrid):
+		cached_list = [i[0] for i in self.cached_hashes if i[1] == debrid and i[2] == 'True']
+		unchecked_list = [i for i in self.hash_list if not any([h for h in self.cached_hashes if h[0] == i and h[1] == debrid])]
+		if unchecked_list: self.processing_hashes = True
+		return cached_list, unchecked_list
 
-    def debrid_check_dialog(self):
-        timeout = 20
-        progressDialog.create('David Debrid', 'Please Wait..', '..', '..')
-        progressDialog.update(0, 'Checking Debrid Services for Torrent Cache.', '..', '..')
-        start_time = time.time()
-        end_time = start_time + timeout
-        for i in range(0, 200):
-            try:
-                if xbmc.abortRequested == True: return sys.exit()
-                try:
-                    if progressDialog.iscanceled():
-                        break
-                except Exception:
-                    pass
-                alive_threads = [x.getName() for x in self.main_threads if x.is_alive() is True]
-                remaining_debrids = [x[1] for x in self.starting_debrids_display if x[0] in alive_threads]
-                current_time = time.time()
-                current_progress = current_time - start_time
-                try:
-                    line2 = 'Checking Debrid Providers'
-                    line3 = 'Remaining Debrid Checks: %s' % ', '.join(remaining_debrids).upper()
-                    percent = int((current_progress/float(timeout))*100)
-                    progressDialog.update(percent, '', line2, line3)
-                except: pass
-                time.sleep(0.2)
-                if len(alive_threads) == 0: break
-                if end_time < current_time: break
-            except Exception:
-                pass
-        try:
-            progressDialog.close()
-        except Exception:
-            pass
-        xbmc.sleep(200)
+	def RD_check(self):
+		self.rd_cached_hashes, unchecked_hashes = self.cached_check('rd')
+		if not unchecked_hashes: return
+		rd_cache = rd_api.check_cache(unchecked_hashes)
+		if not rd_cache: return
+		cached_append = self.rd_cached_hashes.append
+		process_list = []
+		process_append = process_list.append
+		try:
+			for h in unchecked_hashes:
+				cached = 'False'
+				if h in rd_cache:
+					info = rd_cache[h]
+					if isinstance(info, dict) and len(info.get('rd')) > 0:
+						cached_append(h)
+						cached = 'True'
+				process_append((h, cached))
+		except:
+			for i in unchecked_hashes: process_append((i, 'False'))
+		self._add_to_local_cache(process_list, 'rd')
 
-    def RD_cache_checker(self):
-        hash_chunk_list = list(chunks(self.rd_hashes_unchecked, 100))
-        for item in hash_chunk_list: self.rd_query_threads.append(Thread(target=self._rd_lookup, args=(item,)))
-        [i.start() for i in self.rd_query_threads]
-        [i.join() for i in self.rd_query_threads]
-        self._add_to_local_cache(self.rd_process_results, 'rd')
+	def PM_check(self):
+		self.pm_cached_hashes, unchecked_hashes = self.cached_check('pm')
+		if not unchecked_hashes: return
+		pm_cache = pm_api.check_cache(unchecked_hashes)
+		if not pm_cache: return
+		cached_append = self.pm_cached_hashes.append
+		process_list = []
+		process_append = process_list.append
+		try:
+			pm_cache = pm_cache['response']
+			for c, h in enumerate(unchecked_hashes):
+				cached = 'False'
+				if pm_cache[c] is True:
+					cached_append(h)
+					cached = 'True'
+				process_append((h, cached))
+		except:
+			for i in unchecked_hashes: process_append((i, 'False'))
+		self._add_to_local_cache(process_list, 'pm')
 
-    def PM_cache_checker(self):
-        self._pm_lookup(self.pm_hashes_unchecked)
-        self._add_to_local_cache(self.pm_process_results, 'pm')
+	def AD_check(self):
+		self.ad_cached_hashes, unchecked_hashes = self.cached_check('ad')
+		if not unchecked_hashes: return
+		ad_cache = ad_api.check_cache(unchecked_hashes)
+		if not ad_cache: return
+		cached_append = self.ad_cached_hashes.append
+		process_list = []
+		process_append = process_list.append
+		try:
+			ad_cache = ad_cache['magnets']
+			for i in ad_cache:
+				cached = 'False'
+				if i['instant'] == True:
+					cached_append(i['hash'])
+					cached = 'True'
+				process_append((i['hash'], cached))
+		except:
+			for i in unchecked_hashes: process_append((i, 'False'))
+		self._add_to_local_cache(process_list, 'ad')
 
-    def AD_cache_checker(self):
-        hash_chunk_list = list(chunks(self.ad_hashes_unchecked, 100))
-        for item in hash_chunk_list: self.ad_query_threads.append(Thread(target=self._ad_lookup, args=(item,)))
-        [i.start() for i in self.ad_query_threads]
-        [i.join() for i in self.ad_query_threads]
-        self._add_to_local_cache(self.ad_process_results, 'ad')
+	def monitor_processing(self):
+		while not self.processing_hashes:
+			sleep(5)
+			if not [i for i in self.main_threads if i.is_alive()]: break
 
-    def _rd_lookup(self, chunk):
-        try:
-            rd_cache = rd_api.check_cache(chunk)
-            for h in chunk:
-                cached = 'False'
-                if h in rd_cache:
-                    info = rd_cache[h]
-                    if isinstance(info, dict) and len(info.get('rd')) > 0:
-                        self.rd_cached_hashes.append(h)
-                        cached = 'True'
-                self.rd_process_results.append((h, cached))
-        except: pass
+	def debrid_check_dialog(self):
+		self._make_progress_dialog()
+		start_time = time.time()
+		end_time = start_time + timeout
+		while not self.progress_dialog.iscanceled():
+			try:
+				if monitor.abortRequested() is True: break
+				remaining_debrids = [x.getName() for x in self.main_threads if x.is_alive() is True]
+				current_time = time.time()
+				current_progress = current_time - start_time
+				try:
+					insert_line = remaining_debrid_str % ', '.join(remaining_debrids).upper()
+					percent = int((current_progress/float(timeout))*100)
+					self.progress_dialog.update(line % (plswait_str, checking_debrid_str, insert_line), percent)
+				except: pass
+				sleep(self.sleep_time)
+				if len(remaining_debrids) == 0: break
+				if percent >= 100: break
+			except Exception: pass
 
-    def _pm_lookup(self, hash_list):
-        try:
-            pm_cache = pm_api.check_cache(hash_list)['response']
-            for c, h in enumerate(hash_list):
-                cached = 'False'
-                if pm_cache[c] is True:
-                    self.pm_cached_hashes.append(h)
-                    cached = 'True'
-                self.pm_process_results.append((h, cached))
-        except: pass
+	def _query_local_cache(self):
+		cached = debrid_cache.get_many(self.hash_list)
+		if cached: self.cached_hashes = cached
 
-    def _ad_lookup(self, hash_list):
-        try:
-            ad_cache = ad_api.check_cache(hash_list)['data']
-            for i in ad_cache:
-                cached = 'False'
-                if i['instant'] == True:
-                    self.ad_cached_hashes.append(i['hash'])
-                    cached = 'True'
-                self.ad_process_results.append((i['hash'], cached))
-        except: pass
+	def _add_to_local_cache(self, hash_list, debrid):
+		debrid_cache.set_many(hash_list, debrid)
 
-    def _query_local_cache(self, _hash):
-        cached = self.db_cache.get_all(_hash)
-        if cached:
-            self.cached_hashes = cached
+	def _make_progress_dialog(self):
+		if self.progress_dialog: return
+		self.progress_dialog = confirm_progress_media(meta=self.meta)
 
-    def _add_to_local_cache(self, _hash, debrid):
-        self.db_cache.set_many(_hash, debrid)
+	def _kill_progress_dialog(self):
+		try: self.progress_dialog.close()
+		except: pass
+		try: del self.progress_dialog
+		except: pass
 
-class DebridCache:
-    def __init__(self):
-        self.datapath = xbmc.translatePath("special://profile/addon_data/plugin.video.david")
-        self.dbfile = os.path.join(self.datapath, "debridcache.db")
-
-    def get_all(self, hash_list):
-        result = None
-        try:
-            current_time = self._get_timestamp(datetime.datetime.now())
-            dbcon = database.connect(self.dbfile, timeout=40.0)
-            dbcur = dbcon.cursor()
-            dbcur.execute('SELECT * FROM debrid_data WHERE hash in ({0})'.format(', '.join('?' for _ in hash_list)), hash_list)
-            cache_data = dbcur.fetchall()
-            if cache_data:
-                if cache_data[0][3] > current_time:
-                    result = cache_data
-                else:
-                    self.remove_many(cache_data)
-        except: pass
-        return result
-
-    def remove_many(self, old_cached_data):
-        try:
-            old_cached_data = [(str(i[0]),) for i in old_cached_data]
-            dbcon = database.connect(self.dbfile, timeout=40.0)
-            dbcur = dbcon.cursor()
-            dbcur.executemany("DELETE FROM debrid_data WHERE hash=?", old_cached_data)
-            dbcon.commit()
-        except: pass
-
-    def set_many(self, hash_list, debrid, expiration=datetime.timedelta(hours=1)):
-        try:
-            expires = self._get_timestamp(datetime.datetime.now() + expiration)
-            insert_list = [(i[0], debrid, i[1], expires) for i in hash_list]
-            dbcon = database.connect(self.dbfile, timeout=40.0)
-            dbcur = dbcon.cursor()
-            dbcur.executemany("INSERT INTO debrid_data VALUES (?, ?, ?, ?)", insert_list)
-            dbcon.commit()
-        except: pass
-
-    def check_database(self):
-        if not xbmcvfs.exists(self.datapath):
-            xbmcvfs.mkdirs(self.datapath)
-        dbcon = database.connect(self.dbfile)
-        dbcon.execute("""CREATE TABLE IF NOT EXISTS debrid_data
-                      (hash text not null, debrid text not null, cached text, expires integer, unique (hash, debrid))
-                        """)
-        dbcon.close()
-
-    def clear_database(self):
-        try:
-            dbcon = database.connect(self.dbfile)
-            dbcur = dbcon.cursor()
-            dbcur.execute("DELETE FROM debrid_data")
-            dbcur.execute("VACUUM")
-            dbcon.commit()
-            dbcon.close()
-            return 'success'
-        except: return 'failure'
-
-    def _get_timestamp(self, date_time):
-        return int(time.mktime(date_time.timetuple()))
-
-
-
-
-
-
+debrid_check = DebridCheck()

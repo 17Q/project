@@ -1,5 +1,9 @@
 [B]Updates[/B]
 
+[B]August 5, 2022[/B]
+[B]Version 2.0.0[/B]
+- Updated for Matrix
+
 [B]April 13, 2020[/B]
 [B]Version 1.0.10[/B]
 - Add New Episodes to Main Menu For Trakt Progress (Default) or David Progress
@@ -26,34 +30,45 @@
 [B]Trakt Information:[/B]
 - Automatically Track TV Shows and Movies You're Watching
 - Sign up for free at https://trakt.tv/auth/join
-- Authorize your Trakt Account From Main Menu - Click Tools - Click Settings: Accounts
+- Authorize your Trakt Account - From Main Menu - Click Tools - Click Settings: David - Click Meta Accounts
 
 [B]TMDb Information:[/B]
 - Personal API keys provide quicker API responses
 - Sign up for free at https://www.themoviedb.org/account/signup
-- Enter your TMDb API Key From Main Menu - Click Tools - Click Settings: Accounts
+- Enter your TMDb API Key - From Main Menu - Click Tools - Click Settings: David - Click Meta Accounts
 
-[B]How to Authorize Premium Accounts[/B]
+[B]Fanart.tv Information:[/B]
+- Personal API keys provide quicker API responses
+- Sign up for free at https://fanart.tv/wp-login.php?action=register
+- Enter your TMDb API Key - From Main Menu - Click Tools - Click Settings: David - Click Meta Accounts
+
+[B]IMDb Information:[/B]
+- Sign up for free at https://www.imdb.com
+- Enter your IMDb UR Name - From Main Menu - Click Tools - Click Settings: David - Click Meta Accounts
+
+[B]How to Authorize Premium Provider Accounts[/B]
 
 [B]Real-Debrid Information:[/B]
 - Real-Debrid is a premium subscription service
 - Sign up at https://www.real-debrid.com
-- From Main Menu - Click Tools - Click Settings: Accounts - Click Authorize Real Debrid
+- From Main Menu - Click Tools - Click Settings: David - Click Provider Accounts
 
 [B]All Debrid Information:[/B]
 - All Debrid is a premium subscription service
 - Sign up at https://www.alldebrid.com
-- From Main Menu - Click Tools - Click Settings: Accounts - Click Authorize All Debrid
+- From Main Menu - Click Tools - Click Settings: David - Click Provider Accounts
 
 [B]Premiumize Information:[/B]
 - Premiumize is a premium subscription service
 - Sign up at https://www.premiumize.me
-- From Main Menu Click Tools - Click Settings: Accounts - Click Authorize Premiumize
+- From Main Menu - Click Tools - Click Settings: David - Click Provider Accounts
 
 [B]Furk Information:[/B]
 - Furk is a premium subscription service
-- From Main Menu - Click Tools - Click Settings: Accounts - Enter Your Login and Password
+- From Main Menu - Click Tools - Click Settings: David - Click Provider Accounts
 
 [B]Easynews Information:[/B]
 - Easynews is a premium subscription service
-- From Main Menu - Click Tools - Click Settings: Accounts - Enter Your Username and Password
+- From Main Menu - Click Tools - Click Settings: David - Click Provider Accounts
+
+[B]Acts 13:22[CR]And when he had removed him, he raised up unto them David to be their king; to whom also he gave testimony, and said, I have found David the son of Jesse, a man after mine own heart, which shall fulfil all my will.[CR]KING JAMES VERSION (KJV)[/B]

@@ -46,146 +46,58 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.david" version="1.0.11" name=" David" provider-name="17Q">
+<addon id="plugin.video.david" name=" David" provider-name="17Q" version="2.0.1">
     <requires>
-        <import addon="plugin.video.youtube" version="6.4.0" />
-        <import addon="script.extendedinfo" version="5.6.0" />
-        <import addon="script.module.requests" version="2.3.0"/>
-        <import addon="script.module.beautifulsoup4" version="0.6.0"/>
-        <import addon="script.david.artwork" version="1.0.0"/>
-        <import addon="script.david.metadata" version="1.0.0" />
-        <import addon="script.module.openscrapers"/>
-        <import addon="script.module.resolveurl" version="1.0.0"/>
+        <import addon="xbmc.python" version="3.0.0" />
+        <import addon="script.module.requests" version="2.19.1" />
+        <import addon="script.module.qscrapers" version="0.0.1" />
     </requires>
-    <extension point="xbmc.python.pluginsource" library="resources/lib/david.py">
+    <extension library="resources/lib/david.py" point="xbmc.python.pluginsource">
         <provides>video</provides>
     </extension>
-    <extension point="xbmc.service" library="resources/lib/services.py" start="startup"/>
-    <extension point="xbmc.python.module" library="resources/lib/"/>
+    <extension library="resources/lib/service.py" point="xbmc.service" />
+    <extension library="resources/lib/" point="xbmc.python.module" />
+    <extension point="kodi.context.item">
+        <menu id="kodi.core.main">
+            <item library="resources/contextmenu/refresh_widgets.py">
+                <label>40001</label>
+                <visible>String.IsEqual(ListItem.Property(david_widget),true)</visible>
+            </item>
+            <item library="resources/contextmenu/mark_watched.py">
+                <label>40003</label>
+                <visible>[String.IsEqual(ListItem.dbtype,movie) | String.IsEqual(ListItem.dbtype,episode)] + String.IsEqual(ListItem.Property(david_widget),true) + String.IsEqual(ListItem.Property(david_playcount),0)</visible>
+            </item>
+            <item library="resources/contextmenu/mark_unwatched.py">
+                <label>40004</label>
+                <visible>[String.IsEqual(ListItem.dbtype,movie) | String.IsEqual(ListItem.dbtype,episode)] + String.IsEqual(ListItem.Property(david_widget),true) + String.IsEqual(ListItem.Property(david_playcount),1)</visible>
+            </item>
+            <item library="resources/contextmenu/clear_progress.py">
+                <label>40009</label>
+                <visible>[String.IsEqual(ListItem.dbtype,movie) | String.IsEqual(ListItem.dbtype,episode)] + String.IsEqual(ListItem.Property(david_widget),true) + String.IsEqual(ListItem.Property(david_in_progress),true)</visible>
+            </item>
+            <item library="resources/contextmenu/options.py">
+                <label>40007</label>
+                <visible>String.IsEqual(ListItem.Property(david_widget),true)</visible>
+            </item>
+            <item library="resources/contextmenu/extras.py">
+                <label>40006</label>
+                <visible>String.IsEqual(ListItem.Property(david_widget),true)</visible>
+            </item>
+        </menu>
+    </extension>
     <extension point="xbmc.addon.metadata">
-        <summary lang="en">David</summary>
-        <description lang="en">[B]David Movies, TV Shows with Trakt and Library Support[/B][CR][CR]This addon does not form part of the Kodi Media Center. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR][CR]The author does not host any of the content in this addon and takes no responsibility for content found.</description>
+        <reuselanguageinvoker>true</reuselanguageinvoker>
+        <summary lang="en">Mainly used for Furk and Easynews.</summary>
+        <description lang="en">[B]And when he had removed him, he raised up unto them David to be their king; to whom also he gave testimony, and said, I have found David the son of Jesse, a man after mine own heart, which shall fulfil all my will.[/B][CR][CR]This addon does not form part of the Kodi Media Center. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR][CR]The author does not host any of the content in this addon and takes no responsibility for content found.</description>
         <platform>all</platform>
+		<disclaimer lang="en">The author of this addon does not host any of the content which is found and has no affiliation with any of the content providers. This addon simply searches websites for content.</disclaimer>
         <license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
-        <forum></forum>
-        <website></website>
-        <source></source>
-        <disclaimer lang="en">The author of this addon does not host any of the content which is found and have no affiliation with any of the content providers. This addon simply searches websites for content. Use at your own risk!</disclaimer>
         <assets>
             <icon>icon.png</icon>
-            <fanart>fanart.jpg</fanart>
+            <fanart>fanart.png</fanart>
         </assets>
-        <news>- Real-Debrid, All Debrid or Premiumize Recommended
-- Add New Episodes to Main Menu For Trakt Progress (Default) or David Progress
-- Add My Movies (Trakt) Menu to Movies Module
-- Add My TV Shows (Trakt) Menu to TV Shows Module
-- Add Trakt Lists, Trakt Liked Lists and Search Trakt User Lists
-- Update Trakt
-- Update Artwork
-- Update Code
-- OpenScrapers Support
-- VPN Recommended
-- Initial Version 1.0.8 Fen Fork
-        </news>
+        <news>INFO: For latest changes see Changelog within Tools of add-on.</news>
     </extension>
-</addon>
-
-<addon id="plugin.video.htpctv" version="4.1.47" name=" htpcTV" provider-name="17Q">
-	<requires>
-		<import addon="xbmc.python" version="2.19.0" />
-		<import addon="plugin.video.youtube" version="6.4.0" />
-		<import addon="script.extendedinfo" version="5.6.0" />
-		<import addon="script.module.resolveurl" />
-		<import addon="script.module.metahandler" version="2.9.0" />
-	</requires>
-	<extension point="xbmc.python.pluginsource" library="htpctv.py">
-		<provides>video</provides>
-	</extension>
-	<extension point="xbmc.service" library="service.py" start="startup" />
-	<extension point="xbmc.addon.metadata">
-		<summary lang="en">htpcTV</summary>
-		<description lang="en">htpcTV with Library Integration, 24-7 TV Shows, Movies, TV Shows, Movie Collection and TRAKT Support! Kindly note that htpcTV is not an official part of the media player you are running, and therefore not to be mentioned within official support channels, this addon has nothing to do with the media player itself, nor it’s intended use, it is simply a third party plugin which has been added to your system.</description>
-		<disclaimer lang="en">The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.</disclaimer>
-		<platform>all</platform>
-		<website></website>
-		<source></source>
-		<assets>
-			<icon>icon.png</icon>
-			<fanart>fanart.jpg</fanart>
-		</assets>
-		<news>- RealDebrid Recommended
-- Remove Artwork Script
-- Remove Metadata Module
-- Fix Episodes Out of Order
-- Fix Trailers
-- Remove Trailers from Context Menu
-- Fix Episodes TVDb
-- Fix Trakt Progress TVDb
-- Fix TVDb
-- Update Code
-- Fixed Movie Certifications
-- Fixed TV Show Certifications
-- Update 2/47 Code
-- Fix Movie and TV Show Trailers for Leia
-- Add RealDdebrid Torrent Support
-- Revert Trailer fix under Information Tab. The Leia fix crashes Krypton. For now Trailer on Context Menu works in Leia...
-- Fix Movie Trailers
-- Added Trailers to Movie, TV Show and Episodes Context Menu
-- Fix Trakt control settings for Leia
-- Fix Trakt authorization for Leia - htpcTV Add-on will need to be reauthorized
-- Changed unaired default to false
-- Fix In Theaters
-- Fix TV and Movie Search
-- Fix TV and Movie People Search
-- Revert back tm.user
-- Update Artwork
-- Add MetaQ Player Support
-- Update 24/7
-- Updated Resolver
-- Fixed TV Show Actor Search
-- Fixed TV Show Search
-- Fixed TV Show Networks
-- Fixed Movie Actor Search
-- Fixed Movie Search
-- Fixed Movie People, Most Popular Males, Most Popular Females
-- Added Trailers to Movies, TV Shows and Collections
-- Update Sources
-</news>
-	</extension>
-</addon>
-
-<addon id="plugin.video.iptvxtra2"
-       name="IPTVXtra II"
-       version="16.5"
-       provider-name="/kens">
-  <requires>
-    <import addon="xbmc.python" version="2.1.0"/>
-    <import addon="pvr.iptvsimple" />
-    <import addon="script.module.requests" />
-    <import addon="plugin.video.youtube" />
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary lang="en">IPTVXtra II - for Kodi v18</summary>
-    <language>en</language>
-    <news>ver16.5 (06/28/2020)
-      [new]
-      *Reworked 1st run startup routine.
-      *Favorite Channel function added.
-      *Merge EPG -Combines Alternate and Provider EPG into a more robust Guide.
-      *PPV selections are available in there own Section.
-      *Ability to see only new VOD and PPV's since your last Update.
-      *Ability to Enable a pre-configured Ext.Player file for MX Player -Android(free version). *This fixes Video playback stuttering for all Videos (Live TV still uses Kodi default player).
-      *Get Quick information for all VOD items.
-      *Play Trailers for all VOD and PPV items.
-      *** Overall quicker and easier to use!
-    </news>
-    <description lang="en">Ver 16.5 - The Last Update before the rewrite for Kodi v19, incorporating many of the features of the next version.</description>
-     <platform>all</platform>
-  </extension>
 </addon>
 
 <addon id="plugin.video.metaq" name=" MetaQ" version="1.0.2" provider-name="17Q">
@@ -296,45 +208,6 @@
 	</extension>
 </addon>
 
-<addon id="script.david.artwork" version="1.0.0" name="David Artwork" provider-name="17Q">
-    <requires>
-        <import addon="xbmc.python" version="2.19.0"/>
-    </requires>
-    <extension point="xbmc.python.module" library="lib" />
-    <extension point="xbmc.addon.metadata">
-        <summary>Themes for Addons</summary>
-        <description>Themes for Addons</description>
-        <platform>all</platform>
-        <license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
-        <assets>
-            <icon>icon.png</icon>
-            <fanart>fanart.jpg</fanart>
-        </assets>
-    </extension>
-</addon>
-
-<addon id="script.david.metadata" version="1.0.0" name="David Meta Module" provider-name="17Q">
-    <requires>
-        <import addon="xbmc.python" version="2.19.0"/>
-    </requires>
-    <extension point="xbmc.python.module" library="lib" />
-    <extension point="xbmc.python.pluginsource" library="lib/default.py">
-        <provides>executable</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <summary>Metadata for Addons</summary>
-        <description>Metadata for Addons</description>
-        <platform>all</platform>
-        <license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
-        <assets>
-            <icon>icon.png</icon>
-            <fanart>fanart.jpg</fanart>
-        </assets>
-        <news>
-        </news>
-    </extension>
-</addon>
-
 <addon id="script.extendedinfo" name=" MetaInfo" version="8.0.3" provider-name="17Q">
 	<requires>
 		<import addon="xbmc.python" version="2.25.0"/>
@@ -426,6 +299,35 @@
     </assets>
     <news></news>
     </extension>
+</addon>
+
+<addon id="script.module.qscrapers" name="QScrapers Module" version="1.0.2" provider-name="17Q">
+	<requires>
+		<import addon="xbmc.python" version="3.0.0" />
+		<import addon="script.module.requests" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="lib/default.py">
+		<provides>executable</provides>
+	</extension>
+	<extension point="xbmc.service" library="lib/service.py" start="startup" />
+	<extension point="xbmc.python.module" library="lib" />
+	<extension point="xbmc.addon.metadata">
+		<reuselanguageinvoker>false</reuselanguageinvoker>
+		<summary lang="en">QScrapers Module</summary>
+		<description>A module that can be used to provide site scrapers.</description>
+		<platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
+		<forum></forum>
+		<website></website>
+		<source></source>
+		<disclaimer lang="en">The author is not responsible for the use of this addon. The author is not responsible for the content found using this addon. The author does not host or own any content found within this addon.[CR]The author is in no way affiliated with Kodi, Team Kodi, or the XBMC Foundation.[CR]This is a Non-profit resource, organized solely for educational purposes which is protected under the Fair-Use doctrine of the Copyright Act, Specifically section 107, which does promote freedom of expression, by permitting the unlicensed use of copyright-protected works.</disclaimer>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.png</fanart>
+			<screenshot></screenshot>
+		</assets>
+		<news></news>
+	</extension>
 </addon>
 
 <addon id="skin.xtuary.krypton" version="1.0.4" name="Xtuary - Customizable Estuary skin mod for Krypton" provider-name="17Q">
@@ -727,7 +629,7 @@
 	</extension>
 </addon>
 
-<addon id="skin.xtuary.matrix" version="2.0.1" name="Xtuary - Customizable Estuary skin mod for Matrix" provider-name="phil65, Ichabod Fletchman, mod by HTMC">
+<addon id="skin.xtuary.matrix" version="2.0.2" name="Xtuary - Customizable Estuary skin mod for Matrix - Nexus" provider-name="phil65, Ichabod Fletchman, mod by 17Q">
 	<requires>
 		<import addon="xbmc.gui" version="5.15.0"/>
 		<import addon="script.skinshortcuts" version="0.6.0"/>

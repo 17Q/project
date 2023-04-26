@@ -1,815 +1,689 @@
 # -*- coding: utf-8 -*-
-import xbmc, xbmcaddon, xbmcgui, xbmcplugin
-import sys, os
-import json
-try: from urllib import unquote, quote_plus
-except ImportError: from urllib.parse import unquote, quote_plus
 import time
-from threading import Thread
-from modules.utils import clean_file_name, selection_dialog
-from indexers.furk import t_file_browser, seas_ep_query_list, add_uncached_file
-from modules.nav_utils import build_url, setView, close_all_dialog, show_busy_dialog, hide_busy_dialog
-from modules.utils import string_to_float, to_utf8, safe_string, remove_accents
-from modules import settings
-# from modules.utils import logger
+import metadata
+from windows import open_window
+from scrapers import external, folders
+from modules import debrid, kodi_utils, settings
+from modules.player import DavidPlayer
+from modules.source_utils import internal_sources, external_sources, internal_folders_import, scraper_names, get_cache_expiry, make_alias_dict
+from modules.utils import clean_file_name, string_to_float, safe_string, remove_accents, get_datetime, manual_function_import
+# logger = kodi_utils.logger
 
-__addon__ = xbmcaddon.Addon(id='plugin.video.david')
-__resolveURL__ = xbmcaddon.Addon(id='script.module.resolveurl')
-__handle__ = int(sys.argv[1])
-window = xbmcgui.Window(10000)
-dialog = xbmcgui.Dialog()
-default_furk_icon = os.path.join(settings.get_theme(), 'tools.png')
+json, show_busy_dialog, hide_busy_dialog, confirm_progress_media = kodi_utils.json, kodi_utils.show_busy_dialog, kodi_utils.hide_busy_dialog, kodi_utils.confirm_progress_media
+select_dialog, confirm_dialog, get_setting = kodi_utils.select_dialog, kodi_utils.confirm_dialog, kodi_utils.get_setting
+Thread, get_property, set_property, clear_property = kodi_utils.Thread, kodi_utils.get_property, kodi_utils.set_property, kodi_utils.clear_property
+ls, monitor, get_icon, notification, sleep = kodi_utils.local_string, kodi_utils.monitor, kodi_utils.get_icon, kodi_utils.notification, kodi_utils.sleep
+auto_play, active_internal_scrapers, provider_sort_ranks,  = settings.auto_play, settings.active_internal_scrapers, settings.provider_sort_ranks
+display_sleep_time, scraping_settings, include_prerelease_results = settings.display_sleep_time, settings.scraping_settings, settings.include_prerelease_results
+ignore_results_filter, filter_status, results_sort_order = settings.ignore_results_filter, settings.filter_status, settings.results_sort_order
+display_uncached_torrents, check_prescrape_sources = settings.display_uncached_torrents, settings.check_prescrape_sources
+metadata_user_info, quality_filter, sort_to_top  = settings.metadata_user_info, settings.quality_filter, settings.sort_to_top
+results_xml_style, results_xml_window_number = settings.results_xml_style, settings.results_xml_window_number
+debrid_enabled, debrid_type_enabled, debrid_valid_hosts = debrid.debrid_enabled, debrid.debrid_type_enabled, debrid.debrid_valid_hosts
+rd_info, pm_info, ad_info = ('apis.real_debrid_api', 'RealDebridAPI'), ('apis.premiumize_api', 'PremiumizeAPI'), ('apis.alldebrid_api', 'AllDebridAPI')
+debrids = {'Real-Debrid': rd_info, 'rd_cloud': rd_info, 'rd_browse': rd_info, 'Premiumize.me': pm_info, 'pm_cloud': pm_info, 'pm_browse': pm_info,
+			'AllDebrid': ad_info, 'ad_cloud': ad_info, 'ad_browse': ad_info}
+quality_ranks = {'4K': 1, '1080p': 2, '720p': 3, 'SD': 4, 'SCR': 5, 'CAM': 5, 'TELE': 5}
+cloud_scrapers, folder_scrapers = ('rd_cloud', 'pm_cloud', 'ad_cloud'), ('folder1', 'folder2', 'folder3', 'folder4', 'folder5')
+default_internal_scrapers = ('furk', 'easynews', 'rd_cloud', 'pm_cloud', 'ad_cloud', 'folders')
+hevc_filter_key, hdr_filter_key, dolby_vision_filter_key, av1_filter_key = '[B]HEVC[/B]', '[B]HDR[/B]', '[B]D/VISION[/B]', '[B]AV1[/B]'
+dialog_format, remaining_format = '[COLOR %s][B]%s[/B][/COLOR] 4K: %s | 1080p: %s | 720p: %s | SD: %s | Total: %s', ls(32676)
+main_line = '%s[CR]%s[CR]%s'
 
-class Sources:
-    def __init__(self):
-        self.play_physical = False
-        self.suppress_notifications = False
-        self.providers = []
-        self.sources = []
-        self.prescrape_sources = []
-        self.starting_providers = []
-        self.prescrape_starting_providers = []
-        self.uncached_results = []
-        self.threads = []
-        self.prescrape_threads = []
-        self.display_mode = settings.display_mode()
-        self.folder_scrapers = ('folder1', 'folder2', 'folder3', 'folder4', 'folder5')
-        self.file_scrapers = ('local', 'downloads', 'folder1', 'folder2', 'folder3', 'folder4', 'folder5')
-        self.internal_scrapers = ('furk', 'rd-cloud', 'ad-cloud', 'local', 'downloads', 'easynews', 'pm-cloud', 'folder1', 'folder2', 'folder3', 'folder4', 'folder5')
+class Sources():
+	def __init__(self):
+		self.params = {}
+		self.clear_properties, self.filters_ignored, self.active_folders = True, False, False
+		self.threads, self.providers, self.sources, self.internal_scraper_names = [], [], [], []
+		self.prescrape_scrapers, self.prescrape_threads, self.prescrape_sources, self.uncached_torrents = [], [], [], []
+		self.remove_scrapers = ['external']# needs to be mutable so leave as list.
+		self.exclude_list = ['furk', 'easynews', 'library']# needs to be mutable so leave as list.
+		self.sourcesTotal = self.sources4K = self.sources1080p = self.sources720p = self.sourcesSD = 0
+		self.prescrape, self.disabled_ext_ignored, self.default_ext_only = 'true', 'false', 'false'
+		self.language = get_setting('meta_language')
+		self.progress_dialog = None
+		self.failed_playback_retries = 0
+		self.easynews_playback_retried = False
 
-    def playback_prep(self, vid_type, tmdb_id, query, tvshowtitle=None, season=None, episode=None, ep_name=None, plot=None, meta=None, from_library=False, background='false', autoplay=None):
-        self._clear_sources()
-        self.background = True if background == 'true' else False
-        self.dialog_background = True if (__addon__.getSetting('auto_play'), __addon__.getSetting('autoplay_minimal_notifications')) == ('true', 'true') else False
-        self.suppress_notifications = True if self.background == True or self.dialog_background == True else False
-        self.from_library = from_library
-        self.widget = False if 'plugin' in xbmc.getInfoLabel('Container.PluginName') else True
-        self.action = 'Container.Update(%s)' if not self.widget else 'RunPlugin(%s)'
-        self.autoplay = autoplay if autoplay != None else settings.auto_play()
-        self.autoplay_hevc = settings.autoplay_hevc()
-        self.check_library = settings.check_prescrape_sources('local')
-        self.check_downloads = settings.check_prescrape_sources('downloads')
-        self.check_folders = settings.check_prescrape_sources('folders')
-        self.include_prerelease_results = settings.include_prerelease_results()
-        self.include_uncached_results = settings.include_uncached_results()
-        self.internal_scraper_order = settings.internal_scraper_order()
-        self.language = xbmcaddon.Addon(id='script.david.metadata').getSetting('meta_language')
-        self.vid_type = vid_type
-        self.tmdb_id = tmdb_id
-        self.season = int(season) if season else ''
-        self.episode = int(episode) if episode else ''
-        if meta: self.meta = json.loads(meta)
-        else: self._grab_meta()
-        display_name = clean_file_name(unquote(query)) if vid_type == 'movie' else '%s - %dx%.2d' % (self.meta['title'], self.season, self.episode)
-        if from_library: self.meta.update({'plot': plot, 'from_library': from_library, 'ep_name': ep_name})
-        self.meta.update({'query': query, 'vid_type': self.vid_type, 'media_id': self.tmdb_id, 'rootname': display_name,
-                          'tvshowtitle': self.meta['title'], 'season': self.season, 'episode': self.episode, 'background': self.background})
-        self.search_info = self._search_info()
-        window.setProperty('david_media_meta', json.dumps(self.meta))
-        self.get_sources()
+	def playback_prep(self, params=None):
+		if self.clear_properties: self._clear_properties()
+		if params: self.params = params
+		params_get = self.params.get
+		self.background = params_get('background', 'false') == 'true'
+		if self.background: hide_busy_dialog()
+		else: show_busy_dialog()
+		self.prescrape = params_get('prescrape', self.prescrape) == 'true'
+		self.disabled_ext_ignored = params_get('disabled_ext_ignored', self.disabled_ext_ignored) == 'true'
+		self.default_ext_only = params_get('default_ext_only', self.default_ext_only) == 'true'
+		self.disable_autoplay_next_episode = params_get('disable_autoplay_next_episode', 'false') == 'true'
+		self.media_type = params_get('media_type')
+		self.tmdb_id = params_get('tmdb_id')
+		self.ep_name = params_get('ep_name')
+		self.plot = params_get('plot')
+		self.custom_title = params_get('custom_title', None)
+		self.custom_year = params_get('custom_year', None)
+		self.custom_season = params_get('custom_season', None)
+		self.custom_episode = params_get('custom_episode', None)
+		if 'autoplay' in self.params: self.autoplay = self.params.get('autoplay', 'false') == 'true'
+		else: self.autoplay = auto_play(self.media_type)
+		if 'season' in self.params: self.season = int(params_get('season'))
+		else: self.season = ''
+		if 'episode' in self.params: self.episode = int(params_get('episode'))
+		else: self.episode = ''
+		if 'meta' in self.params: self.meta = json.loads(params_get('meta'))
+		else: self._grab_meta()
+		self.active_internal_scrapers = active_internal_scrapers()
+		if not 'external' in self.active_internal_scrapers and (self.disabled_ext_ignored or self.default_ext_only): self.active_internal_scrapers.append('external')
+		self.active_external = 'external' in self.active_internal_scrapers
+		self.provider_sort_ranks = provider_sort_ranks()
+		self.sleep_time = display_sleep_time()
+		self.scraper_settings = scraping_settings()
+		self.include_prerelease_results = include_prerelease_results()
+		self.ignore_results_filter = ignore_results_filter()
+		self.ignore_scrape_filters = params_get('ignore_scrape_filters', 'false') == 'true'
+		self.filter_hevc = filter_status('hevc')
+		self.filter_hdr = filter_status('hdr')
+		self.filter_dv = filter_status('dv')
+		self.filter_av1 = filter_status('av1')
+		self.hybrid_allowed = self.filter_hdr in (0, 2)
+		self.sort_function = results_sort_order()
+		self.display_uncached_torrents = display_uncached_torrents()
+		self.quality_filter = self._quality_filter()
+		self.filter_size_method = int(get_setting('results.filter_size_method', '0'))
+		self.include_unknown_size = get_setting('results.include.unknown.size', 'false') == 'true'
+		self.include_3D_results = get_setting('include_3d_results', 'true') == 'true'
+		self._update_meta()
+		self._search_info()
+		set_property('david_playback_meta', json.dumps(self.meta))
+		self.get_sources()
 
-    def get_sources(self):
-        self._activate_resolveURL()
-        self.active_scrapers = settings.active_scrapers()
-        self.play_physical = self.pre_scrape_check()
-        if self.play_physical: results = self.sources
-        if not self.play_physical:
-            results = self.collect_results()
-            results = self.filter_results(results)
-            results = self.sort_results(results)
-        self._activate_resolveURL(setting='false')
-        if not results:
-            return self._no_results()
-        if self.autoplay:
-            results = self._sort_hevc(results)
-        elif self.include_uncached_results:
-            results += self.uncached_results
-        results = self.enumerate_labels(results)
-        window.setProperty('david_search_results', json.dumps(results))
-        hide_busy_dialog()
-        self.play_source()
+	def get_sources(self):
+		results = []
+		if any(x in self.active_internal_scrapers for x in default_internal_scrapers) and self.prescrape:
+			if self.prepare_internal_scrapers():
+				results = self.collect_prescrape_results()
+				if results: results = self.process_results(results)
+		if not results:
+			self.prescrape = False
+			self.prepare_internal_scrapers()
+			if self.active_external:
+				self.activate_debrid_info()
+				self.activate_external_providers()
+			elif not self.active_internal_scrapers: self._kill_progress_dialog()
+			self.orig_results = self.collect_results()
+			if not self.orig_results and not self.active_external: self._kill_progress_dialog()
+			results = self.process_results(self.orig_results)
+			if not results: return self._process_post_results()
+		self.play_source(results)
 
-    def collect_results(self):
-        if 'folder' in '.'.join(self.active_scrapers):
-            self.check_folder_scrapers(self.active_scrapers, self.providers, False)
-        if 'local' in self.active_scrapers:
-            from scrapers.local_library import LocalLibrarySource
-            self.providers.append(('local', LocalLibrarySource()))
-        if 'downloads' in self.active_scrapers:
-            from scrapers.downloads import DownloadsSource
-            self.providers.append(('downloads', DownloadsSource()))
-        if 'furk' in self.active_scrapers:
-            from scrapers.furk import FurkSource
-            self.providers.append(('furk', FurkSource()))
-        if 'easynews' in self.active_scrapers:
-            from scrapers.easynews import EasyNewsSource
-            self.providers.append(('easynews', EasyNewsSource()))
-        if 'pm-cloud' in self.active_scrapers:
-            from scrapers.pm_cache import PremiumizeSource
-            self.providers.append(('pm-cloud', PremiumizeSource()))
-        if 'rd-cloud' in self.active_scrapers:
-            from scrapers.rd_cache import RealDebridSource
-            self.providers.append(('rd-cloud', RealDebridSource()))
-        if 'ad-cloud' in self.active_scrapers:
-            from scrapers.ad_cache import AllDebridSource
-            self.providers.append(('ad-cloud', AllDebridSource()))
-        if 'external' in self.active_scrapers:
-            from scrapers.external import ExternalSource
-            self.providers.append(('external', ExternalSource()))
-        for i in range(len(self.providers)):
-            self.threads.append(Thread(target=self.activate_providers, args=(self.providers[i][1],)))
-            self.starting_providers.append((self.threads[i].getName(), self.providers[i][0]))
-        [i.start() for i in self.threads]
-        if 'external' in self.active_scrapers or self.background:
-            [i.join() for i in self.threads]
-        else:
-            self.scrapers_dialog('internal')
-        return self.sources
+	def collect_results(self):
+		self.sources.extend(self.prescrape_sources)
+		threads_append = self.threads.append
+		if self.active_folders: self.append_folder_scrapers(self.providers)
+		self.providers.extend(internal_sources(self.active_internal_scrapers))
+		if self.providers:
+			for i in self.providers: threads_append(Thread(target=self.activate_providers, args=(i[0], i[1], False), name=i[2]))
+			[i.start() for i in self.threads]
+		if self.active_external or self.background:
+			if self.active_external:
+				self.external_args = (self.external_providers, self.debrid_torrent_enabled, self.debrid_hoster_enabled, self.internal_scraper_names,
+										self.prescrape_sources, self.progress_dialog, self.disabled_ext_ignored)
+				self.activate_providers('external', external, False)
+			if self.providers: [i.join() for i in self.threads]
+		else: self.scrapers_dialog()
+		return self.sources
 
-    def filter_results(self, results):
-        cached_results = [i for i in results if not 'uncached' in i]
-        self.uncached_results = [i for i in results if 'uncached' in i]
-        quality_filter = self._quality_filter()
-        include_local_in_filter = settings.include_sources_in_filter('include_local')
-        include_downloads_in_filter = settings.include_sources_in_filter('include_downloads')
-        include_folders_in_filter = settings.include_sources_in_filter('include_folders')
-        filter_torrent_size = __addon__.getSetting('torrent.filter.size')
-        include_3D_results = __addon__.getSetting('include_3d_results')
-        if filter_torrent_size:
-            torrent_min_size = string_to_float(__addon__.getSetting('torrent.size.minimum.movies' if self.vid_type == 'movie' else 'torrent.size.minimum.episodes'), 0)
-            torrent_max_size = string_to_float(__addon__.getSetting('torrent.size.maximum.movies' if self.vid_type == 'movie' else 'torrent.size.maximum.episodes'), 200)
-        results = []
-        for item in cached_results:
-            append_item = False
-            if any(x in item for x in self.folder_scrapers) and not include_folders_in_filter: append_item = True
-            elif item.get("local") and not include_local_in_filter: append_item = True
-            elif item.get("downloads") and not include_downloads_in_filter: append_item = True
-            elif item.get("quality") in quality_filter: append_item = True
-            if item['source'].lower() == 'torrent' and filter_torrent_size == 'true':
-                if not torrent_min_size < item['external_size'] < torrent_max_size: append_item = False
-            if not include_3D_results:
-                info = item['info'] if 'info' in item else item['label']
-                if '3D' in info: append_item = False
-            if append_item: results.append(item)
-        return results
+	def collect_prescrape_results(self):
+		threads_append = self.prescrape_threads.append
+		if self.active_folders:
+			if self.autoplay or check_prescrape_sources('folders'):
+				self.append_folder_scrapers(self.prescrape_scrapers)
+				self.remove_scrapers.append('folders')
+		self.prescrape_scrapers.extend(internal_sources(self.active_internal_scrapers, True))
+		if not self.prescrape_scrapers: return []
+		for i in self.prescrape_scrapers: threads_append(Thread(target=self.activate_providers, args=(i[0], i[1], True), name=i[2]))
+		[i.start() for i in self.prescrape_threads]
+		self.remove_scrapers.extend(i[2] for i in self.prescrape_scrapers)
+		if self.background: [i.join() for i in self.prescrape_threads]
+		else: self.scrapers_dialog()
+		return self.prescrape_sources
 
-    def sort_results(self, results):
-        def _add_keys(item):
-            provider = item['scrape_provider']
-            if provider in ('local', 'downloads') or 'folder' in provider: provider = 'files'
-            item['quality_rank'] = self._get_quality_rank(item.get("quality", "SD"))
-            if provider == 'external':
-                item['debrid_rank'] = self._get_debrid_rank(item.get('debrid', 'internal'))
-                item['name_rank'] = item['provider']
-                if sort_torrent_top == 'true': item['torrent_rank'] = self._get_torrent_rank(item)
-            else:
-                item['debrid_rank'] = 1
-                item['torrent_rank'] = 1
-                item['name_rank'] = self._get_name_rank(provider.upper())
-                item['external_size'] = 600.0 * 1024
-        sort_keys = list(settings.results_sort_order())
-        sort_torrent_top = __addon__.getSetting('torrent.sort.them.up')
-        sort_torrent_size = __addon__.getSetting('torrent.sort.size')
-        if 'external' in self.active_scrapers:
-            insert = 0 if sort_keys[0] == 'name_rank' else 1
-            sort_keys.insert(insert, 'debrid_rank')
-            if sort_torrent_top == 'true':
-                sort_keys.insert(insert, 'torrent_rank')
-            if sort_torrent_size == 'true':
-                insert2 = 3 if sort_keys[1] == 'torrent_rank' else -1
-                sort_keys.insert(insert2, 'external_size')
-        threads = []
-        for item in results: threads.append(Thread(target=_add_keys, args=(item,)))
-        [i.start() for i in threads]
-        [i.join() for i in threads]
-        for item in reversed(sort_keys):
-            if item in ('size', 'external_size'): reverse = True
-            else: reverse = False
-            results = sorted(results, key=lambda k: k[item], reverse=reverse)
-        providers = []
-        if settings.sorted_first('sort_rd-cloud_first'): providers.append('rd-cloud')
-        if settings.sorted_first('sort_pm-cloud_first'): providers.append('pm-cloud')
-        if settings.sorted_first('sort_ad-cloud_first'): providers.append('ad-cloud')
-        if settings.sorted_first('sort_folders_first'): providers.extend(self.folder_scrapers)
-        if settings.sorted_first('sort_downloads_first'): providers.append('downloads')
-        if settings.sorted_first('sort_local_first'): providers.append('local')
-        for provider in providers: self._sort_first(provider, results)
-        return results
+	def process_results(self, results):
+		if self.prescrape: self.all_scrapers = self.active_internal_scrapers
+		else:
+			self.all_scrapers = list(set(self.active_internal_scrapers + self.remove_scrapers))
+			clear_property('fs_filterless_search')
+		self.uncached_torrents = [i for i in results if 'Uncached' in i.get('cache_provider', '')]
+		if not self.display_uncached_torrents:
+			results = [i for i in results if not 'Uncached' in i.get('cache_provider', '')]
+		if self.ignore_scrape_filters:
+			self.filters_ignored = True
+			results = self.sort_results(results)
+			results = self._sort_first(results)
+		else:
+			results = self.filter_results(results)
+			results = self.sort_results(results)
+			results = self._special_filter(results, hevc_filter_key, self.filter_hevc)
+			results = self._special_filter(results, hdr_filter_key, self.filter_hdr)
+			results = self._special_filter(results, dolby_vision_filter_key, self.filter_dv)
+			results = self._special_filter(results, av1_filter_key, self.filter_av1)
+			results = self._sort_first(results)
+		return results
 
-    def activate_providers(self, function):
-        sources = function.results(self.search_info)
-        self.sources.extend(sources)
+	def filter_results(self, results):
+		results = [i for i in results if i['quality'] in self.quality_filter]
+		if not self.include_3D_results: results = [i for i in results if not '3D' in i['extraInfo']]
+		if self.filter_size_method:
+			if self.filter_size_method == 1:
+				duration = self.meta['duration'] or (5400 if self.media_type == 'movie' else 2400)
+				max_size = ((0.125 * (0.90 * string_to_float(get_setting('results.size.auto', '20'), '20'))) * duration)/1000
+			elif self.filter_size_method == 2:
+					max_size = string_to_float(get_setting('results.size.manual', '10000'), '10000') / 1000
+			if self.include_unknown_size: results = [i for i in results if i['scrape_provider'].startswith('folder') or i['size'] <= max_size]
+			else: results = [i for i in results if i['scrape_provider'].startswith('folder') or 0.01 < i['size'] <= max_size]
+		return results
 
-    def activate_prescrape_providers(self, function):
-        sources = function.results(self.search_info)
-        self.prescrape_sources.extend(sources)
+	def sort_results(self, results):
+		def _add_keys(item):
+			provider = item['scrape_provider']
+			if provider == 'external': account_type = item['debrid'].lower()
+			else: account_type = provider.lower()
+			item['provider_rank'] = self._get_provider_rank(account_type)
+			item['quality_rank'] = self._get_quality_rank(item.get('quality', 'SD'))
+		for item in results: _add_keys(item)
+		results.sort(key=self.sort_function)
+		results = self._sort_uncached_torrents(results)
+		return results
 
-    def enumerate_labels(self, results):
-        for n, i in enumerate(results, 1):
-            i['label'] = '%s | %s' % (str(n).zfill(2), i['label'])
-            i['multiline_label'] = '%s | %s' % (str(n).zfill(2), i['multiline_label'])
-        return results
+	def prepare_internal_scrapers(self):
+		if self.active_external and len(self.active_internal_scrapers) == 1: return
+		active_internal_scrapers = [i for i in self.active_internal_scrapers if not i in self.remove_scrapers]
+		if self.prescrape and not self.active_external and all([check_prescrape_sources(i) for i in active_internal_scrapers]): return False
+		self.active_folders = 'folders' in active_internal_scrapers
+		if self.active_folders:
+			self.folder_info = self.get_folderscraper_info()
+			self.internal_scraper_names = [i for i in active_internal_scrapers if not i == 'folders'] + [i[0] for i in self.folder_info]
+			self.active_internal_scrapers = active_internal_scrapers
+		else:
+			self.folder_info = []
+			self.internal_scraper_names = active_internal_scrapers[:]
+			self.active_internal_scrapers = active_internal_scrapers
+		return True
 
-    def play_source(self):
-        if self.background:
-            return xbmc.executebuiltin(self.action % build_url({'mode': 'play_auto_nextep'}))
-        if self.play_physical or self.autoplay:
-            return self.play_auto()
-        if self.display_mode == 2 or self.from_library or self.widget:
-            return self.dialog_results()
-        return xbmc.executebuiltin(self.action % build_url({'mode': 'play_display_results'}))
+	def activate_providers(self, module_type, function, prescrape):
+		sources = self._get_module(module_type, function).results(self.search_info)
+		if not sources: return
+		if prescrape: self.prescrape_sources.extend(sources)
+		else: self.sources.extend(sources)
 
-    def pre_scrape_check(self):
-        prescrape_scrapers = []
-        if not any(x in self.active_scrapers for x in self.file_scrapers): return False
-        if self.autoplay:
-            if 'local' in self.active_scrapers:
-                from scrapers.local_library import LocalLibrarySource
-                prescrape_scrapers.append(('local', LocalLibrarySource()))
-            if 'downloads' in self.active_scrapers:
-                from scrapers.downloads import DownloadsSource
-                prescrape_scrapers.append(('downloads', DownloadsSource()))
-            if 'folder' in '.'.join(self.active_scrapers):
-                self.check_folder_scrapers(self.active_scrapers, prescrape_scrapers, False)
-        else:
-            if 'local' in self.active_scrapers and self.check_library:
-                from scrapers.local_library import LocalLibrarySource
-                prescrape_scrapers.append(('local', LocalLibrarySource()))
-            if 'downloads' in self.active_scrapers and self.check_downloads:
-                from scrapers.downloads import DownloadsSource
-                prescrape_scrapers.append(('downloads', DownloadsSource()))
-            if 'folder' in '.'.join(self.active_scrapers):
-                self.check_folder_scrapers(self.active_scrapers, prescrape_scrapers)
-        self.total_active_scrapers = len(prescrape_scrapers)
-        if self.total_active_scrapers == 0: return False
-        for i in range(len(prescrape_scrapers)):
-            self.prescrape_threads.append(Thread(target=self.activate_prescrape_providers, args=(prescrape_scrapers[i][1],)))
-            self.prescrape_starting_providers.append((self.prescrape_threads[i].getName(), prescrape_scrapers[i][0]))
-        [i.start() for i in self.prescrape_threads]
-        if self.background:
-            [i.join() for i in self.prescrape_threads]
-        else:
-            self.scrapers_dialog('pre_scrape')
-        if not self.prescrape_sources: return False
-        prescrape_results = self.filter_results(self.prescrape_sources)
-        if not prescrape_results: return False
-        if self.autoplay:
-            self.sources.extend(prescrape_results)
-            return True
-        result = selection_dialog([i.get('multiline_label') for i in prescrape_results], prescrape_results, 'Pre-Scrape Results:')
-        if not result: return False
-        self.sources.append(result)
-        return True
+	def activate_debrid_info(self):
+		self.debrid_enabled = debrid_enabled()
+		self.debrid_torrent_enabled = debrid_type_enabled('torrent', self.debrid_enabled)
+		self.debrid_hoster_enabled = debrid_valid_hosts(debrid_type_enabled('hoster', self.debrid_enabled))
 
-    def check_folder_scrapers(self, active_scrapers, append_list, prescrape=True):
-        from scrapers.folder_scraper import FolderScraper
-        for i in active_scrapers:
-            if i.startswith('folder'):
-                scraper_name = __addon__.getSetting('%s.display_name' % i)
-                if prescrape:
-                    if self.check_folders: append_list.append((scraper_name, FolderScraper(i, scraper_name)))
-                else: append_list.append((scraper_name, FolderScraper(i, scraper_name)))
+	def activate_external_providers(self):
+		if not self.debrid_torrent_enabled and not self.debrid_hoster_enabled:
+			self._kill_progress_dialog()
+			if len(self.active_internal_scrapers) == 1 and 'external' in self.active_internal_scrapers: notification(32854, 2000)
+			self.active_external = False
+		else:
+			if not self.debrid_torrent_enabled: self.exclude_list.extend(scraper_names('torrents'))
+			elif not self.debrid_hoster_enabled: self.exclude_list.extend(scraper_names('hosters'))
+			external_providers = external_sources(ret_all=self.disabled_ext_ignored, ret_default_only=self.default_ext_only)
+			self.external_providers = [i for i in external_providers if not i[0] in self.exclude_list]
 
-    def scrapers_dialog(self, scrape_type):
-        def _scraperDialog():
-            for i in range(0, 100):
-                try:
-                    if xbmc.abortRequested == True: return sys.exit()
-                    try:
-                        if progress_dialog.iscanceled():
-                            break
-                    except Exception:
-                        pass
-                    alive_threads = [x.getName() for x in _threads if x.is_alive() is True]
-                    remaining_providers = [x[1] for x in _starting_providers if x[0] in alive_threads]
-                    source_4k_label = total_format % (int_dialog_highlight, len([e for e in _sources if e['quality'] == '4K' and  not 'uncached' in e]))
-                    source_1080_label = total_format % (int_dialog_highlight, len([e for e in _sources if e['quality']  == '1080p' and  not 'uncached' in e]))
-                    source_720_label = total_format % (int_dialog_highlight, len([e for e in _sources if e['quality'] == '720p' and  not 'uncached' in e]))
-                    source_sd_label = total_format % (int_dialog_highlight, len([e for e in _sources if e['quality'] in ['SD', 'SCR', 'CAM', 'TELE'] and not 'uncached' in e]))
-                    source_total_label = total_format % (int_dialog_highlight, len([e for e in _sources if e['quality'] in ['4K', '1080p', '720p', 'SD', 'SCR', 'CAM', 'TELE'] and not 'uncached' in e]))
-                    try:
-                        line1 = '[COLOR %s]%s[/COLOR]' % (int_dialog_highlight, _line1_insert)
-                        line2 = ('[COLOR %s][B]%s[/B][/COLOR] 4K: %s | 1080p: %s | 720p: %s | SD: %s | Total: %s') % (int_dialog_highlight, _line2_insert, source_4k_label, source_1080_label, source_720_label, source_sd_label, source_total_label)
-                        if len(remaining_providers) > 3: line3_insert = str(len(remaining_providers))
-                        else: line3_insert = ', '.join(remaining_providers).upper()
-                        line3 = 'Remaining providers: %s' % line3_insert
-                        current_time = time.time()
-                        current_progress = current_time - start_time
-                        percent = int((current_progress/float(timeout))*100)
-                        progress_dialog.update(max(1, percent), line1, line2, line3)
-                    except: pass
-                    time.sleep(0.2)
-                    if len(alive_threads) == 0: break
-                    if end_time < current_time: break
-                except Exception:
-                    pass
-        def _scraperDialogBG():
-            for i in range(0, 100):
-                try:
-                    if xbmc.abortRequested == True: return sys.exit()
-                    try:
-                        if progress_dialog.iscanceled():
-                            break
-                    except Exception:
-                        pass
-                    alive_threads = [x.getName() for x in _threads if x.is_alive() is True]
-                    remaining_providers = [x[1] for x in _starting_providers if x[0] in alive_threads]
-                    source_4k_label = total_format % (int_dialog_highlight, len([e for e in _sources if e['quality'] == '4K' and  not 'uncached' in e]))
-                    source_1080_label = total_format % (int_dialog_highlight, len([e for e in _sources if e['quality']  == '1080p' and  not 'uncached' in e]))
-                    source_720_label = total_format % (int_dialog_highlight, len([e for e in _sources if e['quality'] == '720p' and  not 'uncached' in e]))
-                    source_sd_label = total_format % (int_dialog_highlight, len([e for e in _sources if e['quality'] in ['SD', 'SCR', 'CAM', 'TELE'] and not 'uncached' in e]))
-                    source_total_label = total_format % (int_dialog_highlight, len([e for e in _sources if e['quality'] in ['4K', '1080p', '720p', 'SD', 'SCR', 'CAM', 'TELE'] and not 'uncached' in e]))
-                    try:
-                        line1 = '4K:%s|1080p:%s|720p:%s|SD:%s|T:%s' % (source_4k_label, source_1080_label, source_720_label, source_sd_label, source_total_label)
-                        line2 = 'Remaining providers: %s' % str(len(remaining_providers))
-                        current_time = time.time()
-                        current_progress = current_time - start_time
-                        percent = int((current_progress/float(timeout))*100)
-                        progress_dialog.update(max(1, percent), line1, line2)
-                    except: pass
-                    time.sleep(0.2)
-                    if len(alive_threads) == 0: break
-                    if end_time < current_time: break
-                except Exception:
-                    pass
-        hide_busy_dialog()
-        timeout = 25
-        int_dialog_highlight = __addon__.getSetting('int_dialog_highlight')
-        if not int_dialog_highlight or int_dialog_highlight == '': int_dialog_highlight = 'dodgerblue'
-        total_format = '[COLOR %s][B]%s[/B][/COLOR]'
-        _progress_heading = int(__addon__.getSetting('progress.heading'))
-        _progress_title = self.meta.get('rootname') if _progress_heading == 1 else 'Internal Scrapers' if scrape_type == 'internal' else 'Pre-Scrape'
-        _threads = self.threads if scrape_type == 'internal' else self.prescrape_threads
-        _starting_providers = self.starting_providers if scrape_type == 'internal' else self.prescrape_starting_providers
-        _sources = self.sources if scrape_type == 'internal' else self.prescrape_sources
-        _line1_insert = 'Internal Scrapers' if scrape_type == 'internal' else 'Pre-Scrape Sources'
-        _line2_insert = 'Int:' if scrape_type == 'internal' else 'Pre:'
-        if self.suppress_notifications:
-            progress_dialog = xbmcgui.DialogProgressBG()
-            function = _scraperDialogBG
-        else:
-            progress_dialog = xbmcgui.DialogProgress()
-            function = _scraperDialog
-        start_time = time.time()
-        end_time = start_time + timeout
-        progress_dialog.create(_progress_title, '')
-        progress_dialog.update(0)
-        function()
-        try: progress_dialog.close()
-        except Exception: pass
-        xbmc.sleep(500)
+	def play_source(self, results):
+		if self.background: return self.play_execute_background(results)
+		if self.autoplay: return self.play_file(results, autoplay=True)
+		return self.display_results(results)
 
-    def display_results(self):
-        def _build_simple_directory(item, position=None):
-            try:
-                title = item.get('title')
-                item_id = item.get('id', None)
-                uncached = item.get('uncached', False)
-                mode = 'furk.add_uncached_file' if uncached else 'play_file'
-                source = json.dumps([item])
-                url = build_url({'mode': mode, 'name': title, 'title': title, 'id': item_id, 'source': source})
-                listitem = xbmcgui.ListItem(item.get("label"))
-                listitem.setArt({'poster': poster})
-                item_list.append({'list_item': (url, listitem, False), 'position': position})
-            except: pass
-        def _build_directory(item, position=None):
-            try:
-                title = item.get('title')
-                item_id = item.get('id', None)
-                scrape_provider = item['scrape_provider']
-                uncached_furk = True if scrape_provider == 'furk' and 'uncached' in item else False
-                uncached_torrent = True if 'Uncached' in item.get('cache_provider', '') else False
-                uncached = True if True in (uncached_furk, uncached_torrent) else False
-                mode = 'furk.add_uncached_file' if uncached_furk else 'play_file'
-                source = json.dumps([item])
-                url = build_url({'mode': mode, 'name': title, 'title': title, 'id': item_id, 'source': source})
-                name = item.get('name')
-                url_dl = item.get('url_dl')
-                cm = []
-                if multiline_label:
-                    display = item.get("multiline_label")
-                else:
-                    display = item.get("label")
-                listitem = xbmcgui.ListItem(display)
-                listitem.setInfo('video', {'plot': meta['plot']})
-                listitem.setArt({'poster': poster, 'fanart': meta['fanart'], 'thumb': poster, 'clearlogo': meta['clearlogo']})
-                if not uncached:
-                    if scrape_provider not in self.file_scrapers:
-                        down_file_params = {'mode': 'download_file', 'name': meta.get('rootname'), 'url': url_dl, 'source': source, 'meta': meta_json}
-                        if scrape_provider == 'furk': down_file_params['archive'] = True
-                        cm.append(("[B]Download File[/B]",'XBMC.RunPlugin(%s)' % build_url(down_file_params)))
-                    if scrape_provider == 'furk':
-                        if 'PACK' in display:
-                            down_archive_params = {'mode': 'download_file', 'name': name, 'url': url_dl, 'db_type': 'archive', 'image': default_furk_icon}
-                            cm.append(("[B]Download Archive[/B]",'XBMC.RunPlugin(%s)' % build_url(down_archive_params)))
-                        browse_pack_params = {'mode': 'furk.browse_packs', 'file_name': name, 'file_id': item_id}
-                        add_files_params = {'mode': 'furk.add_to_files', 'name': name, 'item_id': item_id}
-                        cm.append(("[B]Browse Furk Folder[/B]",'XBMC.RunPlugin(%s)'  % build_url(browse_pack_params)))
-                        cm.append(("[B]Add to My Files[/B]",'XBMC.RunPlugin(%s)'  % build_url(add_files_params)))
-                listitem.addContextMenuItems(cm)
-                item_list.append({'list_item': (url, listitem, False), 'position': position})
-            except: pass
-        try: results = json.loads(window.getProperty('david_search_results'))
-        except: return
-        meta_json = window.getProperty('david_media_meta')
-        meta = json.loads(meta_json)
-        if meta.get('use_animated_poster', False): poster = meta.get('gif_poster')
-        else: poster = meta.get('poster')
-        multiline_label = settings.multiline_results()
-        build_results = _build_simple_directory if self.display_mode == 1 else _build_directory
-        item_list = []
-        threads = []
-        for position, item in enumerate(results): threads.append(Thread(target=build_results, args=(item, position)))
-        [i.start() for i in threads]
-        [i.join() for i in threads]
-        item_list.sort(key=lambda k: k['position'])
-        xbmcplugin.addDirectoryItems(__handle__, [i['list_item'] for i in item_list])
-        sleep = 1500 if len(results) <= 250 else 3000
-        xbmcplugin.setContent(__handle__, 'files')
-        xbmcplugin.endOfDirectory(__handle__)
-        xbmc.sleep(sleep)
-        setView('view.search_results')
+	def append_folder_scrapers(self, current_list):
+		current_list.extend(internal_folders_import(self.folder_info))
 
-    def dialog_results(self):
-        hide_busy_dialog()
-        close_all_dialog()
-        multiline_label = settings.multiline_results()
-        links_list = []
-        results = json.loads(window.getProperty('david_search_results'))
-        for item in results:
-            if multiline_label: listitem = xbmcgui.ListItem(item.get("multiline_label"))
-            else: listitem = xbmcgui.ListItem(item.get("label"))
-            listitem.setProperty('IsPlayable', 'false')
-            links_list.append(listitem)
-        chosen = dialog.select("David Results", links_list)
-        if chosen < 0: return
-        chosen_result = results[chosen]
-        if chosen_result.get('uncached', False):
-            return add_uncached_file(chosen_result.get('name'), chosen_result.get('id'))
-        return self.play_file(chosen_result.get('title'), json.dumps([chosen_result]))
+	def get_folderscraper_info(self):
+		folder_info = [(get_setting('%s.display_name' % i), i) for i in folder_scrapers]
+		return [i for i in folder_info if not i[0] in (None, 'None', '')]
 
-    def play_auto_nextep(self):
-        from modules.nav_utils import notification
-        try: results = json.loads(window.getProperty('david_search_results'))
-        except: return
-        meta = json.loads(window.getProperty('david_media_meta'))
-        notification('%s %s S%02dE%02d' % ('[B]Next Up:[/B]', meta['title'], meta['season'], meta['episode']), 10000, meta['poster'])
-        player = xbmc.Player()
-        while player.isPlaying():
-            xbmc.sleep(100)
-        xbmc.sleep(1500)
-        return self.play_auto()
+	def scrapers_dialog(self):
+		def _scraperDialog():
+			if not self.progress_dialog: self._make_progress_dialog()
+			while not self.progress_dialog.iscanceled():
+				try:
+					if monitor.abortRequested(): break
+					remaining_providers = [x.getName() for x in _threads if x.is_alive() is True]
+					self._process_internal_results()
+					s4k_label, s1080_label = total_format % self.sources4K, total_format % self.sources1080p
+					s720_label, ssd_label, stotal_label = total_format % self.sources720p, total_format % self.sourcesSD, total_format % self.sourcesTotal
+					try:
+						current_time = time.time()
+						current_progress = current_time - start_time
+						line2 = dialog_format % (int_dialog_hl, line2_inst, s4k_label, s1080_label, s720_label, ssd_label, stotal_label)
+						line3 = remaining_format % ', '.join(remaining_providers).upper()
+						percent = int((current_progress/float(timeout))*100)
+						self.progress_dialog.update(main_line % (line1, line2, line3), percent)
+						sleep(self.sleep_time)
+						if len(remaining_providers) == 0: break
+						if percent >= 100: break
+					except: pass
+				except: pass
+		if self.prescrape: scraper_list, _threads, line1_inst, line2_inst = self.prescrape_scrapers, self.prescrape_threads, ' '.join([ls(32829), ls(32830)]), 'Pre:'
+		else: scraper_list, _threads, line1_inst, line2_inst = self.providers, self.threads, ls(32096), 'Int:'
+		self.internal_scrapers = self._get_active_scraper_names(scraper_list)
+		if not self.internal_scrapers: return
+		timeout = 25
+		int_dialog_hl = get_setting('int_dialog_highlight') or 'dodgerblue'
+		total_format = '[COLOR %s][B]%s[/B][/COLOR]' % (int_dialog_hl, '%s')
+		line1 = '[COLOR %s][B]%s[/B][/COLOR]' % (int_dialog_hl, line1_inst)
+		start_time = time.time()
+		end_time = start_time + timeout
+		_scraperDialog()
 
-    def _no_results(self):
-        if self.background:
-            from modules.nav_utils import notification
-            return notification('%s %s' % ('[B]Next Up:[/B]', '[I]No results found.[/I]'), 10000)
-        return dialog.ok('David', 'No Results')
+	def display_results(self, results):
+		window_style = results_xml_style()
+		action, chosen_item = open_window(('windows.sources', 'SourceResults'), 'sources_results.xml',
+				window_style=window_style, window_id=results_xml_window_number(window_style), results=results, meta=self.meta,
+				scraper_settings=self.scraper_settings, prescrape=self.prescrape, filters_ignored=self.filters_ignored, uncached_torrents=self.uncached_torrents)
+		if not action: self._kill_progress_dialog()
+		elif action == 'play':
+			self._kill_progress_dialog()
+			return self.play_file(results, chosen_item)
+		elif self.prescrape and action == 'perform_full_search':
+			self.prescrape, self.clear_properties = False, False
+			return self.playback_prep()
 
-    def _search_info(self):
-        search_title = self._get_search_title()
-        ep_name = self._get_ep_name()
-        return {'db_type': self.vid_type, 'title': search_title, 'year': self.meta.get('year'),
-        'tmdb_id': self.tmdb_id, 'imdb_id': self.meta.get('imdb_id'), 'season': self.season,
-        'episode': self.episode, 'premiered': self.meta.get('premiered'), 'tvdb_id': self.meta.get('tvdb_id'),
-        'ep_name': ep_name, 'language': self.language, 'scraper_settings': json.dumps(settings.scraping_settings())}
+	def play_execute_background(self, results):
+		background_url = self.play_file(results, autoplay=True, background=True)
+		set_property('david_background_url', background_url)
 
-    def _get_search_title(self):
-        if 'search_title' in self.meta:
-            if self.language != 'en': search_title = self.meta['original_title']
-            else: search_title = self.meta['search_title']
-        else: search_title = self.meta['title']
-        if '(' in search_title: search_title = search_title.split('(')[0]
-        return search_title
+	def _get_active_scraper_names(self, scraper_list):
+		return [i[2] for i in scraper_list]
 
-    def _get_ep_name(self):
-        try: ep_name = to_utf8(safe_string(remove_accents(self.meta.get('ep_name'))))
-        except: ep_name = to_utf8(safe_string(self.meta.get('ep_name')))
-        return ep_name
+	def _process_post_results(self):
+		if self.ignore_results_filter and self.orig_results: return self._process_ignore_filters()
+		elif self.orig_results and not self.autoplay:
+			if self.display_uncached_torrents or confirm_progress_media(meta=self.meta, text=32021, enable_buttons=True):
+				return self.play_source(self.orig_results)
+		return self._no_results()
 
-    def _quality_filter(self):
-        setting = 'results_quality' if not self.autoplay else 'autoplay_quality'
-        quality_filter = settings.quality_filter(setting)
-        if self.include_prerelease_results: quality_filter += ['SCR', 'CAM', 'TELE']
-        return quality_filter
+	def _process_ignore_filters(self):
+		self.filters_ignored = True
+		if self.autoplay:
+			orig_results = self.orig_results[:]
+			orig_results = [i for i in orig_results if not 'Uncached' in i.get('cache_provider', '')]
+			if self.filter_size_method:
+				if self.filter_size_method == 1:
+					duration = self.meta['duration'] or (5400 if self.media_type == 'movie' else 2400)
+					max_size = ((0.125 * (0.90 * string_to_float(get_setting('results.size.auto', '20'), '20'))) * duration)/1000
+				elif self.filter_size_method == 2:
+						max_size = string_to_float(get_setting('results.size.manual', '10000'), '10000') / 1000
+				min_size = 0
+				orig_results.sort(key=lambda x: x['size'])
+				size_list = [i['size'] for i in orig_results]
+				nearest_min_index = size_list.index(min(size_list, key=lambda x: abs(x - min_size)))
+				nearest_max_index = size_list.index(min(size_list, key=lambda x: abs(x - max_size)))
+				nearest_min_results = sorted(orig_results[:nearest_min_index + 1], key=lambda x: x['size'], reverse=True)[:5]
+				nearest_max_results = sorted(orig_results[nearest_max_index:], key=lambda x: x['size'])[:5]
+				orig_results = nearest_min_results + nearest_max_results
+			include_quality = [i for i in orig_results if i['quality'] in self.quality_filter]
+			exclude_quality = [i for i in orig_results if not i['quality'] in self.quality_filter]
+			results = include_quality + exclude_quality
+		else:
+			results = self.sort_results(self.orig_results)
+			results = self._sort_first(results)
+		if self.autoplay: notification(32686)
+		return self.play_source(results)
 
-    def _get_quality_rank(self, quality):
-        if quality == '4K': return 1
-        if quality == '1080p': return 2
-        if quality == '720p': return 3
-        if quality == 'SD': return 4
-        if quality in ['SCR', 'CAM', 'TELE']: return 5
-        return 6
+	def _no_results(self):
+		self._kill_progress_dialog()
+		hide_busy_dialog()
+		if self.background: return notification('%s %s' % (ls(32801), ls(32760)), 5000)
+		notification(32760, 2000)
 
-    def _get_debrid_rank(self, debrid):
-        if debrid != '': return 2
-        else: return 3
+	def _update_meta(self):
+		self.meta.update({'media_type': self.media_type, 'season': self.season, 'episode': self.episode, 'background': self.background})
+		if self.custom_title: self.meta['custom_title'] = self.custom_title
+		if self.custom_year: self.meta['custom_year'] = self.custom_year
+		if self.media_type == 'episode':
+			if self.custom_season: self.meta['custom_season'] = self.custom_season
+			if self.custom_episode: self.meta['custom_episode'] = self.custom_episode
+			if self.disable_autoplay_next_episode: self.meta['disable_autoplay_next_episode'] = 'true'
 
-    def _get_torrent_rank(self, item):
-        source = item['source'].lower()
-        if source == 'torrent':
-            cache_provider = item['cache_provider']
-            if 'Uncached' in cache_provider: return 3
-            if cache_provider == 'Unchecked': return 4
-            return 2
-        else: return 5
+	def _search_info(self):
+		title = self.get_search_title()
+		year = self.get_search_year()
+		season = self.get_search_season()
+		episode = self.get_search_episode()
+		ep_name = self.get_ep_name()
+		aliases = make_alias_dict(self.meta, title)
+		expiry_times = get_cache_expiry(self.media_type, self.meta, self.season)
+		self.search_info = {'media_type': self.media_type, 'title': title, 'year': year, 'tmdb_id': self.tmdb_id, 'imdb_id': self.meta.get('imdb_id'), 'aliases': aliases,
+							'season': season, 'episode': episode, 'tvdb_id': self.meta.get('tvdb_id'), 'ep_name': ep_name, 'expiry_times': expiry_times,
+							'total_seasons': self.meta.get('total_seasons', 1)}
 
-    def _get_name_rank(self, provider):
-        if self.internal_scraper_order[0] in provider: return ['1'] * 10
-        if self.internal_scraper_order[1] in provider: return ['1'] * 11
-        if self.internal_scraper_order[2] in provider: return ['1'] * 12
-        if self.internal_scraper_order[3] in provider: return ['1'] * 13
+	def get_search_title(self):
+		if 'custom_title' in self.meta: search_title = self.meta['custom_title']
+		else:
+			if self.language == 'en': search_title = self.meta['title']
+			else:
+				search_title = None
+				if 'english_title' in self.meta: search_title = self.meta['english_title']
+				else:
+					try:
+						media_type = 'movie' if self.media_type == 'movie' else 'tv'
+						meta_user_info = metadata_user_info()
+						english_title = metadata.english_translation(media_type, self.meta['tmdb_id'], meta_user_info)
+						if english_title: search_title = english_title
+						else: search_title = meta['original_title']
+					except: pass
+				if not search_title: search_title = self.meta['original_title']
+			if '(' in search_title: search_title = search_title.split('(')[0]
+			search_title.replace('/', ' ')
+		return search_title
 
-    def _sort_hevc(self, results):
-        if self.autoplay_hevc == '': self.autoplay_hevc == 'Include'
-        if self.autoplay_hevc == 'Exclude':
-            results = [i for i in results if not 'HEVC' in i['label']]
-        elif self.autoplay_hevc == 'Prefer':
-            hevc_list = [i for i in results if 'HEVC' in i['label']]
-            non_hevc_list = [i for i in results if not i in hevc_list]
-            results = hevc_list + non_hevc_list
-        return results
+	def get_search_year(self):
+		if 'custom_year' in self.meta: year = self.meta['custom_year']
+		else:
+			year = self.meta.get('year')
+			if self.active_external and get_setting('search.enable.yearcheck', 'false') == 'true':
+				from apis.imdb_api import imdb_year_check
+				try: year = str(imdb_year_check(self.meta.get('imdb_id')))
+				except: pass
+		return year
 
-    def _sort_first(self, provider, results):
-        try:
-            inserts = []
-            result = [i for i in results if i['scrape_provider'] == provider]
-            for i in result:
-                inserts.append(i)
-                results.remove(i)
-            inserts = sorted(inserts, key=lambda k: k['quality_rank'], reverse=True)
-            for i in inserts: results.insert(0, i)
-        except: pass
-        return results
+	def get_search_season(self):
+		if 'custom_season' in self.meta: season = int(self.meta['custom_season'])
+		else: season = self.meta['season']
+		return season
 
-    def _grab_meta(self):
-        import davidmeta
-        meta_user_info = davidmeta.retrieve_user_info()
-        window.setProperty('david_fanart_error', 'true')
-        if self.vid_type == "movie":
-            self.meta = davidmeta.movie_meta('tmdb_id', self.tmdb_id, meta_user_info)
-            if not 'rootname' in self.meta: self.meta['rootname'] = '{0} ({1})'.format(self.meta['title'], self.meta['year'])
-        else:
-            self.meta = davidmeta.tvshow_meta('tmdb_id', self.tmdb_id, meta_user_info)
-            episodes_data = davidmeta.season_episodes_meta(self.meta['tmdb_id'], self.meta['tvdb_id'], self.season, self.meta['tvdb_summary']['airedSeasons'], self.meta['season_data'], meta_user_info)
-            try:
-                display_name = '%s - %dx%.2d' % (self.meta['title'], self.season, self.episode)
-                episode_data = [i for i in episodes_data if i['episode'] == int(self.episode)][0]
-                self.meta.update({'vid_type': 'episode', 'rootname': display_name, 'season': episode_data['season'],
-                            'episode': episode_data['episode'], 'premiered': episode_data['premiered'], 'ep_name': episode_data['title'],
-                            'plot': episode_data['plot']})
-            except: pass
+	def get_search_episode(self):
+		if 'custom_episode' in self.meta: episode = int(self.meta['custom_episode'])
+		else: episode = self.meta['episode']
+		return episode
 
-    def _activate_resolveURL(self, setting='true'):
-        try:
-            __resolveURL__.setSetting('RapidgatorResolver_enabled', 'true')
-            xbmc.sleep(100)
-            for item in ('login', 'premium'):
-                __resolveURL__.setSetting('RapidgatorResolver_%s' % item, setting)
-                xbmc.sleep(100)
-            xbmc.sleep(500)
-        except: pass
+	def get_ep_name(self):
+		ep_name = None
+		if self.meta['media_type'] == 'episode':
+			ep_name = self.meta.get('ep_name')
+			try: ep_name = safe_string(remove_accents(ep_name))
+			except: ep_name = safe_string(ep_name)
+		return ep_name
 
-    def _clear_sources(self):
-        for item in ('local_source_results', 'downloads_source_results', 'furk_source_results', 'folder1_source_results', 'folder2_source_results',
-                    'folder3_source_results', 'folder4_source_results', 'folder5_source_results', 'easynews_source_results', 'pm-cloud_source_results',
-                    'rd-cloud_source_results', 'ad-cloud_source_results', 'david_media_meta', 'david_search_results'):
-            window.clearProperty(item)
+	def _process_internal_results(self):
+		for i in self.internal_scrapers:
+			win_property = get_property('%s.internal_results' % i)
+			if win_property in ('checked', '', None): continue
+			try: sources = json.loads(win_property)
+			except: continue
+			set_property('%s.internal_results' % i, 'checked')
+			self._sources_quality_count(sources)
+	
+	def _sources_quality_count(self, sources):
+		for i in sources:
+			quality = i['quality']
+			if quality == '4K': self.sources4K += 1
+			elif quality in ('1440p', '1080p'): self.sources1080p += 1
+			elif quality in ('720p', 'HD'): self.sources720p += 1
+			else: self.sourcesSD += 1
+			self.sourcesTotal += 1
 
-    def play_file(self, title, source):
-        from modules.player import DavidPlayer
-        def _uncached_confirm(item):
-            if not dialog.yesno('DAVID - Uncached Torrent', 'Download this Torrent to your [B]%s[/B] Cloud?' % item['debrid'].upper()):
-                return None
-            else:
-                self.caching_confirmed = True
-                return item
-        try:
-            next = []
-            prev = []
-            total = []
-            results = json.loads(window.getProperty('david_search_results'))
-            results = [i for i in results if not 'Uncached' in i.get('cache_provider', '') or i == json.loads(source)[0]]
-            source_index = results.index(json.loads(source)[0])
-            for i in range(1, 25):
-                try:
-                    u = results[i+source_index]
-                    if u in total:
-                        raise Exception()
-                    total.append(u)
-                    next.append(u)
-                except Exception:
-                    break
-            for i in range(-25, 0)[::-1]:
-                try:
-                    u = results[i+source_index]
-                    if u in total:
-                        raise Exception()
-                    total.append(u)
-                    prev.append(u)
-                except Exception:
-                    break
-            items = json.loads(source)
-            items = [i for i in items+next+prev][:40]
-            header = "David"
-            header2 = header.upper()
-            progressDialog = xbmcgui.DialogProgress()
-            progressDialog.create(header, '')
-            progressDialog.update(0)
-            block = None
-            for i in range(len(items)):
-                try:
-                    self.url = None
-                    self.caching_confirmed = False
-                    try:
-                        if progressDialog.iscanceled():
-                            break
-                        progressDialog.update(int((100 / float(len(items))) * i), str(items[i]['label']), str(' '))
-                    except Exception:
-                        progressDialog.update(int((100 / float(len(items))) * i), str(header2), str(items[i]['label']))
-                    if items[i]['source'] == block:
-                        raise Exception()
-                    w = Thread(target=self.resolve_sources, args=(items[i],))
-                    w.start()
-                    offset = 60 * 2 if items[i].get('source') in ['hugefiles.net', 'kingfiles.net', 'openload.io', 'openload.co', 'oload.tv', 'thevideo.me', 'vidup.me', 'streamin.to', 'torba.se'] else 0
-                    m = ''
-                    for x in range(3600):
-                        try:
-                            if xbmc.abortRequested is True:
-                                return sys.exit()
-                            if progressDialog.iscanceled():
-                                return progressDialog.close()
-                        except Exception:
-                            pass
-                        k = xbmc.getCondVisibility('Window.IsActive(virtualkeyboard)')
-                        if k:
-                            m += '1'
-                            m = m[-1]
-                        if (w.is_alive() is False or x > 30 + offset) and not k:
-                            break
-                        k = xbmc.getCondVisibility('Window.IsActive(yesnoDialog)')
-                        if k:
-                            m += '1'
-                            m = m[-1]
-                        if (w.is_alive() is False or x > 30 + offset) and not k:
-                            break
-                        time.sleep(0.5)
-                    for x in range(30):
-                        try:
-                            if xbmc.abortRequested is True:
-                                return sys.exit()
-                            if progressDialog.iscanceled():
-                                return progressDialog.close()
-                        except Exception:
-                            pass
-                        if m == '':
-                            break
-                        if w.is_alive() is False:
-                            break
-                        time.sleep(0.5)
-                    if w.is_alive() is True:
-                        block = items[i]['source']
-                    if self.url == 'uncached':
-                        self.url = _uncached_confirm(items[i])
-                    if self.url is None:
-                        raise Exception()
-                    try:
-                        progressDialog.close()
-                    except Exception:
-                        pass
-                    xbmc.sleep(200)
-                    if self.url: break
-                except Exception: pass
-            try: progressDialog.close()
-            except Exception: pass
-            if self.caching_confirmed:
-                return self.resolve_sources(self.url, cache_item=True)
-            return DavidPlayer().run(self.url)
-        except Exception:
-            pass
+	def _quality_filter(self):
+		setting = 'results_quality_%s' % self.media_type if not self.autoplay else 'autoplay_quality_%s' % self.media_type
+		filter_list = quality_filter(setting)
+		if self.include_prerelease_results and 'SD' in filter_list: filter_list += ['SCR', 'CAM', 'TELE']
+		return filter_list
 
-    def play_auto(self):
-        meta = json.loads(window.getProperty('david_media_meta'))
-        items = json.loads(window.getProperty('david_search_results'))
-        items = [i for i in items if not i.get('uncached', False)]
-        filter = [i for i in items if i['source'].lower() in ['hugefiles.net', 'kingfiles.net', 'openload.io', 'openload.co', 'oload.tv', 'thevideo.me', 'vidup.me', 'streamin.to', 'torba.se'] and i['debrid'] == '']
-        items = [i for i in items if i not in filter]
-        u = None
-        if not self.suppress_notifications:
-            self.suppress_notifications = True if (__addon__.getSetting('auto_play'), __addon__.getSetting('autoplay_minimal_notifications')) == ('true', 'true') else False
-        if self.suppress_notifications:
-            show_busy_dialog()
-            for i in range(len(items)):
-                try:
-                    if xbmc.abortRequested is True:
-                        return sys.exit()
-                    url = self.resolve_sources(items[i])
-                    if 'plugin://' in url:
-                        hide_busy_dialog()
-                        return xbmc.executebuiltin("RunPlugin({0})".format(url))
-                    if u is None:
-                        u = url
-                    if url is not None:
-                        break
-                except Exception:
-                    pass
-        else:
-            header = "David"
-            header2 = header.upper()
-            try:
-                progressDialog = xbmcgui.DialogProgress()
-                progressDialog.create(header, '')
-                progressDialog.update(0)
-            except Exception:
-                pass
-            for i in range(len(items)):
-                try:
-                    if progressDialog.iscanceled():
-                        break
-                    progressDialog.update(int((100 / float(len(items))) * i), str(items[i]['label']), str(' '))
-                except Exception:
-                    progressDialog.update(int((100 / float(len(items))) * i), str(header2), str(items[i]['label']))
-                try:
-                    if xbmc.abortRequested is True:
-                        return sys.exit()
-                    url = self.resolve_sources(items[i])
-                    if 'plugin://' in url:
-                        try: progressDialog.close()
-                        except Exception: pass
-                        return xbmc.executebuiltin("RunPlugin({0})".format(url))
-                    if u is None:
-                        u = url
-                    if url is not None:
-                        break
-                except Exception:
-                    pass
-            try: progressDialog.close()
-            except Exception: pass
-        hide_busy_dialog()
-        from modules.player import DavidPlayer
-        DavidPlayer().run(self.url)
-        return u
+	def _get_quality_rank(self, quality):
+		return quality_ranks[quality]
 
-    def furkTFile(self, file_name, file_id):
-        from apis.furk_api import FurkAPI
-        from indexers.furk import get_release_quality
-        hide_busy_dialog()
-        close_all_dialog()
-        t_files = FurkAPI().t_files(file_id)
-        t_files = [i for i in t_files if 'video' in i['ct'] and 'bitrate' in i]
-        display_list = []
-        display_list = ['%02d | [B]%s[/B] | [B]%.2f GB[/B] | [I]%s[/I]' % \
-                        (count, get_release_quality(i['name'], i['url_dl'], t_file='yep')[0],
-                        float(i['size'])/1073741824,
-                        clean_file_name(i['name']).upper()) for count, i in enumerate(t_files, 1)]
-        chosen = dialog.select(file_name, display_list)
-        if chosen < 0: return None
-        chosen_result = t_files[chosen]
-        url_dl = chosen_result['url_dl']
-        from modules.player import DavidPlayer
-        return DavidPlayer().run(url_dl)
+	def _get_provider_rank(self, account_type):
+		return self.provider_sort_ranks[account_type] or 11
 
-    def resolve_sources(self, item, cache_item=False):
-        from modules import resolver
-        try:
-            if 'cache_provider' in item:
-                if item['cache_provider'] in ('Real-Debrid', 'Premiumize.me', 'AllDebrid'):
-                    url = resolver.resolve_cached_torrents(item['cache_provider'], item['url'], item['info_hash'])
-                    self.url = url
-                    return url
-                if item['cache_provider'] == 'Unchecked':
-                    url = resolver.resolve_unchecked_torrents(item['debrid'], item['url'], item['info_hash'])
-                    self.url = url
-                    return url
-                if 'Uncached' in item['cache_provider']:
-                    if cache_item:
-                        url = resolver.resolve_uncached_torrents(item['debrid'], item['url'], item['info_hash'])
-                        if not url: return None
-                        from modules.player import DavidPlayer
-                        return DavidPlayer().run(url)
-                    else:
-                        url = 'uncached'
-                        self.url = url
-                        return url
-                    return None
-            if item.get('scrape_provider', None) in self.internal_scrapers:
-                url = resolver.resolve_internal_sources(item['scrape_provider'], item['id'], item['url_dl'], item.get('direct_debrid_link', False))
-                self.url = url
-                return url
-            if item['debrid'] in ('Real-Debrid', 'Premiumize.me', 'AllDebrid') and not item['source'].lower() == 'torrent':
-                from openscrapers import sources
-                self.sourceDict = sources()
-                call = [i[1] for i in self.sourceDict if i[0] == item['provider']][0]
-                url = call.resolve(item['url'])
-                url = resolver.resolve_debrid(item['debrid'], url)
-                if url is not None:
-                    self.url = url
-                    return url
-                else:
-                    return None
-            else:
-                url = resolver.resolve_free_links(item['url'], item['provider'], item['direct'])
-                self.url = url
-                return url
-        except Exception:
-            return
+	def _sort_first(self, results):
+		try:
+			sort_first_scrapers = []
+			if 'folders' in self.all_scrapers and sort_to_top('folders'): sort_first_scrapers.append('folders')
+			sort_first_scrapers.extend([i for i in self.all_scrapers if i in cloud_scrapers and sort_to_top(i)])
+			if not sort_first_scrapers: return results
+			sort_first = [i for i in results if i['scrape_provider'] in sort_first_scrapers]
+			sort_first.sort(key=lambda k: (self._sort_folder_to_top(k['scrape_provider']), k['quality_rank']))
+			sort_last = [i for i in results if not i in sort_first]
+			results = sort_first + sort_last
+		except: pass
+		return results
+
+	def _sort_folder_to_top(self, provider):
+		if provider == 'folders': return 0
+		else: return 1
+
+	def _sort_uncached_torrents(self, results):
+		uncached = [i for i in results if 'Uncached' in i.get('cache_provider', '')]
+		cached = [i for i in results if not i in uncached]
+		return cached + uncached
+
+	def _special_filter(self, results, key, enable_setting):
+		if enable_setting == 1:
+			if key == dolby_vision_filter_key and self.hybrid_allowed:
+				results = [i for i in results if all(x in i['extraInfo'] for x in (key, hdr_filter_key)) or not key in i['extraInfo']]
+			else: results = [i for i in results if not key in i['extraInfo']]
+		elif enable_setting == 2 and self.autoplay:
+			priority_list = [i for i in results if key in i['extraInfo']]
+			remainder_list = [i for i in results if not i in priority_list]
+			results = priority_list + remainder_list
+		return results
+
+	def _grab_meta(self):
+		meta_user_info = metadata_user_info()
+		if self.media_type == 'movie':
+			self.meta = metadata.movie_meta('tmdb_id', self.tmdb_id, meta_user_info, get_datetime())
+		else:
+			self.meta = metadata.tvshow_meta('tmdb_id', self.tmdb_id, meta_user_info, get_datetime())
+			episodes_data = metadata.season_episodes_meta(self.season, self.meta, meta_user_info)
+			try:
+				episode_data = [i for i in episodes_data if i['episode'] == int(self.episode)][0]
+				self.meta.update({'media_type': 'episode', 'season': episode_data['season'], 'episode': episode_data['episode'], 'premiered': episode_data['premiered'],
+								'ep_name': episode_data['title'], 'plot': episode_data['plot']})
+			except: pass
+
+	def _get_module(self, module_type, function):
+		if module_type == 'external': module = function.source(*self.external_args)
+		elif module_type == 'folders': module = function[0](*function[1])
+		else: module = function()
+		return module
+
+	def _clear_properties(self):
+		for item in default_internal_scrapers: clear_property('%s.internal_results' % item)
+		for item in self.get_folderscraper_info(): clear_property('%s.internal_results' % item[0])
+
+	def _make_progress_dialog(self):
+		self.progress_dialog = confirm_progress_media(meta=self.meta)
+
+	def _kill_progress_dialog(self):
+		try: self.progress_dialog.close()
+		except: pass
+		try: del self.progress_dialog
+		except: pass
+		self.progress_dialog = None
+
+	def furkPacks(self, name, file_id, download=False):
+		from apis.furk_api import FurkAPI
+		show_busy_dialog()
+		t_files = FurkAPI().t_files(file_id)
+		t_files = [i for i in t_files if 'video' in i['ct'] and 'bitrate' in i]
+		t_files.sort(key=lambda k: k['name'].lower())
+		hide_busy_dialog()
+		if download: return t_files
+		default_furk_icon = get_icon('furk')
+		list_items = [{'line1': '%.2f GB | %s' % (float(item['size'])/1073741824, clean_file_name(item['name']).upper()), 'icon': default_furk_icon} for item in t_files]
+		kwargs = {'items': json.dumps(list_items), 'heading': name, 'enumerate': 'true', 'multi_choice': 'false', 'multi_line': 'false'}
+		chosen_result = select_dialog(t_files, **kwargs)
+		if chosen_result is None: return None
+		link = chosen_result['url_dl']
+		name = chosen_result['name']
+		return DavidPlayer().run(link, 'video')
+
+	def debridPacks(self, debrid_provider, name, magnet_url, info_hash, download=False):
+		show_busy_dialog()
+		debrid_info = {'Real-Debrid': ('rd_browse', 'realdebrid'), 'Premiumize.me': ('pm_browse', 'premiumize'), 'AllDebrid': ('ad_browse', 'alldebrid')}[debrid_provider]
+		debrid_function = self.debrid_importer(debrid_info[0])
+		try: debrid_files = debrid_function().display_magnet_pack(magnet_url, info_hash)
+		except: debrid_files = None
+		hide_busy_dialog()
+		if not debrid_files: return notification(32574)
+		debrid_files.sort(key=lambda k: k['filename'].lower())
+		if download: return debrid_files, debrid_function
+		icon = get_icon(debrid_info[1])
+		list_items = [{'line1': '%.2f GB | %s' % (float(item['size'])/1073741824, clean_file_name(item['filename']).upper()), 'icon': icon} \
+							for item in debrid_files]
+		kwargs = {'items': json.dumps(list_items), 'heading': name, 'enumerate': 'true', 'multi_choice': 'false', 'multi_line': 'false'}
+		chosen_result = select_dialog(debrid_files, **kwargs)
+		if chosen_result is None: return None
+		link = self.resolve_internal_sources(debrid_info[0], chosen_result['link'], '')
+		name = chosen_result['filename']
+		return DavidPlayer().run(link, 'video')
+
+	def play_file(self, results, source={}, autoplay=False, background=False):
+		def _check_playback(items):
+			if self.failed_playback_retries <= 4:
+				self.failed_playback_retries += 1
+				item_source = self.current_source.get('debrid', None) or self.current_source.get('source', None)
+				notification(ls(32121) % item_source.upper() or 'Source')
+				sleep(2000)
+				if item_source == 'easynews':
+					if self.easynews_playback_retried:
+						items = [i for i in items if not i == self.current_source]
+						self.easynews_playback_retried = False
+					else: self.easynews_playback_retried = True
+				else: items = [i for i in items if not i == self.current_source]
+				return self.play_file(items, autoplay=autoplay, background=background)
+		def _uncached_confirm(item):
+			if not confirm_dialog(text=ls(32831) % item['debrid'].upper()): return None
+			else:
+				self.caching_confirmed = True
+				return item
+		def _resolve_dialog():
+			self.url = None
+			for count, item in enumerate(items, 1):
+				try:
+					self.caching_confirmed = False
+					if not background:
+						try:
+							if self.progress_dialog.iscanceled(): break
+							if monitor.abortRequested(): break
+							name = item['name'].replace('.', ' ').replace('-', ' ').upper()
+							percent = int(count/float(total_items)*100)
+							self.progress_dialog.update(main_line % ('', name, ''), percent)
+						except: pass
+					url = self.resolve_sources(item)
+					if url == 'uncached':
+						url = _uncached_confirm(item)
+						if url is None: return
+					if url:
+						self.url, self.current_source = url, item
+						break
+				except: pass
+			self._kill_progress_dialog()
+		try:
+			self._kill_progress_dialog()
+			if autoplay:
+				items = [i for i in results if not 'Uncached' in i.get('cache_provider', '')]
+				if self.filters_ignored: notification(32686)
+			elif source:
+				results = [i for i in results if not 'Uncached' in i.get('cache_provider', '') or i == source]
+				source_index = results.index(source)
+				leading_index = max(source_index-20, 0)
+				items_prev = results[leading_index:source_index]
+				trailing_index = 41 - len(items_prev)
+				items_next = results[source_index+1:source_index+trailing_index]
+				items = [source] + items_next + items_prev
+			else: items = results
+			total_items = len(items)
+			if not background: self._make_progress_dialog()
+			_resolve_dialog()
+			if background: return self.url
+			if self.caching_confirmed: return self.resolve_sources(self.url, cache_item=True)
+			self.playback_successful = False
+			DavidPlayer().run(self.url, self)
+			if not self.playback_successful: return _check_playback(items)
+		except: pass
+
+	def resolve_sources(self, item, cache_item=False, meta=None):
+		if meta: self.meta = meta
+		try:
+			if 'cache_provider' in item:
+				cache_provider = item['cache_provider']
+				if self.meta['media_type'] == 'episode': title, season, episode, pack = self.get_ep_name(), self.get_search_season(), self.get_search_episode(), 'package' in item
+				else: title, season, episode, pack = self.get_search_title(), None, None, False
+				if cache_provider in ('Real-Debrid', 'Premiumize.me', 'AllDebrid'):
+					url = self.resolve_cached_torrents(cache_provider, item['url'], item['hash'], title, season, episode, pack)
+					return url
+				if 'Uncached' in cache_provider:
+					if cache_item:
+						if not pack: title, season, episode  = None, None, None
+						url = self.resolve_uncached_torrents(item['debrid'], item['url'], item['hash'], title, season, episode)
+						if not url: return None
+						if url == 'cache_pack_success': return
+						return DavidPlayer().run(url)
+					else:
+						url = 'uncached'
+						return url
+					return None
+			if item.get('scrape_provider', None) in default_internal_scrapers:
+				url = self.resolve_internal_sources(item['scrape_provider'], item['id'], item['url_dl'], item.get('direct_debrid_link', False))
+				return url
+			if item.get('debrid') in ('Real-Debrid', 'Premiumize.me', 'AllDebrid') and not item['source'].lower() == 'torrent':
+				url = self.resolve_debrid(item['debrid'], item['provider'], item['url'])
+				if url is not None: return url
+				else: return None
+			else:
+				url = item['url']
+				return url
+		except: return
+
+	def debrid_importer(self, debrid_provider):
+		return manual_function_import(*debrids[debrid_provider])
+
+	def resolve_cached_torrents(self, debrid_provider, item_url, _hash, title, season, episode, pack):
+		url = None
+		debrid_function = self.debrid_importer(debrid_provider)
+		store_to_cloud = settings.store_resolved_torrent_to_cloud(debrid_provider, pack)
+		try: url = debrid_function().resolve_magnet(item_url, _hash, store_to_cloud, title, season, episode)
+		except: pass
+		return url
+
+	def resolve_uncached_torrents(self, debrid_provider, item_url, _hash, title, season, episode):
+		debrid_function = self.debrid_importer(debrid_provider)
+		if season: pack = True
+		else: pack = False
+		if debrid_function().add_uncached_torrent(item_url, pack):
+			if pack: return 'cache_pack_success'
+			return self.resolve_cached_torrents(debrid_provider, item_url, _hash, title, season, episode)
+		else: return None
+
+	def resolve_debrid(self, debrid_provider, item_provider, item_url):
+		url = None
+		debrid_function = self.debrid_importer(debrid_provider)
+		try: url = debrid_function().unrestrict_link(item_url)
+		except: pass
+		return url
+
+	def resolve_internal_sources(self, scrape_provider, item_id, url_dl, direct_debrid_link=False):
+		url = None
+		try:
+			if direct_debrid_link: return url_dl
+			if scrape_provider == 'furk':
+				from indexers.furk import t_file_browser
+				meta = json.loads(get_property('david_playback_meta'))
+				url = t_file_browser(item_id, meta['media_type'], meta['season'], meta['episode'])
+				if url and get_setting('furk.disable_ssl') == 'true': url = url.replace('https', 'http')
+			elif scrape_provider == 'easynews':
+				from indexers.easynews import resolve_easynews
+				url = resolve_easynews({'url_dl': url_dl, 'play': 'false'})
+				if url and get_setting('easynews.disable_ssl') == 'true': url = url.replace('https', 'http')
+			elif scrape_provider == 'folders': url = url_dl
+			else:
+				debrid_function = self.debrid_importer(scrape_provider)
+				if any(i in scrape_provider for i in ('rd_', 'ad_')): url = debrid_function().unrestrict_link(item_id)
+				elif '_cloud' in scrape_provider: url = debrid_function().get_item_details(item_id)
+				else: url = debrid_function().add_headers_to_url(item_id)
+		except: pass
+		return url
