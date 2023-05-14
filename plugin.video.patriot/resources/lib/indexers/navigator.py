@@ -22,6 +22,7 @@ import os,sys
 import xbmc, xbmcaddon, xbmcgui
 
 import six
+import xbmcvfs
 
 from resources.lib.modules import control
 from resources.lib.modules import trakt
@@ -42,7 +43,7 @@ queueMenu = control.lang(32065)
 class navigator:
 
     ADDON_ID      = xbmcaddon.Addon().getAddonInfo('id')
-    HOMEPATH      = xbmc.translatePath('special://home/')
+    HOMEPATH      = xbmcvfs.translatePath('special://home/')
     ADDONSPATH    = os.path.join(HOMEPATH, 'addons')
     THISADDONPATH = os.path.join(ADDONSPATH, ADDON_ID)
     LOCALNEWS     = os.path.join(THISADDONPATH, 'news.txt')
@@ -56,9 +57,6 @@ class navigator:
 
         if self.getMenuEnabled('navi.tvShows') == True:
             self.addDirectoryItem(32002, 'tvNavigator', 'tvshows.png', 'DefaultTVShows.png')
-
-        if self.getMenuEnabled('navi.channels') == True:
-            self.addDirectoryItem(32007, 'channelsNavigator', 'livetv.png', 'DefaultMovies.png')
 
         if self.getMenuEnabled('navi.movieWidget') == True:
             self.addDirectoryItem('My Movies (Trakt)', 'mymovieNavigator', 'mymovies.png', 'DefaultVideoPlaylists.png')

@@ -1,4 +1,9 @@
 
+[B]Version 1.0.9[/B]
+- Update code for Nexus
+- Remove Channels
+- Edit Movie Boxsets
+
 [B]Version 1.0.8[/B]
 - Update code
 - Orion support

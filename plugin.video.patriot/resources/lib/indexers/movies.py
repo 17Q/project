@@ -428,7 +428,7 @@ class movies:
                  ('ls576842543', 'Dirty Harry (1971-1988)'),
                  ('ls576844230', 'Every Which Way But Loose (1978-1980)'),
                  ('ls576849505', 'The Expendables (2010-2014)'),
-                 ('ls576849843', 'Fast and the Furious (2001-2021)'),
+                 ('ls576849843', 'Fast and the Furious (2001-2023)'),
                  ('ls576897608', 'Father of the Bride (1991-1995)'),
                  ('ls576897458', 'Fletch (1985-1989)'),
                  ('ls576897832', 'Fugitive (1993-1998)'),

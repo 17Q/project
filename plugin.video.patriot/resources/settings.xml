@@ -90,7 +90,6 @@
         <setting type="lsep" label="Main Menu" />
         <setting id="navi.movies" type="bool" label="Movies" default="true" />
         <setting id="navi.tvShows" type="bool" label="TV Shows" default="true" />
-        <setting id="navi.channels" type="bool" label="Channels" default="true" />
         <setting id="navi.movieWidget" type="bool" label="My Movies (Trakt)" default="true" />
         <setting id="navi.tvWidget" type="bool" label="My TV Shows (Trakt)" default="true" />
         <setting id="navi.movieNew" type="bool" label="New Movies" default="true" />

@@ -1,5 +1,11 @@
 [B]Updates[/B]
 
+[B]May 14, 2023[/B]
+[B]Version 1.0.9[/B]
+- Update code for Nexus
+- Remove Channels
+- Edit Movie Boxsets
+
 [B]July 28, 2022[/B]
 [B]Version 1.0.8[/B]
 - Update code
@@ -93,15 +99,3 @@
 - Sign up at https://furk.net
 - Free Trials are also available
 - From Main Menu - Tools/Settings/Premium Accounts - Enter your Furk Username, Password and API Key
-
-[B]How to Install Orion Add-on[/B]
-- From Patriot, Select Tools
-- Select Orion: Install
-- Go back to Patriot main menu
-- Select Tools again
-- Select Orion: Settings
-- Select Account
-- Select Authentication
-
-
-

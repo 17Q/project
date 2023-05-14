@@ -145,7 +145,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.patriot" name=" Patriot" provider-name="17Q" version="1.0.8">
+<addon id="plugin.video.patriot" name=" Patriot" provider-name="17Q" version="1.0.9">
     <requires>
         <import addon="script.module.patriotscrapers" />
         <import addon="script.module.resolveurl" />
@@ -163,7 +163,7 @@
     <extension point="xbmc.addon.metadata">
         <reuselanguageinvoker>false</reuselanguageinvoker>
         <summary lang="en_GB">Patriot</summary>
-        <description lang="en_GB">[B]Patriot: a person who loves his or her country and boldly supports and defends it. Enjoy![/B][CR][CR]This addon does not form part of the Kodi Media Center. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR][CR]The author does not host any of the content in this addon and takes no responsibility for content found.</description>
+        <description lang="en_GB">[B]Patriot Movies, TV Shows, Trakt and Library Support[/B][CR][CR]This addon does not form part of the Kodi Media Center. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR][CR]The author does not host any of the content in this addon and takes no responsibility for content found.</description>
         <platform>all</platform>
         <license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
         <forum />
