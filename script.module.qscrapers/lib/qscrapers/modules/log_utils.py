@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Qscrapers Module
 """
 
 from datetime import datetime
@@ -59,7 +59,7 @@ def log(msg, caller=None, level=LOGINFO):
 					f.write(line.rstrip('\r\n') + '\n' + log_file)
 		else:
 			import xbmc
-			xbmc.log('%s: %s' % (DEBUGPREFIX % debug_list[level], msg, level))
+			xbmc.log('%s: %s' % (DEBUGPREFIX % debug_list[level], msg), level)
 	except Exception as e:
 		import traceback
 		traceback.print_exc()
@@ -123,6 +123,25 @@ def view_LogFile(name):
 		f.close()
 		heading = '[B]%s -  LogFile[/B]' % name
 		windows = TextViewerXML('textviewer.xml', addonPath(), heading=heading, text=text)
+		windows.run()
+		del windows
+	except:
+		error()
+
+def view_TorrentStats(name):
+	try:
+		from qscrapers.windows.textviewer import TextViewerXML
+		from qscrapers.modules.control import addonPath
+		log_file = joinPath(LOGPATH, '%s.log' % name.lower())
+		if not existsPath(log_file):
+			from qscrapers.modules.control import notification
+			return notification(message='Log File not found, likely logging is not enabled.')
+		f = open(log_file, 'r', encoding='utf-8', errors='ignore')
+		text = f.read()
+		f.close()
+		stats_lines = '\n'.join([line for line in text.splitlines() if '#STATS' in line])
+		heading = '[B]%s -  LogFile[/B]' % name
+		windows = TextViewerXML('textviewer.xml', addonPath(), heading=heading, text=stats_lines)
 		windows.run()
 		del windows
 	except:

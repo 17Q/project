@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Qscrapers Module
 """
 
 from ast import literal_eval
@@ -9,7 +9,6 @@ import re
 from time import time
 from sqlite3 import dbapi2 as db
 from qscrapers.modules.control import existsPath, dataPath, makeFile, cacheFile
-
 
 def get(function, duration, *args):
 	"""

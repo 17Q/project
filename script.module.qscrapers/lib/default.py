@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Qscrapers Module
 """
 
 from sys import argv
@@ -26,12 +26,7 @@ elif action == 'ShowHelp':
 	help.get(params.get('name'))
 
 elif action == "Defaults":
-	sourceList = []
-	sourceList = sources_qscrapers.all_providers
-	for i in sourceList:
-		source_setting = 'provider.' + i
-		value = control.getSettingDefault(source_setting)
-		control.setSetting(source_setting, value)
+	control.setProviderDefaults()
 
 elif action == "toggleAll":
 	sourceList = []
@@ -94,6 +89,49 @@ elif action == 'tools_viewLogFile':
 	from qscrapers.modules import log_utils
 	log_utils.view_LogFile(params.get('name'))
 
+elif action == 'tools_viewTorrentStats':
+	from qscrapers.modules import log_utils
+	log_utils.view_TorrentStats(params.get('name'))
+
 elif action == 'tools_uploadLogFile':
 	from qscrapers.modules import log_utils
 	log_utils.upload_LogFile()
+
+elif action == 'plexAuth':
+	from qscrapers.modules import plex
+	plex.Plex().auth()
+
+elif action == 'plexRevoke':
+	from qscrapers.modules import plex
+	plex.Plex().revoke()
+
+elif action == 'plexSelectShare':
+	from qscrapers.modules import plex
+	plex.Plex().get_plexshare_resource()
+
+elif action == 'plexSeeShare':
+	from qscrapers.modules import plex
+	plex.Plex().see_active_shares()
+
+elif action == 'ShowOKDialog':
+	control.okDialog(params.get('title', 'default'), int(params.get('message', '')))
+
+elif action == 'TestProwlarrConnection':
+	from qscrapers.modules.prowlarr import Prowlarr
+	prowlarr = Prowlarr()
+	prowlarr.test()
+
+elif action == 'ProwlarrIndexers':
+	from qscrapers.modules.prowlarr import Prowlarr
+	prowlarr = Prowlarr()
+	prowlarr.get_indexers()
+
+elif action == 'mediafusionAuth':
+	from qscrapers.modules.mediafusion import MediaFusion
+	mediafusion = MediaFusion()
+	mediafusion.auth()
+
+elif action == 'mediafusionReset':
+	from qscrapers.modules.mediafusion import MediaFusion
+	mediafusion = MediaFusion()
+	mediafusion.clear()

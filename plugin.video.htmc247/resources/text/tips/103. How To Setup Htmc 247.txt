@@ -1,0 +1,50 @@
+Htmc 247: SETTING UP AS A 24/7 ADDON
+
+Htmc 247 default settings are already configured to:
+- Auto Play your Movies
+- Auto Play Next TV Show Episodes via TMDb Lists as well as Trakt Personal and Public Lists.
+
+TO WATCH CONTINUOUS TV SHOWS:
+Simply click a Season and Episode to start playing your favorite show. When the episode finishes, the next one will Auto Play automatically.
+
+TO WATCH RANDOM EPISODES OF YOUR FAVORITE SHOWS:
+From the context menu, select Options → Play Random → then choose either:
+- Single Random Play (plays one random episode)
+- Continual Random Play (keeps playing random episodes endlessly)
+
+-------------------------------------
+FIRST THINGS FIRST: SETUP GUIDE
+
+1. ENABLE EXTERNAL SCRAPERS:
+   - Go to Tools → Settings → Accounts
+   - Enable External Scrapers and choose the external scrapers module you wish to use
+
+2. AUTHORIZE A DEBRID SERVICE:
+   - Authorize Real Debrid, All Debrid, or the service of your choice
+
+3. (OPTIONAL) AUTHORIZE TRAKT:
+   - Authorize Trakt if you plan on using Trakt List(s) with Htmc 247
+   - NOTE: To avoid updating your Trakt account with random shows, consider using TMDb Lists instead
+
+4. AUTHORIZE TMDB:
+   - Authorize your TMDb account to use personal or public lists
+   - You can also create a new TMDb List by importing your favorite Trakt List(s)
+
+5. ADD LISTS TO THE ROOT MENU:
+   - Once your lists are set up, use the context menu → Add Content to add them to the Root Menu
+
+6. SET YOUR VIEWS:
+   - Go to Tools → Set Views
+   - Choose how you want your lists displayed (Wall, WideList, etc.)
+
+-------------------------------------
+TIPS FOR THE BEST EXPERIENCE:
+
+- Use TMDb lists for more control if you don’t want Trakt updating with random shows
+- For marathon sessions, combine Auto Play with Continual Random Play for 24/7 viewing
+- Experiment with different views (Wall, WideList, etc.) for easier browsing
+
+-------------------------------------
+ENJOY!
+
+With everything set up, Htmc 247 will function as your always-on 24/7 streaming addon, tailored to your lists and preferences.

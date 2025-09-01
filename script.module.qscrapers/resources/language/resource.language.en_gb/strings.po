@@ -160,7 +160,7 @@ msgid "General"
 msgstr ""
 
 msgctxt "#32051"
-msgid "Premium Hosters"
+msgid "Hosters"
 msgstr ""
 
 msgctxt "#32052"
@@ -232,7 +232,7 @@ msgid "FURK"
 msgstr ""
 
 msgctxt "#32069"
-msgid "GANOOL (movies only)"
+msgid "GANOOL (Movies only)"
 msgstr ""
 
 msgctxt "#32070"
@@ -403,16 +403,12 @@ msgctxt "#32111"
 msgid "KICKASS2 (Pack Capable)"
 msgstr ""
 
-msgctxt "#32112"
-msgid "LIMETORRENTS (Pack capable)"
-msgstr ""
-
 msgctxt "#32113"
 msgid "MAGNET$NUMBER[4]YOU"
 msgstr ""
 
 msgctxt "#32114"
-msgid "MAGNETDL (Pack capable)"
+msgid "TORRENTQUEST (Pack capable)"
 msgstr ""
 
 msgctxt "#32115"
@@ -439,10 +435,6 @@ msgctxt "#32120"
 msgid "TOPNOW"
 msgstr ""
 
-msgctxt "#32121"
-msgid "TORLOCK"
-msgstr ""
-
 msgctxt "#32122"
 msgid "TORRENTAPI (Pack capable)"
 msgstr ""
@@ -464,7 +456,7 @@ msgid "YOURBITTORRENT (Pack capable)"
 msgstr ""
 
 msgctxt "#32127"
-msgid "YTSMX (movies only)"
+msgid "YTSMX (Movies only)"
 msgstr ""
 
 msgctxt "#32128"
@@ -473,10 +465,6 @@ msgstr ""
 
 msgctxt "#32129"
 msgid "BTDB (Pack capable)"
-msgstr ""
-
-msgctxt "#32130"
-msgid "TORRENTZ2  (Pack capable)"
 msgstr ""
 
 msgctxt "#32131"
@@ -519,6 +507,242 @@ msgctxt "#32140"
 msgid "Clear ALL Extra Undesirables"
 msgstr ""
 
-msgctxt "#32141"
+msgctxt "#32513"
+msgid "1) Open this link in a browser : [COLOR skyblue]%s[/COLOR]"
+msgstr ""
+
+msgctxt "#32514"
+msgid "2) When prompted enter : [COLOR skyblue]%s[/COLOR]"
+msgstr ""
+
+msgctxt "#32515"
+msgid "Enable Plex Scraper"
+msgstr ""
+
+msgctxt "#32516"
+msgid "Setup"
+msgstr ""
+
+msgctxt "#32517"
+msgid "[COLOR FFA0C12C]-- Setup Help --[/COLOR]"
+msgstr ""
+
+msgctxt "#32518"
+msgid "Plex Token"
+msgstr ""
+
+msgctxt "#32519"
+msgid "Plex Client ID"
+msgstr ""
+
+msgctxt "#32520"
+msgid "Plex Device ID"
+msgstr ""
+
+msgctxt "#32521"
+msgid "Plexshare Source Title"
+msgstr ""
+
+msgctxt "#32522"
+msgid "Plexshare accessToken"
+msgstr ""
+
+msgctxt "#32523"
+msgid "Plexshare url"
+msgstr ""
+
+msgctxt "#32524"
+msgid "Authorize Plex"
+msgstr ""
+
+msgctxt "#32525"
+msgid "Revoke Plex"
+msgstr ""
+
+msgctxt "#32526"
+msgid "(Select/Re-Select) PlexShare Source"
+msgstr ""
+
+msgctxt "#32527"
+msgid "Exclude Adult Results"
+msgstr ""
+
+msgctxt "#32530"
+msgid "General settings for scraper."
+msgstr ""
+
+msgctxt "#32531"
+msgid "Set all providers to default qscraper settings."
+msgstr ""
+
+msgctxt "#32532"
+msgid "Disable all providers in the scraper."
+msgstr ""
+
+msgctxt "#32533"
+msgid "Enable all providers in the scraper."
+msgstr ""
+
+msgctxt "#32534"
+msgid "Show changlog for QScrapers."
+msgstr ""
+
+msgctxt "#32535"
+msgid "Disable all hosters. This does not change torrent provider settings."
+msgstr ""
+
+msgctxt "#32536"
+msgid "Enable all hosters. This does not change torrent provider settings."
+msgstr ""
+
+msgctxt "#32537"
+msgid "Premium Hosters are hosters that you may have accounts with that could be used as providers. Plex, GDrive, Easy News, and Furk are all included in this section."
+msgstr ""
+
+msgctxt "#32538"
+msgid "Torrent Hosters are sites that can be scraped for torrents to be used with hosters or debrid accounts."
+msgstr ""
+
+msgctxt "#32539"
+msgid "Toggle all torrent providers off."
+msgstr ""
+
+msgctxt "#32540"
+msgid "Toggle all torrent providers on."
+msgstr ""
+
+msgctxt "#32541"
+msgid "Toggle all pack compatible torrent providers on."
+msgstr ""
+
+msgctxt "#32542"
+msgid "Toggle all pack compatible torrent providers off."
+msgstr ""
+
+msgctxt "#32543"
+msgid "IBIT"
+msgstr ""
+
+msgctxt "#32544"
+msgid "See Active PlexShares"
+msgstr ""
+
+msgctxt "#32545"
+msgid "KNABEN"
+msgstr ""
+
+msgctxt "#32546"
+msgid "Plex Account Link"
+msgstr ""
+
+msgctxt "#32547"
+msgid "Prowlarr"
+msgstr ""
+
+msgctxt "#32548"
+msgid "Prowlarr is a self-hosted torrent indexer management tool that integrates various indexers into a single, easy-to-use web interface."
+msgstr ""
+
+msgctxt "#32549"
+msgid "Enable Prowlarr"
+msgstr ""
+
+msgctxt "#32550"
+msgid "Turn this on to integrate Prowlarr, enhancing your media search capabilities by aggregating various torrent indexers in one place."
+msgstr ""
+
+msgctxt "#32551"
+msgid "Prowlarr Server URL"
+msgstr ""
+
+msgctxt "#32552"
+msgid "Enter the URL where your Prowlarr server is hosted. Example: http://localhost:9696"
+msgstr ""
+
+msgctxt "#32553"
+msgid "Prowlarr API Key"
+msgstr ""
+
+msgctxt "#32554"
+msgid "Enter your Prowlarr API key to authenticate and connect with the Prowlarr server."
+msgstr ""
+
+msgctxt "#32555"
+msgid "Test Prowlarr Connection"
+msgstr ""
+
+msgctxt "#32556"
+msgid "Make a basic HTTP request to make sure your settings are correct."
+msgstr ""
+
+msgctxt "#32557"
 msgid ""
+msgstr ""
+
+msgctxt "#32558"
+msgid "SELFHOSTED (Pack Capable)"
+msgstr ""
+
+msgctxt "#32559"
+msgid "SELF-HOSTED URL"
+msgstr ""
+
+msgctxt "#32560"
+msgid "SELF-HOSTED NAME"
+msgstr ""
+
+msgctxt "#32561"
+msgid "Bypass title filter"
+msgstr ""
+
+msgctxt "#32562"
+msgid "Enabling this setting will bypass the filter removing results that do not match the title name. This may result in some incorrect sources."
+msgstr ""
+
+msgctxt "#32563"
+msgid "COMET (Pack Capable)"
+msgstr ""
+
+msgctxt "#32564"
+msgid "Debrid Provider"
+msgstr ""
+
+msgctxt "#32565"
+msgid "Real-Debrid"
+msgstr ""
+
+msgctxt "#32566"
+msgid "Premiumize.me"
+msgstr ""
+
+msgctxt "#32567"
+msgid "All Debrid"
+msgstr ""
+
+msgctxt "#32568"
+msgid "MEDIAFUSION (Pack Capable)"
+msgstr ""
+
+msgctxt "#32569"
+msgid "View QScrapers torrent stats"
+msgstr ""
+
+msgctxt "#32570"
+msgid "Setup Using Device Code"
+msgstr ""
+
+msgctxt "#32571"
+msgid "Mediafusion URL"
+msgstr ""
+
+msgctxt "#32572"
+msgid "Use Custom Mediafusion URL"
+msgstr ""
+
+msgctxt "#32573"
+msgid "Secret String"
+msgstr ""
+
+msgctxt "#32574"
+msgid "Reset Secret"
 msgstr ""

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Qscrapers Module
 """
 
 import xbmc
 from qscrapers.modules import control
+from qscrapers.modules.Thread_pool import shutdown_executor
 window = control.homeWindow
 LOGINFO = 1 # (LOGNOTICE(2) deprecated in 19, use LOGINFO(1))
 
@@ -62,6 +63,7 @@ def main():
 			xbmc.log('[ script.module.qscrapers ]  Settings file cleaned complete', LOGINFO)
 		break
 	SettingsMonitor().waitForAbort()
+	shutdown_executor()
 	xbmc.log('[ script.module.qscrapers ]  Service Stopped', LOGINFO)
 
 main()

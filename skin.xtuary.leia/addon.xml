@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="skin.xtuary.leia" version="2.0.16" name="Xtuary - Customizable Estuary skin mod for Leia" provider-name="17Q">
+<addon id="skin.xtuary.leia" version="2.0.16" name="Xtuary - Customizable Estuary skin mod for Leia" provider-name="phil65, Ichabod Fletchman, mod by HTMC">
 	<requires>
 		<import addon="xbmc.gui" version="5.14.0"/>
 		<import addon="script.skinshortcuts" version="0.6.0"/>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	QScrapers Module  Modified 01-02-23 UD
 """
 
 from json import dumps as jsdumps, loads as jsloads
@@ -9,7 +9,8 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcvfs
-import xml.etree.ElementTree as ET
+from xml.dom.minidom import parse as mdParse
+#import xml.etree.ElementTree as ET #python 3.11 bug screws element tree. everything changed was left commented out.
 
 addon = xbmcaddon.Addon
 addonObject = addon('script.module.qscrapers')
@@ -25,6 +26,7 @@ monitor = xbmc.Monitor()
 dialog = xbmcgui.Dialog()
 homeWindow = xbmcgui.Window(10000)
 progressDialog = xbmcgui.DialogProgress()
+progress_line = '%s[CR]%s[CR]%s'
 
 deleteFile = xbmcvfs.delete
 existsPath = xbmcvfs.exists
@@ -36,12 +38,15 @@ transPath = xbmcvfs.translatePath
 joinPath = os.path.join
 
 SETTINGS_PATH = transPath(joinPath(addonInfo('path'), 'resources', 'settings.xml'))
-try: dataPath = transPath(addonInfo('profile')).decode('utf-8')
-except: dataPath = transPath(addonInfo('profile'))
+dataPath = transPath(addonInfo('profile'))
 cacheFile = joinPath(dataPath, 'cache.db')
 undesirablescacheFile = joinPath(dataPath, 'undesirables.db')
+plexSharesFile = joinPath(dataPath, 'plexshares.db')
 settingsFile = joinPath(dataPath, 'settings.xml')
 
+def getKodiVersion(full=False):
+	if full: return xbmc.getInfoLabel("System.BuildVersion")
+	else: return int(xbmc.getInfoLabel("System.BuildVersion")[:2])
 
 def setting(id, fallback=None):
 	try: settings_dict = jsloads(homeWindow.getProperty('qscrapers_settings'))
@@ -60,12 +65,19 @@ def setSetting(id, value):
 
 def make_settings_dict(): # service runs upon a setting change
 	try:
-		root = ET.parse(settingsFile).getroot()
+		#root = ET.parse(settingsFile).getroot()
+		root = mdParse(settingsFile) #minidom instead of element tree
+		curSettings = root.getElementsByTagName("setting") #minidom instead of element tree
 		settings_dict = {}
-		for item in root:
+		for item in curSettings:
 			dict_item = {}
-			setting_id = item.get('id')
-			setting_value = item.text
+			#setting_id = item.get('id')
+			setting_id = item.getAttribute('id') #minidom instead of element tree
+			#setting_value = item.text
+			try:
+				setting_value = item.firstChild.data #minidom instead of element tree
+			except:
+				setting_value = None
 			if setting_value is None: setting_value = ''
 			dict_item = {setting_id: setting_value}
 			settings_dict.update(dict_item)
@@ -134,18 +146,30 @@ def clean_settings():
 		addon_dir = transPath(addon.getAddonInfo('path'))
 		profile_dir = transPath(addon.getAddonInfo('profile'))
 		active_settings_xml = joinPath(addon_dir, 'resources', 'settings.xml')
-		root = ET.parse(active_settings_xml).getroot()
-		for item in root.findall(r'./category/setting'):
-			setting_id = item.get('id')
+		#root = ET.parse(active_settings_xml).getroot()
+		#for item in root.findall(r'./section/category/group/setting'):
+		root = mdParse(active_settings_xml) #minidom instead of element tree
+		root = root.getElementsByTagName("setting") #minidom instead of element tree
+		for item in root:
+			#setting_id = item.get('id')
+			setting_id = item.getAttribute('id') #minidom instead of element tree
 			if setting_id:
 				active_settings.append(setting_id)
 		settings_xml = joinPath(profile_dir, 'settings.xml')
-		root = ET.parse(settings_xml).getroot()
+		#root = ET.parse(settings_xml).getroot()
+		root = mdParse(settings_xml) #minidom instead of element tree
+		root = root.getElementsByTagName("setting") #minidom instead of element tree 
 		for item in root:
 			dict_item = {}
-			setting_id = item.get('id')
-			setting_default = item.get('default')
-			setting_value = item.text
+			#setting_id = item.get('id')
+			#setting_default = item.get('default')
+			#setting_value = item.text
+			setting_id = item.getAttribute('id') #minidom instead of element tree
+			setting_default = item.getAttribute('default') #minidom instead of element tree
+			try:
+				setting_value = item.firstChild.data #minidom instead of element tree
+			except:
+				setting_value = None
 			dict_item['id'] = setting_id
 			if setting_value:
 				dict_item['value'] = setting_value
@@ -176,8 +200,10 @@ def addonIcon():
 	return addonInfo('icon')
 
 def addonPath():
-	try: return transPath(addonInfo('path').decode('utf-8'))
-	except: return transPath(addonInfo('path'))
+	return transPath(addonInfo('path'))
+
+def addonEnabled(addon_id):
+	return condVisibility('System.AddonIsEnabled(%s)' % addon_id)
 
 def addonInstalled(addon_id):
 	return condVisibility('System.HasAddon(%s)' % addon_id)
@@ -188,22 +214,33 @@ def openSettings(query=None, id=addonInfo('id')):
 		execute('Addon.OpenSettings(%s)' % id)
 		if not query: return
 		c, f = query.split('.')
-		execute('SetFocus(%i)' % (int(c) - 100))
-		execute('SetFocus(%i)' % (int(f) - 80))
+		if getKodiVersion() > 20.0:
+			execute('SetFocus(%i)' % (int(c) - 200))
+			execute('SetFocus(%i)' % (int(f) - 180))
+		else:
+			execute('SetFocus(%i)' % (int(c) - 100))
+			execute('SetFocus(%i)' % (int(f) - 80))
 	except:
-		return
+		from qscrapers.modules import log_utils
+		log_utils.error()
 
-def getSettingDefault(id):
-	import re
+def getProviderDefaults():
+	provider_defaults = {}
 	try:
-		settings = open(SETTINGS_PATH, 'r')
-		value = ' '.join(settings.readlines())
-		value.strip('\n')
-		settings.close()
-		value = re.findall(r'id=\"%s\".*?default=\"(.*?)\"' % (id), value)[0]
-		return value
-	except:
-		return None
+		for item in mdParse(SETTINGS_PATH).getElementsByTagName("setting"): #holy shit look at that.
+			setting_id = item.getAttribute('id') #minidom instead of element tree
+			if not setting_id.startswith('provider.'): continue
+			try: defaulttext = item.getElementsByTagName('default')[0].firstChild.data
+			except: defaulttext = 'false'
+			provider_defaults[setting_id] = defaulttext or 'false'
+	except: pass
+	return provider_defaults
+
+def setProviderDefaults(provider_defaults=None):
+	try:
+		if provider_defaults is None: provider_defaults = getProviderDefaults()
+		for k, v in provider_defaults.items(): setSetting(k, v)
+	except: return
 
 def hide():
 	execute('Dialog.Close(busydialog)')

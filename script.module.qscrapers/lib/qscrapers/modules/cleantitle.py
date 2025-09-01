@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Qscrapers Module changed 10-11-22 by umbrelladev
 """
 
 import re
@@ -12,7 +12,9 @@ def get(title):
 		title = re.sub(r'(&#[0-9]+)([^;^0-9]+)', '\\1;\\2', title) # fix html codes with missing semicolon between groups
 		title = re.sub(r'&#(\d+);', '', title).lower()
 		title = title.replace('&quot;', '\"').replace('&amp;', '&').replace('&nbsp;', '')
-		title = re.sub(r'[<\[({].*?[})\]>]|[^\w0-9]|[_]', '', title)
+		#title = re.sub(r'[<\[({].*?[})\]>]|[^\w0-9]|[_]', '', title) #replaced with lines below to stop removing () and everything between.
+		title = re.sub(r'\([^\d]*(\d+)[^\d]*\)', '', title) #eliminate all numbers between ()
+		title = re.sub(r'[<\[{].*?[}\]>]|[^\w0-9]|[_]', '', title)
 		return title
 	except:
 		from qscrapers.modules import log_utils
@@ -38,11 +40,14 @@ def geturl(title):
 	if not title: return
 	try:
 		title = title.lower().rstrip()
-		try: title = title.translate(None, ':*?"\'\.<>|&!,')
+		#try: title = title.translate(None, ':*?"\'\.<>|&!,')
+		try:title = title.translate(str.maketrans('', '', ':*?"\'\\.<>|&!,'))
 		except:
-			try: title = title.translate(title.maketrans('', '', ':*?"\'\.<>|&!,'))
+			#try: title = title.translate(title.maketrans('', '', ':*?"\'\.<>|&!,'))
+			try: title = title.translate(title.maketrans('', '', ':*?"\'\\.<>|&!,'))
 			except:
-				for c in ':*?"\'\.<>|&!,': title = title.replace(c, '')
+				#for c in ':*?"\'\.<>|&!,': title = title.replace(c, '')
+				for c in ':*?"\'\\.<>|&!,': title = title.replace(c, '')
 		title = title.replace('/', '-').replace(' ', '-').replace('--', '-').replace('–', '-').replace('!', '')
 		return title
 	except:

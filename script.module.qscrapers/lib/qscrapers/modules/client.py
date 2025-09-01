@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Qscrapers Module
 """
 
 import gzip
@@ -138,6 +138,7 @@ def request(url, close=True, redirect=True, error=False, proxy=None, post=None, 
 							except: log_utils.error()
 							if response.status_code == 403: # if cfscrape server still responds with 403
 								log_utils.log('cfscrape-Error url=(%s): %s' % (url, 'HTTP Error 403: Forbidden'), __name__, level=log_utils.LOGDEBUG)
+								log_utils.log('Headers-Used: %s' % str(headers), level=log_utils.LOGDEBUG)
 								return None
 						except:
 							log_utils.error()

@@ -1,0 +1,25 @@
+<addon id="plugin.video.htmc247" name="Htmc247" provider-name="17Q" version="1.0.0">
+    <requires>
+        <import addon="xbmc.python" version="3.0.0"/>
+        <import addon="script.module.pil" version="1.1.7"/>
+        <import addon="script.module.requests" version="2.19.1"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="resources/lib/htmc247.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.service" library="resources/lib/service.py"/>
+    <extension point="xbmc.python.module" library="resources/lib/"/>
+    <extension point="xbmc.addon.metadata">
+        <reuselanguageinvoker>true</reuselanguageinvoker>
+        <summary lang="en">Access your content from Easynews and Debrid Clouds.</summary>
+        <description lang="en">htmc247 Continuous 24-7 TV Shows. Kindly note that htmc247 is not an official part of the media player you are running, and therefore not to be mentioned within official support channels, this addon has nothing to do with the media player itself, nor it’s intended use, it is simply a third party plugin which has been added to your system.</description>
+        <platform>all</platform>
+		<disclaimer lang="en">The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.</disclaimer>
+        <license/>
+        <assets>
+            <icon>resources/media/addon_icons/htmc247_icon_01.png</icon>
+            <fanart>resources/media/htmc247_fanart_01.jpg</fanart>
+        </assets>
+        <news>INFO: For latest changes see Changelog within Tools of add-on.</news>
+    </extension>
+</addon>

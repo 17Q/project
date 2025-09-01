@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# created by Venom for Fenomscrapers (updated 7-19-2022)
+# created by Venom for Qscrapers (updated 7-19-2022)
 """
-	Fenomscrapers Project
+	Qscrapers Project
 """
 
 import re
@@ -10,6 +10,8 @@ from qscrapers.modules import cfscrape
 from qscrapers.modules import client
 from qscrapers.modules import source_utils
 from qscrapers.modules import workers
+from qscrapers.modules import log_utils
+from time import time
 
 
 class source:
@@ -21,9 +23,10 @@ class source:
 		self.language = ['en']
 # captcha ["torrentgalaxy.to", "torrentgalaxy.mx"
 # working ["torrentgalaxy.su", "https://tgx.rs"]
-		self.base_link = "https://torrentgalaxy.su"
+		self.base_link = "https://tgx.rs"
 		self.search_link = '/torrents.php?search=%s&sort=seeders&order=desc'
 		self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'} # cfscrape has some old User-Agents that fail
+		self.item_totals = {'4K': 0, '1080p': 0, '720p': 0, 'SD': 0, 'CAM': 0 }
 		self.min_seeders = 0
 
 	def sources(self, data, hostDict):
@@ -31,6 +34,7 @@ class source:
 		if not data: return sources
 		sources_append = sources.append
 		try:
+			startTime = time()
 			scraper = cfscrape.create_scraper()
 			aliases = data['aliases']
 			year = data['year']
@@ -65,7 +69,8 @@ class source:
 				columns = re.findall(r'<div.*?>(.+?)</div>', row, re.DOTALL)
 
 				url = unquote_plus(columns[4]).replace('&amp;', '&')
-				url = re.search(r'(magnet:.+?)&tr=', url, re.I).group(1).replace(' ', '.')
+				try: url = re.search(r'(magnet:.+?)&tr=', url, re.I).group(1).replace(' ', '.')
+				except: continue
 				hash = re.search(r'btih:(.*?)&', url, re.I).group(1)
 				name = source_utils.clean_name(url.split('&dn=')[1])
 
@@ -94,8 +99,15 @@ class source:
 
 				sources_append({'provider': 'torrentgalaxy', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info,
 											'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
+				self.item_totals[quality]+=1
 			except:
 				source_utils.scraper_error('TORRENTGALAXY')
+		logged = False
+		for quality in self.item_totals:
+			if self.item_totals[quality] > 0:
+					logged = True
+					log_utils.log('#STATS - TORRENTGALAXY found {0:2.0f} {1}'.format(self.item_totals[quality],quality) )
+		if not logged: log_utils.log('#STATS - TORRENTGALAXY found nothing')
 		return sources
 
 	def sources_packs(self, data, hostDict, search_series=False, total_seasons=None, bypass_filter=False):
@@ -103,6 +115,7 @@ class source:
 		if not data: return self.sources
 		self.sources_append = self.sources.append
 		try:
+			startTime = time()
 			self.scraper = cfscrape.create_scraper()
 			self.search_series = search_series
 			self.total_seasons = total_seasons
@@ -126,13 +139,21 @@ class source:
 				queries = [
 						self.search_link % quote_plus(query + ' S%s' % self.season_xx),
 						self.search_link % quote_plus(query + ' Season %s' % self.season_x)]
-			threads = []
-			thrds_append = threads.append
+			from qscrapers.modules.Thread_pool import run_and_wait
+			from functools import partial
+			bound_get_sources_packs = partial(self.get_sources_packs)
+			links = []
 			for url in queries:
-				link = '%s%s' % (self.base_link, url)
-				thrds_append(workers.Thread(self.get_sources_packs, link))
-			[i.start() for i in threads]
-			[i.join() for i in threads]
+				links.append('%s%s' % (self.base_link, url))
+			run_and_wait(bound_get_sources_packs, links)
+			logged = False
+			for quality in self.item_totals:
+				if self.item_totals[quality] > 0:
+					logged = True
+					log_utils.log('#STATS - TORRENTGALAXY(pack) found {0:2.0f} {1}'.format(self.item_totals[quality],quality) )
+			if not logged: log_utils.log('#STATS - TORRENTGALAXY(pack) found nothing')
+			endTime = time()
+			log_utils.log('#STATS - TORRENTGALAXY(pack) took %.2f seconds' % (endTime - startTime))
 			return self.sources
 		except:
 			source_utils.scraper_error('TORRENTGALAXY')
@@ -154,7 +175,8 @@ class source:
 				columns = re.findall(r'<div.*?>(.+?)</div>', row, re.DOTALL)
 
 				url = unquote_plus(columns[4]).replace('&amp;', '&')
-				url = re.search(r'(magnet:.+?)&tr=', url, re.I).group(1).replace(' ', '.')
+				try: url = re.search(r'(magnet:.+?)&tr=', url, re.I).group(1).replace(' ', '.')
+				except: continue
 				hash = re.search(r'btih:(.*?)&', url, re.I).group(1)
 				name = source_utils.clean_name(url.split('&dn=')[1])
 
@@ -194,5 +216,6 @@ class source:
 				if self.search_series: item.update({'last_season': last_season})
 				elif episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
 				self.sources_append(item)
+				self.item_totals[quality] += 1
 			except:
 				source_utils.scraper_error('TORRENTGALAXY')

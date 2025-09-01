@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-# created by Venom for Fenomscrapers (updated 6-19-2022)
+# created by Venom for Qscrapers (updated 6-19-2022)
 """
-	Fenomscrapers Project
+	Qscrapers Project
 """
 
 import re
 from urllib.parse import quote_plus, unquote_plus
 from qscrapers.modules import client
 from qscrapers.modules import source_utils
-from qscrapers.modules import workers
+from qscrapers.modules import log_utils
+from time import time
 SERVER_ERROR = ('something went wrong', 'Connection timed out', '521: Web server is down', '503 Service Unavailable')
 
 
@@ -21,20 +22,32 @@ class source:
 		self.language = ['en']
 		self.base_link = "https://bitcq.com"
 		self.search_link = "/search?q=%s&category[]=1"
+		self.item_totals = {
+			'4K': 0,
+			'1080p': 0,
+			'720p': 0,
+			'SD': 0,
+			'CAM': 0 
+			}
 		self.min_seeders = 0
 
 	def sources(self, data, hostDict):
 		sources = []
 		if not data: return sources
-		append = sources.append
+		sources_append = sources.append
 		try:
-			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
+			startTime = time()
 			aliases = data['aliases']
-			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']
-			hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else year
-			query = re.sub(r'[^A-Za-z0-9\s\.-]+', '', '%s %s' % (title, hdlr))
+			if 'tvshowtitle' in data:
+				title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
+				episode_title = data['title']
+				hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode']))
+			else:
+				title = data['title'].replace('&', 'and').replace('/', ' ').replace('$', 's')
+				episode_title = None
+				hdlr = year
+			query = '%s %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', title), hdlr)
 			url = '%s%s' % (self.base_link, self.search_link % quote_plus(query))
 			# log_utils.log('url = %s' % url)
 			results = client.request(url, timeout=7)
@@ -52,7 +65,8 @@ class source:
 				columns = re.findall(r'<td.*?>(.+?)</td>', row, re.DOTALL)
 
 				url = unquote_plus(columns[0]).replace('&amp;', '&')
-				url = re.search(r'(magnet:.+?)&tr=', url, re.I).group(1).replace(' ', '.')
+				try: url = re.search(r'(magnet:.+?)&tr=', url, re.I).group(1).replace(' ', '.')
+				except: continue
 				hash = re.search(r'btih:(.*?)&', url, re.I).group(1)
 				name = source_utils.clean_name(url.split('&dn=')[1])
 
@@ -78,10 +92,19 @@ class source:
 				except: dsize = 0
 				info = ' | '.join(info)
 
-				append({'provider': 'bitcq', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
-							'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
+				sources_append({'provider': 'bitcq', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info,
+											'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
+				self.item_totals[quality]+=1
 			except:
 				source_utils.scraper_error('BITCQ')
+		logged = False
+		for quality in self.item_totals:
+			if self.item_totals[quality] > 0:
+				log_utils.log('#STATS - BITCQ found {0:2.0f} {1}'.format(self.item_totals[quality],quality) )
+				logged = True
+		if not logged: log_utils.log('#STATS - BITCQ found nothing')
+		endTime = time()
+		log_utils.log('#STATS - BITCQ took %.2f seconds' % (endTime - startTime))
 		return sources
 
 	def sources_packs(self, data, hostDict, search_series=False, total_seasons=None, bypass_filter=False):
@@ -89,6 +112,7 @@ class source:
 		if not data: return self.sources
 		self.sources_append = self.sources.append
 		try:
+			startTime = time()
 			self.search_series = search_series
 			self.total_seasons = total_seasons
 			self.bypass_filter = bypass_filter
@@ -109,16 +133,24 @@ class source:
 				queries = [
 						self.search_link % quote_plus(query + ' Season'),
 						self.search_link % quote_plus(query + ' Complete')]
-			threads = []
-			append = threads.append
+			from qscrapers.modules.Thread_pool import run_and_wait
+			from functools import partial
+			bound_get_sources_packs = partial(self.get_sources_packs)
+			links = []
 			for url in queries:
-				link = '%s%s' % (self.base_link, url)
-				append(workers.Thread(self.get_sources_packs, link))
-			[i.start() for i in threads]
-			[i.join() for i in threads]
+				links.append('%s%s' % (self.base_link, url))
+			run_and_wait(bound_get_sources_packs, links)
+			logged = False
+			for quality in self.item_totals:
+				if self.item_totals[quality] > 0:
+					log_utils.log('#STATS - BITCQ(pack) found {0:2.0f} {1}'.format(self.item_totals[quality],quality) )
+					logged = True
+			if not logged: log_utils.log('#STATS - BITCQ(pack) found nothing')
+			endTime = time()
+			log_utils.log('#STATS - BITCQ(pack) took %.2f seconds' % (endTime - startTime))
 			return self.sources
 		except:
-			source_utils.scraper_error('GLODLS')
+			source_utils.scraper_error('BITCQ')
 			return self.sources
 
 	def get_sources_packs(self, link):
@@ -135,7 +167,8 @@ class source:
 				columns = re.findall(r'<td.*?>(.+?)</td>', row, re.DOTALL)
 
 				url = unquote_plus(columns[0]).replace('&amp;', '&')
-				url = re.search(r'(magnet:.+?)&tr=', url, re.I).group(1).replace(' ', '.')
+				try: url = re.search(r'(magnet:.+?)&tr=', url, re.I).group(1).replace(' ', '.')
+				except: continue
 				hash = re.search(r'btih:(.*?)&', url, re.I).group(1)
 				name = source_utils.clean_name(url.split('&dn=')[1])
 
@@ -174,5 +207,6 @@ class source:
 				if self.search_series: item.update({'last_season': last_season})
 				elif episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
 				self.sources_append(item)
+				self.item_totals[quality]+=1
 			except:
 				source_utils.scraper_error('BITCQ')

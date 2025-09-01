@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Fenomscrapers Module
+	Qscrapers Module
 """
 
 import re
@@ -148,9 +148,9 @@ def check_title(title, aliases, release_title, hdlr, year, years=None): # non pa
 				from qscrapers.modules import log_utils
 				log_utils.error()
 	try:
+		
 		title = title.replace('&', 'and').replace(year, '') # year only in meta title if an addon custom query added it
 		if title not in title_list: title_list_append(title)
-
 		release_title = re.sub(r'([(])(?=((19|20)[0-9]{2})).*?([)])', '\\2', release_title) #remove parenthesis only if surrounding a 4 digit date
 		t = re.split(r'%s' % hdlr, release_title, 1, re.I)[0].replace(year, '').replace('&', 'and')
 		if years:
@@ -563,7 +563,8 @@ def clean_name(release_title):
 		if releasetitle_startswith('rifftrax'): return release_title # removed by "undesirables" anyway so exit
 		for i in unwanted_tags:
 			if releasetitle_startswith(i):
-				release_title = re.sub(r'^%s' % i.replace('+', '\+'), '', release_title, 1, re.I)
+				#release_title = re.sub(r'^%s' % i.replace('+', '\+'), '', release_title, 1, re.I)
+				release_title = re.sub(r'^%s' % re.escape(i), '', release_title, 1, re.I)
 		release_title = release_title.lstrip('+.-:/ ')
 		release_title = re.sub(r'^\[.*?]', '', release_title, 1, re.I)
 		release_title = release_title.lstrip('.-[](){}:/')

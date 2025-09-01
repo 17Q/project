@@ -1,0 +1,26 @@
+QUICK START: Htmc 247 (24/7 ADDON)
+
+DEFAULT FEATURES:
+- Auto-plays Movies & Next TV Episodes
+- Works with TMDb and Trakt lists
+
+HOW TO WATCH:
+- CONTINUOUS EPISODES: Pick a season & episode → next episode auto-plays
+- RANDOM EPISODES: Context Menu → Options → Play Random →
+    * Single Random Play (1 random ep)
+    * Continual Random Play (endless shuffle)
+
+SETUP STEPS:
+1. Enable External Scrapers → Tools → Settings → Accounts → turn on & pick scrapers
+2. Authorize Debrid (Real-Debrid, All-Debrid, etc.)
+3. (Optional) Authorize Trakt → Use Trakt lists or skip to avoid random updates
+4. Authorize TMDb → Use public/personal lists or import Trakt lists into TMDb
+5. Add Lists to Menu → Context Menu → Add Content
+6. Set Views (Wall, WideList, etc.)
+
+TIPS:
+- Use TMDb lists for cleaner setup
+- Try Continual Random Play for 24/7 shuffle mode
+- Adjust views for easier browsing
+
+Done! Enjoy your endless autoplay experience with Htmc 247.
